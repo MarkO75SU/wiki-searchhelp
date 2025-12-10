@@ -80,6 +80,19 @@ function applyTranslations() {
                     option.textContent = translations[currentLang][translationKey];
                 }
             });
+            
+            // Sync the selected option of target-wiki-lang to match the app's currentLang
+            // This makes the default target wiki language change with the app's UI language.
+            const currentAppLangCode = currentLang; // e.g., 'de', 'en', 'fr'
+            const optionValues = Array.from(targetWikiLangSelect.options).map(option => option.value);
+
+            if (optionValues.includes(currentAppLangCode)) {
+                targetWikiLangSelect.value = currentAppLangCode;
+            } else {
+                // If currentAppLangCode is not a direct option, reset to default 'de'
+                // or choose a sensible fallback. Assuming 'de' is the most robust default.
+                targetWikiLangSelect.value = 'de';
+            }
         }
     }
     
