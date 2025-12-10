@@ -1,3 +1,4 @@
+// FORCE CACHE CLEAR - SCRIPT VERSION FORCED REFRESH - LAST UPDATED 2023-10-27-14:35
 // script.js
 
 // Object to hold translations
