@@ -36,19 +36,15 @@ function applyTranslations() {
     const elements = document.querySelectorAll('[id]');
     elements.forEach(element => {
         const key = element.id;
-        if (translations[currentLang] && translations[currentLang][key]) {
-            if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
-                // Translate placeholder attribute for inputs
-                element.placeholder = translations[currentLang][key];
-            } else if (element.tagName === 'LABEL' && element.nextElementSibling && element.nextElementSibling.classList.contains('info-icon')) {
-                // Special handling for labels that have an associated info icon
-                // We assume the element's ID directly corresponds to the translation key for its text content.
-                element.textContent = translations[currentLang][key];
+        // Check for placeholder translation specifically for input elements
+        if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+            const placeholderKey = `${key}-placeholder`; // e.g., 'search-query-placeholder'
+            if (translations[currentLang] && translations[currentLang][placeholderKey]) {
+                element.placeholder = translations[currentLang][placeholderKey];
             }
-             else {
-                // Default: translate textContent
-                element.textContent = translations[currentLang][key];
-            }
+        } else if (translations[currentLang] && translations[currentLang][key]) {
+            // Default: translate textContent for other elements
+            element.textContent = translations[currentLang][key];
         }
     });
 
