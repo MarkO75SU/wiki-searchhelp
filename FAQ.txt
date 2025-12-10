@@ -1,0 +1,70 @@
+# Frequently Asked Questions (FAQ) - WikiGUI
+
+Welcome to the FAQ section for WikiGUI! This tool helps you construct advanced Wikipedia search queries. If you can't find an answer here, please refer to the official Wikipedia search help or contact support if available.
+
+---
+
+## 1. Getting Started
+
+*   **Q: What is WikiGUI?**
+    *   A: WikiGUI is a web-based tool that assists users in building complex search queries for Wikipedia by providing an intuitive interface for various search parameters.
+
+*   **Q: Is WikiGUI free to use?**
+    *   A: WikiGUI is provided under an open license (see LICENSE\_AGREEMENT.txt). Basic use is free. Please refer to the LICENSE\_AGREEMENT.txt and NON\_COMMERCIAL\_USE.txt for details on usage restrictions and commercial use.
+
+*   **Q: Do I need to install anything to use WikiGUI?**
+    *   A: No, WikiGUI is a web application. You can use it directly from your web browser without any installation, provided you have an internet connection.
+
+*   **Q: Where can I find the official Wikipedia search guide?**
+    *   A: You can find the official guide by clicking the link in the header of the page, which will direct you to the search help documentation for the selected Wikipedia language.
+
+---
+
+## 2. Features & Functionality
+
+*   **Q: How does the "All these words" field work?**
+    *   A: Entering terms in the "All these words" field means all of them must be present in the search results (equivalent to an implicit AND).
+
+*   **Q: What's the difference between "All these words" and "Exact Phrase"?**
+    *   A: "All these words" requires each word to be present, but not necessarily together. "Exact Phrase" requires the sequence of words to appear together, enclosed in quotation marks.
+
+*   **Q: How can I exclude specific words from my search?**
+    *   A: Use the "Without these words" field. Enter the words you wish to exclude, and pages containing any of these words will not be returned.
+
+*   **Q: How do I search within a specific category?**
+    *   A: You can use the "In Category" field to specify one or more categories. For subcategories, use the "Deep Category" field.
+
+*   **Q: What are Namespaces?**
+    *   A: Namespaces are different areas within Wikipedia (e.g., Articles, Files, Categories, Help pages). You can select specific namespaces to narrow down your search results.
+
+*   **Q: How does the new category dropdown work?**
+    *   A: The "Category" dropdown allows you to select a predefined Wikipedia category (e.g., Science, History) to pre-fill the "In Category" search parameter. This helps quickly target broad subject areas.
+
+---
+
+## 3. Troubleshooting & Support
+
+*   **Q: I entered my search parameters, but the "Generated Search String" is empty.**
+    *   A: Ensure you have entered at least one search term in the primary fields like "All these words" or "Exact Phrase".
+
+*   **Q: The search results seem incomplete or incorrect.**
+    *   A: Double-check your entered parameters. Wikipedia's search syntax can be complex. Refer to the official Wikipedia search help link for detailed information on how parameters work. Using specific parameter combinations (like `intitle:` vs. `intext:`) can significantly affect results.
+
+*   **Q: How do I report a bug or suggest a new feature for WikiGUI?**
+    *   A: Please refer to the project's repository (if available) for issue tracking, or contact the developer via [mention contact method if available, e.g., GitHub issues page].
+
+---
+
+## 4. Legal & Licensing
+
+*   **Q: What license is WikiGUI provided under?**
+    *   A: WikiGUI is provided under an open license. Please refer to the `LICENSE_AGREEMENT.txt` file for details.
+
+*   **Q: Can I use WikiGUI for commercial purposes?**
+    *   A: Please review the `NON_COMMERCIAL_USE.txt` file and the `LICENSE_AGREEMENT.txt` for information regarding commercial use. It is likely restricted unless a separate commercial license is obtained.
+
+*   **Q: Where can I find the Terms of Use?**
+    *   A: The basic terms of use are located in the `TERMS_OF_USE.txt` file.
+
+---
+This FAQ is a starting point. More specific questions can be added as needed.

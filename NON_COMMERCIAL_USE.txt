@@ -1,0 +1,25 @@
+This document outlines an example clause for non-commercial use. It is not a substitute for legal advice and should be reviewed by a legal professional.
+
+---
+
+**[Software Name] - Non-Commercial Use Clause**
+
+**Effective Date:** October 26, 2023
+
+This clause applies to the use of the [Software Name] software.
+
+**1. Definition of Non-Commercial Use**
+For the purposes of this clause, "Non-Commercial Use" means use of the Software for personal, educational, or research purposes that does not primarily intend or is not directed towards commercial advantage or monetary compensation. This includes, but is not limited to, use by individuals for personal learning, non-profit organizations for internal operations, or academic institutions for research and teaching, provided such use does not involve selling the software, providing it as part of a commercial service, or using it to generate revenue.
+
+**2. Restrictions**
+Unless you have obtained explicit written permission from [Your Name/Organization Name] or a separate commercial license, you are prohibited from using [Software Name] for any Commercial Use. Commercial Use includes, but is not limited to:
+    a. Charging a fee for access to or use of the Software.
+    b. Using the Software as part of a product or service for which you charge money or receive significant benefit.
+    c. Using the Software in connection with advertising, marketing, or sales activities.
+    d. Using the Software in a way that directly or indirectly generates revenue or commercial advantage for yourself or a third party.
+
+**3. Governing Law**
+This clause shall be governed by and construed in accordance with the laws of Germany.
+
+---
+**Disclaimer:** This is a simplified example. For actual use, consult with a legal professional to ensure compliance with all applicable laws and to define commercial use accurately for your context.

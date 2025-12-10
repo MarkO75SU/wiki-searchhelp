@@ -4,6 +4,20 @@
 const translations = {};
 let currentLang = 'de'; // Default language
 
+// Mapping of language codes to Wikipedia search help URLs
+const wikipediaSearchHelpUrls = {
+    'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
+    'en': 'https://en.wikipedia.org/wiki/Help:Searching',
+    'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
+    // Add more languages if supported
+    'es': 'https://es.wikipedia.org/wiki/Ayuda:Búsqueda',
+    'zh': 'https://zh.wikipedia.org/wiki/Help:Search',
+    'hi': 'https://hi.wikipedia.org/wiki/Help:Search',
+    'ar': 'https://ar.wikipedia.org/wiki/Help:Search',
+    'ru': 'https://ru.wikipedia.org/wiki/Help:Search',
+    'pt': 'https://pt.wikipedia.org/wiki/Ajuda:Pesquisa'
+};
+
 // Helper function to fetch translations
 async function fetchTranslations(lang) {
     try {
@@ -17,7 +31,7 @@ async function fetchTranslations(lang) {
     }
 }
 
-// Function to apply translations
+// Function to apply translations and update dynamic content
 function applyTranslations() {
     const elements = document.querySelectorAll('[id]');
     elements.forEach(element => {
@@ -28,7 +42,6 @@ function applyTranslations() {
                 element.placeholder = translations[currentLang][key];
             } else if (element.tagName === 'LABEL' && element.nextElementSibling && element.nextElementSibling.classList.contains('info-icon')) {
                 // Special handling for labels that have an associated info icon
-                // This ensures the label text itself is translated, not just the info popup
                 // We assume the element's ID directly corresponds to the translation key for its text content.
                 element.textContent = translations[currentLang][key];
             }
@@ -72,6 +85,12 @@ function applyTranslations() {
                 }
             });
         }
+    }
+    
+    // Update dynamic links, like the Wikipedia search help link
+    const officialDocLink = document.getElementById('official-doc-link');
+    if (officialDocLink) {
+        officialDocLink.href = wikipediaSearchHelpUrls[currentLang] || wikipediaSearchHelpUrls['en']; // Fallback to English if language not found
     }
 }
 
@@ -329,7 +348,8 @@ if (searchForm) {
         event.preventDefault();
         const generatedQuery = generateSearchString();
         const targetLangInput = document.getElementById('target-wiki-lang');
-        const targetLang = targetLangInput ? targetLangInput.value : 'en'; // Default to 'en' if not found
+        // Safely get targetLang, default to 'en' if element not found or value is empty
+        const targetLang = targetLangInput ? targetLangInput.value || 'en' : 'en';
 
         const resultsContainer = document.getElementById('simulated-search-results');
         
