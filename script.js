@@ -328,7 +328,9 @@ if (searchForm) {
     searchForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const generatedQuery = generateSearchString();
-        const targetLang = document.getElementById('target-wiki-lang')?.value; // Use optional chaining
+        const targetLangInput = document.getElementById('target-wiki-lang');
+        const targetLang = targetLangInput ? targetLangInput.value : 'en'; // Default to 'en' if not found
+
         const resultsContainer = document.getElementById('simulated-search-results');
         
         if (resultsContainer) {
@@ -368,6 +370,44 @@ if (searchForm) {
     });
 } else {
     console.error("Element with ID 'search-form' not found. Submit listener not attached.");
+}
+
+// Function to add Enter key listener to trigger form submission
+function addEnterKeySubmitListener() {
+    const searchForm = document.getElementById('search-form');
+    if (!searchForm) return; // Exit if form not found
+
+    const inputFieldsToWatch = [
+        'search-query',
+        'exact-phrase',
+        'without-words',
+        'any-words',
+        'incategory-value',
+        'deepcat-value',
+        'prefix-value',
+        'subpageof-value',
+        'linkfrom-value',
+        'insource-value',
+        'hastemplate-value',
+        'filetype-value',
+        'filesize-min',
+        'filesize-max',
+        'category-select' // The new dropdown
+    ];
+
+    inputFieldsToWatch.forEach(id => {
+        const inputElement = document.getElementById(id);
+        if (inputElement) {
+            inputElement.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    // Prevent default behavior (like form submission if it were default)
+                    event.preventDefault();
+                    // Manually trigger the form submission
+                    searchForm.submit();
+                }
+            });
+        }
+    });
 }
 
 
@@ -438,4 +478,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchTranslations(currentLang);
     applyTranslations();
     generateSearchString(); // Generate initial string on load
+    addEnterKeySubmitListener(); // Add the new listener for Enter key
 });
