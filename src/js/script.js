@@ -110,6 +110,17 @@ function applyTranslations() {
     }
 }
 
+// Function to update the active state of language buttons
+function updateLanguageButtonState() {
+    document.querySelectorAll('.lang-button').forEach(button => {
+        if (button.dataset.lang === currentLang) {
+            button.classList.add('active');
+        } else {
+            button.classList.remove('active');
+        }
+    });
+}
+
 // Function to add Enter key listener to trigger form submission
 
 function addEnterKeySubmitListener() {
@@ -602,9 +613,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM fully loaded. Initializing application...");
     await fetchTranslations(currentLang);
     applyTranslations();
+    document.documentElement.lang = currentLang; // Set initial HTML lang attribute
+    updateLanguageButtonState(); // Set initial active language button
     generateSearchString(); // Generate initial string on load
     console.log("generateSearchString called from DOMContentLoaded."); // Debug log
     addEnterKeySubmitListener(); // Add the new listener for Enter key
     console.log("Enter key listener attached.");
     addAccordionFunctionality(); // Add accordion functionality
+
+    // Event listeners for language selection buttons
+    document.querySelectorAll('.lang-button').forEach(button => {
+        button.addEventListener('click', async () => {
+            const newLang = button.dataset.lang;
+            if (newLang && newLang !== currentLang) {
+                currentLang = newLang;
+                if (!translations[currentLang]) {
+                    await fetchTranslations(currentLang);
+                }
+                document.documentElement.lang = currentLang; // Update HTML lang attribute
+                applyTranslations();
+                updateLanguageButtonState(); // Update active class for buttons
+            }
+        });
+    });
 });
