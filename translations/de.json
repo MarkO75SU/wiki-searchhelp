@@ -79,7 +79,7 @@
     "filesize-min-placeholder": "Min",
     "filesize-max-placeholder": "Max",
     "info-filesize-text": "Filtert Mediendateien nach ihrer Größe. Verwenden Sie Min und Max für einen Bereich.",
-    "generate-search-string-button": "Suchzeichenkette generieren & Vorschau",
+    "generate-search-string-button": "Suche starten",
     "clear-form-button": "Formular leeren",
     "query-label": "Abfrage",
     "comment-label": "Kommentar",
