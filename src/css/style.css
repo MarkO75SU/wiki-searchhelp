@@ -520,9 +520,9 @@ header h1 {
     white-space: normal; /* Allow text to wrap */
     text-align: center; /* Center text within the button */
     height: auto; /* Allow vertical expansion */
-    font-size: 1rem; /* Explicit font size */
+    font-size: 1.1rem; /* Explicit font size */
     /* Removed min-width, flex-grow to allow content-based sizing */
-    /* margin-right will be managed by parent gap */
+    /* Removed margin-right as it's managed by parent gap */
 }
 
 .preset-button:hover {
