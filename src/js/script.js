@@ -41,7 +41,7 @@ const wikipediaSearchHelpUrls = {
 // Preset search queries for "Space Exploration"
 const presetSearches = {
     easy: {
-        'search-query': 'space exploration',
+        'search-query': 'space exploration', // Simple keyword
         'exact-phrase': '',
         'without-words': '',
         'any-words': '',
@@ -59,10 +59,10 @@ const presetSearches = {
         'filesize-max': ''
     },
     medium: {
-        'search-query': 'Mars',
-        'exact-phrase': 'red planet',
-        'without-words': 'rover',
-        'any-words': 'exploration OR mission',
+        'search-query': 'Mars', // Main topic
+        'exact-phrase': 'red planet', // Exact phrase
+        'without-words': 'rover', // Exclude
+        'any-words': 'exploration OR mission', // OR condition
         'option-intitle': false,
         'option-wildcard': false,
         'option-fuzzy': false,
@@ -77,19 +77,19 @@ const presetSearches = {
         'filesize-max': ''
     },
     complex: {
-        'search-query': '',
+        'search-query': '', // No main query to demonstrate other advanced features
         'exact-phrase': '',
-        'without-words': 'Apollo',
+        'without-words': '',
         'any-words': '',
         'option-intitle': false,
         'option-wildcard': false,
         'option-fuzzy': false,
         'incategory-value': '',
-        'deepcat-value': 'Astronomy',
+        'deepcat-value': 'Astronomy', // Deep category
         'linkfrom-value': '',
         'prefix-value': '',
-        'insource-value': 'launch date',
-        'hastemplate-value': 'Infobox Spacecraft',
+        'insource-value': 'launch date', // Insource search
+        'hastemplate-value': 'Infobox Spacecraft', // Has template
         'filetype-value': '',
         'filesize-min': '',
         'filesize-max': ''

@@ -82,7 +82,11 @@
     "info-ns-template-text": "Searches in the Template namespace.",
     "label-fuzzy": "Fuzzy Search (tilde ~)",
     "info-fuzzy-text": "Allows for minor spelling variations (e.g., 'house~' finds 'houses').",
-    "presets-heading": "Search Presets:",
+    "presets-heading": "Preset Searches:",
+    "presets-description": "Click a preset to load a pre-configured search query for various complexities:",
+    "preset-easy": "Easy: Basic Keyword Search",
+    "preset-medium": "Medium: Phrase & Exclusion Search",
+    "preset-complex": "Complex: Template & Deep Category Search"
     "generate-search-string-button": "Generate Search String & Preview",
     "generated-string-heading": "Generated Search String:",
     "generated-string-placeholder": "Generated string will appear here.",
