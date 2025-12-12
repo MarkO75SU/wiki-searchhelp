@@ -582,9 +582,9 @@ function addEnterKeySubmitListener() {
             inputElement.addEventListener('keydown', (event) => {
                 console.log(`Keydown event on ${id}. Key: ${event.key}, Target: ${event.target.id}`); // DEBUG
                 if (event.key === 'Enter') {
-                    console.log(`Enter key pressed on ${id}. Preventing default and triggering form submit.`); // DEBUG
+                    console.log(`Enter key pressed on ${id}. Preventing default and triggering generate-search-string-button click.`); // DEBUG
                     event.preventDefault();
-                    searchForm.submit();
+                    document.getElementById('generate-search-string-button').click();
                 }
             });
         } else {
