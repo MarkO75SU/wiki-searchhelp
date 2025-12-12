@@ -587,13 +587,18 @@ function applyTranslations() {
             const currentAppLangCode = currentLang; // e.g., 'de', 'en', 'fr'
             const optionValues = Array.from(targetWikiLangSelect.options).map(option => option.value);
 
+            console.log(`DEBUG: currentAppLangCode = ${currentAppLangCode}`); // NEW DEBUG
+            console.log(`DEBUG: optionValues = ${optionValues}`); // NEW DEBUG
+            console.log(`DEBUG: optionValues.includes(currentAppLangCode) = ${optionValues.includes(currentAppLangCode)}`); // NEW DEBUG
+
             if (optionValues.includes(currentAppLangCode)) {
+                console.log(`DEBUG: Assigning ${currentAppLangCode} to targetWikiLangSelect.value`); // NEW DEBUG
                 targetWikiLangSelect.value = currentAppLangCode;
             } else {
-                // If currentAppLangCode is not a direct option, reset to default 'de'
-                // or choose a sensible fallback. Assuming 'de' is the most robust default.
+                console.log(`DEBUG: Fallback to 'de' for targetWikiLangSelect.value`); // NEW DEBUG
                 targetWikiLangSelect.value = 'de';
             }
+            console.log(`DEBUG: targetWikiLangSelect.value AFTER assignment = ${targetWikiLangSelect.value}`); // NEW DEBUG
         }
     }
     
