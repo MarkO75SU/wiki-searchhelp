@@ -115,7 +115,7 @@
     "alert-invalid-csv-import": "Failed to import CSV: ",
     "alert-unsupported-file-type": "Unsupported file type. Please select a .json or .csv file.",
     "alert-failed-to-read-file": "Failed to read file.",
-    "alert-imported-new-searches": "Successfully imported new searches."
+    "alert-imported-new-searches": "Successfully imported new searches",
     "generated-string-heading": "Generated Search String:",
     "generated-string-placeholder": "Generated string will appear here.",
     "search-results-heading": "Search Results (First 10):",
