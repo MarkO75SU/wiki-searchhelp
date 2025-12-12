@@ -608,6 +608,20 @@ function applyTranslations() {
         officialDocLink.href = wikipediaSearchHelpUrls[currentLang] || wikipediaSearchHelpUrls['en']; // Fallback to English if language not found
         console.log(`  - Official documentation link updated for ${currentLang}: ${officialDocLink.href}`); // DEBUG
     }
+
+    // Update footer links
+    const footerLinkIds = ['link-license-agreement', 'link-terms-of-use', 'link-non-commercial-use', 'link-faq'];
+    footerLinkIds.forEach(id => {
+        const link = document.getElementById(id);
+        if (link) {
+            const originalHref = link.getAttribute('href').replace('_de.html', '.html');
+            if (currentLang === 'de') {
+                link.href = originalHref.replace('.html', '_de.html');
+            } else {
+                link.href = originalHref;
+            }
+        }
+    });
 }
 
 // Function to update the active state of language buttons
