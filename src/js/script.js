@@ -79,16 +79,16 @@ const presetSearches = {
     complex: {
         'search-query': '', 
         'exact-phrase': '',
-        'without-words': 'Apollo', // Exclude in German
+        'without-words': '', // Removed for broader search
         'any-words': '',
         'option-intitle': false,
         'option-wildcard': false,
         'option-fuzzy': false,
-        'incategory-value': '',
-        'deepcat-value': 'Astronomie', // German for Astronomy
+        'incategory-value': 'Fahrzeuge', // Broad German category for vehicles
+        'deepcat-value': '',
         'linkfrom-value': '',
         'prefix-value': '',
-        'insource-value': 'Weltraum', // German for Space
+        'insource-value': '', // Removed for broader search
         'hastemplate-value': 'Infobox', // General Infobox template
         'filetype-value': '',
         'filesize-min': '',
