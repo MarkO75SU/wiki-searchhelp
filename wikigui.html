@@ -177,8 +177,29 @@
                                 <input type="text" id="hastemplate-value" placeholder="e.g., 'Infobox Scientist', 'Citation needed'">
                             </div>
                             <div class="form-group">
-                                <label for="filetype-value" id="label-filetype">File Type:</label>
-                                <input type="text" id="filetype-value" placeholder="pdf, jpg, ogg">
+                                <label id="label-filetype">File Type:</label>
+                                <div id="filetype-options">
+                                    <div class="option-group">
+                                        <input type="checkbox" id="filetype-png" value="png">
+                                        <label for="filetype-png">PNG</label>
+                                    </div>
+                                    <div class="option-group">
+                                        <input type="checkbox" id="filetype-jpg" value="jpg">
+                                        <label for="filetype-jpg">JPG/JPEG</label>
+                                    </div>
+                                    <div class="option-group">
+                                        <input type="checkbox" id="filetype-svg" value="svg">
+                                        <label for="filetype-svg">SVG</label>
+                                    </div>
+                                    <div class="option-group">
+                                        <input type="checkbox" id="filetype-pdf" value="pdf">
+                                        <label for="filetype-pdf">PDF</label>
+                                    </div>
+                                    <div class="option-group">
+                                        <input type="checkbox" id="filetype-ogg" value="ogg">
+                                        <label for="filetype-ogg">OGG</label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="filesize-min" id="label-filesize">File Size (bytes):</label>

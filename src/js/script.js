@@ -1375,23 +1375,7 @@ function generateSearchString() {
 
 
 
-            const hasTemplate = getValue('hastemplate-value');
-
-
-
-            if (hasTemplate) {
-
-
-
-                queryParts.push(`hastemplate:"${hasTemplate}"`);
-
-
-
-                explanationParts.push(getTranslation('explanation-hastemplate', `Including pages that use the template "${hasTemplate}".`, { hastemplate: hasTemplate }));
-
-
-
-            }
+                        const hasTemplate = getValue('hastemplate-value');
 
 
 
@@ -1399,23 +1383,103 @@ function generateSearchString() {
 
 
 
-            const fileType = getValue('filetype-value');
+                        if (hasTemplate) {
 
 
 
-            if (fileType) {
+        
 
 
 
-                queryParts.push(`filetype:${fileType}`);
+                            queryParts.push(`hastemplate:"${hasTemplate}"`);
 
 
 
-                explanationParts.push(getTranslation('explanation-filetype', `Filtering for files of type: "${fileType}".`, { fileType }));
+        
 
 
 
-            }
+                            explanationParts.push(getTranslation('explanation-hastemplate', `Including pages that use the template "${hasTemplate}".`, { hastemplate: hasTemplate }));
+
+
+
+        
+
+
+
+                        }
+
+
+
+        
+
+
+
+            
+
+
+
+        
+
+
+
+                        const selectedFileTypes = Array.from(document.querySelectorAll('#filetype-options input[type="checkbox"]:checked'))
+
+
+
+        
+
+
+
+                            .map(cb => cb.value);
+
+
+
+        
+
+
+
+            
+
+
+
+        
+
+
+
+                        if (selectedFileTypes.length > 0) {
+
+
+
+        
+
+
+
+                            const fileTypeQuery = selectedFileTypes.join('|');
+
+
+
+        
+
+
+
+                            queryParts.push(`filetype:${fileTypeQuery}`);
+
+
+
+        
+
+
+
+                            explanationParts.push(getTranslation('explanation-filetype', `Filtering for files of type: "${fileTypeQuery}".`, { fileType: fileTypeQuery }));
+
+
+
+        
+
+
+
+                        }
 
 
 
