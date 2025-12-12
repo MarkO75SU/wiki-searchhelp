@@ -1729,6 +1729,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         clearFormButton.addEventListener('click', clearForm);
     }
 
+    // Event listener for clear form button
+    const clearFormButton = document.getElementById('clear-form-button');
+    if (clearFormButton) {
+        clearFormButton.addEventListener('click', clearForm);
+    }
+
     // Event listeners for export buttons
     const exportJsonButton = document.getElementById('export-json-button');
     if (exportJsonButton) {
