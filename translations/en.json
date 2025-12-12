@@ -96,7 +96,7 @@
     "preset-medium-exact-phrase": "red planet",
     "preset-medium-without-words": "rover",
     "preset-medium-any-words": "exploration OR mission",
-    "saved-searches-heading": "Saved Searches",
+    "saved-searches-heading": "Saved Searches (Local, temporary storage only. Export for permanent saving)",
     "save-search-comment-placeholder": "Add a comment for this search (optional)",
     "save-search-button": "Save Current Search",
     "export-json-button": "Export as JSON",
