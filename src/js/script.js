@@ -17,7 +17,7 @@ function getTranslation(key, defaultValue = '', replacements = {}) {
     // Perform replacements if provided
     for (const placeholder in replacements) {
         // Regex to match {placeholder} or "{placeholder}"
-        const regex = new RegExp(`{\\s*${placeholder}\\s*}`, 'g');
+        const regex = new RegExp(`{\s*${placeholder}\s*}`, 'g');
         translatedString = translatedString.replace(regex, replacements[placeholder]);
     }
 
@@ -442,7 +442,7 @@ function importSearchesFromCsv(csvString) {
         const importedSearches = [];
 
         for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // Split by comma, but not if within quotes
+            const values = lines[i].split(/,(?=(?:(?:[^""]*\"){2})*[^\"]*$)/); // Split by comma, but not if within quotes
             const search = {};
             headers.forEach((header, index) => {
                 let value = values[index] ? values[index].trim() : '';
@@ -649,8 +649,8 @@ function addEnterKeySubmitListener() {
     const inputFieldsToWatch = [
         'search-query', 'exact-phrase', 'without-words', 'any-words',
         'incategory-value', 'deepcat-value', 'linkfrom-value', 'prefix-value',
-        'insource-value', 'hastemplate-value', 'filetype-value',
-        'filesize-min', 'filesize-max', 'category-select'
+        'insource-value', 'hastemplate-value', 'category-select',
+        'filesize-min', 'filesize-max'
     ];
 
     inputFieldsToWatch.forEach(id => {
@@ -672,7 +672,6 @@ function addEnterKeySubmitListener() {
 }
 
 
-
 // Function to add accordion functionality
 
 
@@ -682,8 +681,6 @@ function addAccordionFunctionality() {
 
 
     const accordionHeaders = document.querySelectorAll('.accordion-header');
-
-
 
 
 
@@ -710,8 +707,6 @@ function addAccordionFunctionality() {
 
 
                 header.classList.toggle('active');
-
-
 
 
 
@@ -754,8 +749,6 @@ function addAccordionFunctionality() {
 
 
     console.log("Accordion functionality initiated.");
-
-
 
 
 
@@ -819,8 +812,6 @@ function generateSearchString() {
 
 
 
-
-
     // Helper to get value from an element
 
 
@@ -867,11 +858,7 @@ function generateSearchString() {
 
 
 
-
-
         const mainQuery = getValue('search-query');
-
-
 
 
 
@@ -883,11 +870,7 @@ function generateSearchString() {
 
 
 
-
-
         const withoutWords = getValue('without-words');
-
-
 
 
 
@@ -899,11 +882,7 @@ function generateSearchString() {
 
 
 
-
-
         const optionFuzzy = getValue('option-fuzzy');
-
-
 
 
 
@@ -915,19 +894,13 @@ function generateSearchString() {
 
 
 
-
-
         const optionIntitle = getValue('option-intitle');
 
 
 
 
 
-
-
     
-
-
 
 
 
@@ -939,11 +912,7 @@ function generateSearchString() {
 
 
 
-
-
         if (mainQuery) {
-
-
 
 
 
@@ -955,11 +924,7 @@ function generateSearchString() {
 
 
 
-
-
             // If fuzzy is enabled, add the tilde.
-
-
 
 
 
@@ -971,11 +936,7 @@ function generateSearchString() {
 
 
 
-
-
                 mainQueryTerm += '~';
-
-
 
 
 
@@ -987,19 +948,11 @@ function generateSearchString() {
 
 
 
-
-
             }
 
 
 
-
-
-
-
     
-
-
 
 
 
@@ -1011,11 +964,7 @@ function generateSearchString() {
 
 
 
-
-
-            if (!optionIntitle && (mainQueryTerm.includes(' ') || /[\(\)]/.test(mainQueryTerm))) {
-
-
+            if (!optionIntitle && (mainQueryTerm.includes(' ') || /[\](\)]/.test(mainQueryTerm))) {
 
 
 
@@ -1027,11 +976,7 @@ function generateSearchString() {
 
 
 
-
-
                     mainQueryTerm = `"${mainQueryTerm}"`;
-
-
 
 
 
@@ -1043,13 +988,7 @@ function generateSearchString() {
 
 
 
-
-
             }
-
-
-
-
 
 
 
@@ -1057,15 +996,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
             if (optionIntitle) {
-
-
-
-
 
 
 
@@ -1073,15 +1004,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
                 explanationParts.push(getTranslation('explanation-intitle', `Searching for pages with "${mainQuery}" specifically in their title.`, { mainQuery }));
-
-
-
-
 
 
 
@@ -1089,15 +1012,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
                 queryParts.push(mainQueryTerm);
-
-
-
-
 
 
 
@@ -1105,15 +1020,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
             }
-
-
-
-
 
 
 
@@ -1121,15 +1028,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
             if (exactPhrase) {
-
-
-
-
 
 
 
@@ -1137,15 +1036,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
                 explanationParts.push(getTranslation('explanation-exact-phrase', `Including the exact phrase "${exactPhrase}".`, { exactPhrase }));
-
-
-
-
 
 
 
@@ -1153,15 +1044,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1169,15 +1052,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
                 const words = withoutWords.split(/\s+/).map(word => `-${word}`);
-
-
-
-
 
 
 
@@ -1185,15 +1060,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
                 explanationParts.push(getTranslation('explanation-without-words', `Excluding pages containing any of these words: "${withoutWords}".`, { withoutWords }));
-
-
-
-
 
 
 
@@ -1201,15 +1068,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1217,15 +1076,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1233,15 +1084,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1249,15 +1092,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1265,15 +1100,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1281,15 +1108,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1297,15 +1116,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1313,15 +1124,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1329,15 +1132,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1345,15 +1140,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
-
-
-
-
 
 
 
@@ -1361,23 +1148,11 @@ function generateSearchString() {
 
 
 
-
-
-
-
         
 
 
 
-
-
-
-
                                     }
-
-
-
-
 
 
 
@@ -1455,11 +1230,7 @@ function generateSearchString() {
 
 
 
-
-
             const prefixValue = getValue('prefix-value');
-
-
 
 
 
@@ -1471,11 +1242,7 @@ function generateSearchString() {
 
 
 
-
-
                 queryParts.push(`prefix:"${prefixValue}"`);
-
-
 
 
 
@@ -1487,13 +1254,7 @@ function generateSearchString() {
 
 
 
-
-
             }
-
-
-
-
 
 
 
@@ -1501,13 +1262,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
             const selectedCategory = getValue('category-select');
-
-
 
 
 
@@ -1519,11 +1274,7 @@ function generateSearchString() {
 
 
 
-
-
                 // This is a duplicate of incategory, but still add explanation if used.
-
-
 
 
 
@@ -1535,21 +1286,13 @@ function generateSearchString() {
 
 
 
-
-
                 explanationParts.push(getTranslation('explanation-selected-category', `Filtering by selected category: "${selectedCategory}".`, { selectedCategory }));
 
 
 
 
 
-
-
             }
-
-
-
-
 
 
 
@@ -1578,10 +1321,6 @@ function generateSearchString() {
 
 
                         }
-
-
-
-        
 
 
 
@@ -1621,10 +1360,6 @@ function generateSearchString() {
 
 
 
-        
-
-
-
             
 
 
@@ -1650,10 +1385,6 @@ function generateSearchString() {
 
 
             
-
-
-
-        
 
 
 
@@ -1695,11 +1426,7 @@ function generateSearchString() {
 
 
 
-
-
             const fileSizeMin = getValue('filesize-min');
-
-
 
 
 
@@ -1711,11 +1438,7 @@ function generateSearchString() {
 
 
 
-
-
                 queryParts.push(`filesize:>=${fileSizeMin}`);
-
-
 
 
 
@@ -1727,13 +1450,7 @@ function generateSearchString() {
 
 
 
-
-
             }
-
-
-
-
 
 
 
@@ -1741,13 +1458,7 @@ function generateSearchString() {
 
 
 
-
-
-
-
             const fileSizeMax = getValue('filesize-max');
-
-
 
 
 
@@ -1759,11 +1470,7 @@ function generateSearchString() {
 
 
 
-
-
-                queryParts.push(`filesize:<=${fileSizeMax}`);
-
-
+                queryParts.push(`filesize:<=`${fileSizeMax}`);
 
 
 
@@ -1775,13 +1482,7 @@ function generateSearchString() {
 
 
 
-
-
             }
-
-
-
-
 
 
 
@@ -1834,10 +1535,6 @@ function generateSearchString() {
 
 
         }
-
-
-
-    
 
 
 
@@ -1919,8 +1616,7 @@ function parseAdvancedSearchParams(query) {
         srdeepcategory: '',
         srhastemplate: '',
         srprefix: '',
-        srincontent: '', // MediaWiki API uses srincontent for insource
-        srfiletype: '' // Added for filetype
+        srincontent: '' // MediaWiki API uses srincontent for insource
     };
 
     let remainingQuery = query;
@@ -1944,8 +1640,6 @@ function parseAdvancedSearchParams(query) {
     extractParam(/prefix:("([^"]+)"|([^\s]+))/i, 'srprefix');
     // Extract insource (maps to srincontent for list=search)
     extractParam(/insource:("([^"]+)"|([^\s]+))/i, 'srincontent');
-    // Extract filetype
-    extractParam(/filetype:([^\s]+)/i, 'srfiletype');
     
     // The remaining part of the query goes into srsearch
     params.srsearch = remainingQuery.trim();
@@ -1987,9 +1681,6 @@ async function performWikipediaSearch(query, lang) {
     if (parsedParams.srincontent) {
         apiParams.srincontent = parsedParams.srincontent;
     }
-    if (parsedParams.srfiletype) {
-        apiParams.srfiletype = parsedParams.srfiletype;
-    }
 
     const params = new URLSearchParams(apiParams);
     const url = `${endpoint}?${params}`;
@@ -1998,249 +1689,3 @@ async function performWikipediaSearch(query, lang) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            console.error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}`);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Wikipedia Search API Response Data:", data);
-        return data.query.search;
-    } catch (error) {
-        console.error("Error during Wikipedia search:", error);
-        return [];
-    }
-}
-
-// Function to fetch a summary for a given article title
-async function fetchArticleSummary(title, lang) {
-    const endpoint = `https://${lang}.wikipedia.org/w/api.php`;
-    const params = new URLSearchParams({
-        action: 'query',
-        prop: 'extracts',
-        exintro: true,
-        explaintext: true,
-        titles: title,
-        format: 'json',
-        origin: '*' // CORS
-    });
-    const url = `${endpoint}?${params}`;
-    console.log("Wikipedia Summary API URL:", url);
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}`);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Wikipedia Summary API Response Data for title:", title, data);
-        const pages = data.query.pages;
-        const pageId = Object.keys(pages)[0];
-        return pages[pageId].extract;
-    } catch (error) {
-        console.error(`Could not fetch summary for ${title}:`, error);
-        return "Summary could not be retrieved.";
-    }
-}
-
-
-// Event listener for form submission
-const searchForm = document.getElementById('search-form');
-if (searchForm) {
-    searchForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Prevent default form submission
-        console.log("Form submit event captured. Generating search query...");
-
-        const generatedQuery = generateSearchString();
-        console.log(`Generated query inside submit listener: "${generatedQuery}"`); // Debug log
-
-        // ... (rest of the function remains the same)
-        console.log("generateSearchString returned:", generatedQuery); // Debug log for generated query
-
-        const targetLangInput = document.getElementById('target-wiki-lang');
-        // Safely get targetLang, default to 'en' if element not found or value is empty
-        const targetLang = targetLangInput ? targetLangInput.value || 'en' : 'en';
-        console.log("Target Wiki Language selected:", targetLang);
-
-        const resultsContainer = document.getElementById('simulated-search-results');
-        
-        if (resultsContainer) {
-            resultsContainer.innerHTML = '<li>Searching...</li>'; // Display loading indicator
-        }
-
-        if (generatedQuery && targetLang) {
-            console.log(`Initiating Wikipedia search with query: "${generatedQuery}" in language: "${targetLang}"`);
-            const searchResults = await performWikipediaSearch(generatedQuery, targetLang);
-            if (resultsContainer) {
-                resultsContainer.innerHTML = ''; // Clear loading message
-            }
-
-            if (searchResults && searchResults.length > 0) {
-                console.log(`Found ${searchResults.length} search results.`);
-                for (const result of searchResults) {
-                    const summary = await fetchArticleSummary(result.title, targetLang);
-                    const listItem = document.createElement('li');
-                    // Link to the Wikipedia article
-                    listItem.innerHTML = `
-                        <a href="https://${targetLang}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">
-                            <strong>${result.title}</strong>
-                        </a>
-                        <p>${summary}</p>
-                    `;
-                    if (resultsContainer) {
-                        resultsContainer.appendChild(listItem);
-                    }
-                }
-            } else {
-                console.log("No search results found.");
-                if (resultsContainer) {
-                    resultsContainer.innerHTML = '<li>No results found.</li>';
-                }
-            }
-        } else {
-            console.log("Search query or target language missing.");
-            if (resultsContainer) {
-                console.log("Search query or target language missing.");
-                if (resultsContainer) {
-                    resultsContainer.innerHTML = '<li>Please enter some search parameters or select a target language.</li>';
-                }
-            }
-        }
-    });
-} else {
-    console.error("Element with ID 'search-form' not found. Submit listener not attached.");
-}
-
-// Initial load
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log("DOM fully loaded. Initializing application...");
-    await fetchTranslations(currentLang);
-    applyTranslations();
-    document.documentElement.lang = currentLang; // Set initial HTML lang attribute
-    updateLanguageButtonState(); // Set initial active language button
-    generateSearchString(); // Generate initial string on load
-    console.log("generateSearchString called from DOMContentLoaded."); // Debug log
-    addEnterKeySubmitListener(); // Add the new listener for Enter key
-    console.log("Enter key listener attached.");
-    addAccordionFunctionality(); // Add accordion functionality
-
-    // Event listeners for language selection buttons
-    document.querySelectorAll('.lang-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            const newLang = button.dataset.lang;
-            if (newLang && newLang !== currentLang) {
-                currentLang = newLang;
-                if (!translations[currentLang]) {
-                    await fetchTranslations(currentLang);
-                }
-                document.documentElement.lang = currentLang; // Update HTML lang attribute
-                applyTranslations();
-                updateLanguageButtonState(); // Update active class for buttons
-            }
-        });
-    });
-
-    // Event listeners for preset buttons
-    document.querySelectorAll('.preset-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const presetType = button.dataset.presetType;
-            if (presetSearches[presetType]) {
-                applyPreset(presetSearches[presetType]);
-            }
-        });
-    });
-
-    // Event listener for copying generated search string to clipboard
-    const generatedStringWrapper = document.querySelector('.generated-string-wrapper');
-    const generatedSearchStringDisplay = document.getElementById('generated-search-string-display');
-    const copyIcon = document.querySelector('.copy-icon');
-
-    if (generatedStringWrapper && generatedSearchStringDisplay && copyIcon) {
-        generatedStringWrapper.style.cursor = 'pointer'; // Indicate clickability
-        generatedStringWrapper.title = 'Click to copy to clipboard';
-
-        generatedStringWrapper.addEventListener('click', async () => {
-            const rawSearchQuery = generatedSearchStringDisplay.textContent;
-            const targetLang = document.getElementById('target-wiki-lang').value;
-            const wikipediaSearchUrl = `https://${targetLang}.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(rawSearchQuery)}`;
-            
-            console.log("Attempting to copy URL:"); // DEBUG
-            console.log("Raw Search Query:", rawSearchQuery); // DEBUG
-            console.log("Target Language:", targetLang); // DEBUG
-            console.log("Constructed Wikipedia Search URL:", wikipediaSearchUrl); // DEBUG
-
-            try {
-                await navigator.clipboard.writeText(wikipediaSearchUrl);
-                copyIcon.textContent = '✅'; // Change icon to a checkmark
-                setTimeout(() => {
-                    copyIcon.textContent = '📋'; // Revert icon after a short delay
-                }, 1500);
-                alert('Wikipedia search URL copied to clipboard!');
-            } catch (err) {
-                console.error('Failed to copy text to clipboard:', err);
-                copyIcon.textContent = '❌';
-                setTimeout(() => {
-                    copyIcon.textContent = '📋';
-                }, 1500);
-                alert('Failed to copy Wikipedia search URL.');
-            }
-        });
-    }
-
-    // Event listener for saving current search
-    const saveSearchButton = document.getElementById('save-search-button');
-    if (saveSearchButton) {
-        saveSearchButton.addEventListener('click', saveCurrentSearch);
-    }
-
-    // Event listener for clear form button
-    const clearFormButton = document.getElementById('clear-form-button');
-    if (clearFormButton) {
-        clearFormButton.addEventListener('click', clearForm);
-    }
-
-
-
-    const exportJsonButton = document.getElementById('export-json-button');
-    if (exportJsonButton) {
-        exportJsonButton.addEventListener('click', exportSearchesToJson);
-    }
-
-    const exportCsvButton = document.getElementById('export-csv-button');
-    if (exportCsvButton) {
-        exportCsvButton.addEventListener('click', exportSearchesToCsv);
-    }
-
-    // Event listener for import file input
-    const importFileInput = document.getElementById('import-file-input');
-    if (importFileInput) {
-        importFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) {
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const content = e.target.result;
-                const fileName = file.name;
-                
-                if (fileName.endsWith('.json')) {
-                    importSearchesFromJson(content);
-                } else if (fileName.endsWith('.csv')) {
-                    importSearchesFromCsv(content);
-                } else {
-                    alert('Unsupported file type. Please select a .json or .csv file.');
-                }
-                // Reset file input to allow re-importing the same file
-                event.target.value = '';
-            };
-            reader.onerror = () => {
-                alert('Failed to read file.');
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        });
-    }
-
-    loadSavedSearches(); // Load saved searches on initial page load
-});
