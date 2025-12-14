@@ -79,9 +79,18 @@ export function generateSearchString() {
 
     Object.entries(params).forEach(([key, value]) => {
         if (value) {
-            queryParts.push(`${key}:"${value}"`);
-            const explanationKey = `explanation-${key}`;
-            explanationParts.push(getTranslation(explanationKey, '', { [key]: value }));
+            // Special handling for date fields
+            if (key === 'dateafter') {
+                queryParts.push(`after:${value}`);
+                explanationParts.push(getTranslation('explanation-dateafter', '', { dateafter: value }));
+            } else if (key === 'datebefore') {
+                queryParts.push(`before:${value}`);
+                explanationParts.push(getTranslation('explanation-datebefore', '', { datebefore: value }));
+            } else {
+                queryParts.push(`${key}:"${value}"`);
+                const explanationKey = `explanation-${key}`;
+                explanationParts.push(getTranslation(explanationKey, '', { [key]: value }));
+            }
         }
     });
 
@@ -132,3 +141,4 @@ export function generateSearchString() {
     }
 
     return queryParts.join(' ').trim();
+}
