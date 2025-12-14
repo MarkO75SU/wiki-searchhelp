@@ -1213,7 +1213,7 @@ function generateSearchString() {
 
 
 
-                        if (anyWords) {
+                                    if (anyWords) {
 
 
 
@@ -1229,7 +1229,7 @@ function generateSearchString() {
 
 
 
-                            // Split by "OR" (case-insensitive), trim each part, filter out empty strings, then join with " OR "
+                                        const wordsArray = anyWords.split(/ OR /i).map(word => word.trim()).filter(word => word !== '');
 
 
 
@@ -1245,7 +1245,7 @@ function generateSearchString() {
 
 
 
-                            const words = anyWords.split(/ OR /i).map(word => word.trim()).filter(word => word !== '').join(' OR ');
+                                        if (wordsArray.length > 0) {
 
 
 
@@ -1261,7 +1261,7 @@ function generateSearchString() {
 
 
 
-                            if (words) {
+                                            let anyWordsQuery = wordsArray.join(' OR ');
 
 
 
@@ -1277,7 +1277,7 @@ function generateSearchString() {
 
 
 
-                                queryParts.push(`(${words})`);
+                                            if (wordsArray.length > 1) { // Only add parentheses if there's more than one OR term
 
 
 
@@ -1293,7 +1293,7 @@ function generateSearchString() {
 
 
 
-                                explanationParts.push(getTranslation('explanation-any-words', `Including pages with at least one of these words: "${anyWords}".`, { anyWords }));
+                                                anyWordsQuery = `(${anyWordsQuery})`;
 
 
 
@@ -1309,7 +1309,7 @@ function generateSearchString() {
 
 
 
-                            }
+                                            }
 
 
 
@@ -1325,7 +1325,55 @@ function generateSearchString() {
 
 
 
-                        }
+                                            queryParts.push(anyWordsQuery);
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+                                            explanationParts.push(getTranslation('explanation-any-words', `Including pages with at least one of these words: "${anyWords}".`, { anyWords }));
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+                                        }
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+                                    }
 
 
 
