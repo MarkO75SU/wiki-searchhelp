@@ -88,6 +88,8 @@
     "label-filetype": "Dateityp:",
     "filetype-placeholder": "pdf, jpg, ogg",
     "info-filetype-text": "Filtert Mediendateien nach ihrem Typ (z.B. pdf, jpg, svg).",
+    "heading-date-filters": "Datumsfilter:",
+    "info-date-filters": "Filtern Sie Artikel nach dem Erstellungs- oder Änderungsdatum der Seite auf Wikipedia. Format: JJJJ-MM-TT.",
     "label-filesize": "Dateigröße (Bytes):",
     "filesize-min-placeholder": "Min",
     "filesize-max-placeholder": "Max",

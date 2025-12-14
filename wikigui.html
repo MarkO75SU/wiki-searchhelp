@@ -265,6 +265,21 @@
                         </div>
                     </div> <!-- End Content/Technical Group -->
 
+                    <div class="search-group" id="group-date-filters" data-advanced>
+                        <h3 class="accordion-header" id="heading-date-filters">Date Filters: <span class="info-icon" data-info-id="info-date-filters" title="Filter articles by the page's creation or last modification date on Wikipedia. Format: YYYY-MM-DD.">?</span><span class="accordion-arrow"></span>
+                        </h3>
+                        <div class="accordion-content">
+                            <div class="form-group">
+                                <label for="dateafter-value" id="label-dateafter">Added after (YYYY-MM-DD):</label>
+                                <input type="date" id="dateafter-value">
+                            </div>
+                            <div class="form-group">
+                                <label for="datebefore-value" id="label-datebefore">Added before (YYYY-MM-DD):</label>
+                                <input type="date" id="datebefore-value">
+                            </div>
+                        </div>
+                    </div> <!-- End Date Filters Group -->
+
 
                     <button type="submit" id="generate-search-string-button">Generate Search String & Preview</button>
                     <button type="button" id="clear-form-button">Clear Form</button>
