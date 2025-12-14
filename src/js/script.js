@@ -1777,31 +1777,7 @@ function generateSearchString() {
 
 
 
-    // Add processedQuery at the beginning if it exists
-
-
-
-    if (processedQuery && !optionIntitle) { // If intitle was used, it's already added with main query part
-
-
-
-        queryParts.unshift(processedQuery);
-
-
-
-    } else if (processedQuery && optionIntitle && queryParts[0] !== processedQuery) {
-
-
-
-         // Ensure it's not duplicated if already added by optionIntitle logic
-
-
-
-        queryParts.unshift(processedQuery);
-
-
-
-    }
+    
 
 
 
