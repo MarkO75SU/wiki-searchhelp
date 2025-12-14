@@ -13,6 +13,7 @@ function parseAdvancedSearchParams(query) {
         srhastemplate: '',
         srprefix: '',
         srincontent: '',
+        srfiletype: '',
     };
 
     const extractParam = (regex, paramName) => {
@@ -28,6 +29,7 @@ function parseAdvancedSearchParams(query) {
     extractParam(/hastemplate:("([^"]+)"|([^\s]+))/i, 'srhastemplate');
     extractParam(/prefix:("([^"]+)"|([^\s]+))/i, 'srprefix');
     extractParam(/insource:("([^"]+)"|([^\s]+))/i, 'srincontent');
+    extractParam(/filetype:([^\s]+)/i, 'srfiletype');
 
     params.srsearch = params.srsearch.trim();
     return params;
