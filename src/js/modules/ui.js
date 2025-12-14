@@ -1,0 +1,116 @@
+// src/js/modules/ui.js
+import { getTranslation, getLanguage } from './state.js';
+import { generateSearchString } from './search.js';
+import { performWikipediaSearch, fetchArticleSummary } from './api.js';
+
+const wikipediaSearchHelpUrls = {
+    'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
+    'en': 'https://en.wikipedia.org/wiki/Help:Searching',
+    'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
+    'es': 'https://es.wikipedia.org/wiki/Ayuda:Búsqueda',
+    'zh': 'https://zh.wikipedia.org/wiki/Help:Search',
+    'hi': 'https://hi.wikipedia.org/wiki/Help:Search',
+    'ar': 'https://ar.wikipedia.org/wiki/Help:Search',
+    'ru': 'https://ru.wikipedia.org/wiki/Help:Search',
+    'pt': 'https://pt.wikipedia.org/wiki/Ajuda:Pesquisa'
+};
+
+export function applyTranslations(translations) {
+    document.querySelectorAll('[data-translate]').forEach(element => {
+        const key = element.getAttribute('data-translate');
+        const translation = getTranslation(key);
+        if (translation) {
+            if (element.hasAttribute('placeholder')) {
+                element.placeholder = translation;
+            } else {
+                element.textContent = translation;
+            }
+        }
+    });
+
+    const lang = getLanguage();
+    document.documentElement.lang = lang;
+    const officialDocLink = document.getElementById('official-doc-link');
+    if (officialDocLink) {
+        officialDocLink.href = wikipediaSearchHelpUrls[lang] || wikipediaSearchHelpUrls['en'];
+    }
+
+    const targetLangSelect = document.getElementById('target-wiki-lang');
+    if (targetLangSelect) {
+        targetLangSelect.value = lang;
+    }
+    
+    // Update footer links
+    const footerLinkIds = ['link-license-agreement', 'link-terms-of-use', 'link-non-commercial-use', 'link-faq'];
+    footerLinkIds.forEach(id => {
+        const link = document.getElementById(id);
+        if (link) {
+            const originalHref = link.getAttribute('href').replace('_de.html', '.html');
+            if (lang === 'de') {
+                link.href = originalHref.replace('.html', '_de.html');
+            } else {
+                link.href = originalHref;
+            }
+        }
+    });
+}
+
+export function clearForm() {
+    const form = document.getElementById('search-form');
+    if (form) {
+        form.reset();
+        document.querySelectorAll('#filetype-options input').forEach(cb => cb.checked = false);
+    }
+    generateSearchString();
+}
+
+export async function handleSearchFormSubmit(event) {
+    event.preventDefault();
+    const query = generateSearchString();
+    const lang = document.getElementById('target-wiki-lang').value;
+    const resultsContainer = document.getElementById('simulated-search-results');
+    
+    if (!query) return;
+
+    resultsContainer.innerHTML = `<li><div class="loading-indicator">${getTranslation('loading-indicator')}</div></li>`;
+    
+    const results = await performWikipediaSearch(query, lang);
+    resultsContainer.innerHTML = '';
+
+    if (results.length === 0) {
+        resultsContainer.innerHTML = `<li>${getTranslation('no-results-found')}</li>`;
+        return;
+    }
+
+    for (const result of results) {
+        const summary = await fetchArticleSummary(result.title, lang);
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">
+                <strong>${result.title}</strong>
+            </a>
+            <p>${summary}</p>
+        `;
+        resultsContainer.appendChild(listItem);
+    }
+}
+
+export function addAccordionFunctionality() {
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            header.classList.toggle('active');
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        });
+    });
+    // Open the first accordion by default
+    const firstAccordion = document.getElementById('heading-main-query');
+    if(firstAccordion) {
+        firstAccordion.classList.add('active');
+        firstAccordion.nextElementSibling.style.display = 'block';
+    }
+}
