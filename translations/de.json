@@ -6,6 +6,7 @@
     "nav-about": "Über uns",
     "main-heading": "Wikipedia Suchhelfer",
     "official-doc-link": "Offizielle Wikipedia Suchdokumentation",
+    "github-support-text": "Möchten Sie unterstützen/nutzen?:",
 
     "heading-main-query": "Hauptsuchanfrage:",
     "info-main-query": "Definieren Sie Ihre primären Schlüsselwörter. Kombinieren Sie Begriffe mit 'UND' (Standard), 'ODER', oder schließen Sie mit '-Begriff' aus. Verwenden Sie Anführungszeichen für exakte Phrasen. Beispiel: 'Apfel ODER Orange -Frucht'",
@@ -109,6 +110,7 @@
     "link-terms-of-use": "Nutzungsbedingungen",
     "link-non-commercial-use": "Nicht-kommerzielle Nutzung",
     "link-faq": "FAQ",
+    "link-report-issue": "Problem melden",
     "lang-de-option": "Deutsch (de)",
     "lang-en-option": "Englisch (en)",
     "lang-fr-option": "Französisch (fr)",

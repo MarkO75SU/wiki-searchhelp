@@ -6,6 +6,7 @@
     "nav-about": "About",
     "main-heading": "Wikipedia Search Helper",
     "official-doc-link": "Official Wikipedia Search Documentation",
+    "github-support-text": "Want to support/use?:",
 
     "heading-main-query": "Main Search Query:",
     "label-search-query": "All these words:",
@@ -126,6 +127,8 @@
     "generated-string-placeholder": "Generated string will appear here.",
     "search-results-heading": "Search Results (First 10 of {totalResults}):",
     "no-results-found": "No results found.",
+    "link-faq": "FAQ",
+    "link-report-issue": "Report an Issue",
     "lang-de-option": "German (de)",
     "lang-en-option": "English (en)",
     "lang-fr-option": "French (fr)",
