@@ -71,7 +71,9 @@ export function generateSearchString() {
     const params = {
         incategory: getValue('incategory-value'),
         deepcat: getValue('deepcat-value'),
-        linksto: getValue('linkfrom-value'), // Note: The parameter is linksto, not linkfrom
+        linksto: getValue('linkfrom-value'),
+        dateafter: getValue('dateafter-value'), // New date field
+        datebefore: getValue('datebefore-value'), // New date field
         prefix: getValue('prefix-value'),
         insource: getValue('insource-value'),
         hastemplate: getValue('hastemplate-value')
@@ -79,9 +81,18 @@ export function generateSearchString() {
 
     Object.entries(params).forEach(([key, value]) => {
         if (value) {
-            queryParts.push(`${key}:"${value}"`);
-            const explanationKey = `explanation-${key}`;
-            explanationParts.push(getTranslation(explanationKey, '', { [key]: value }));
+            // Special handling for date fields
+            if (key === 'dateafter') {
+                queryParts.push(`after:${value}`);
+                explanationParts.push(getTranslation('explanation-dateafter', '', { dateafter: value }));
+            } else if (key === 'datebefore') {
+                queryParts.push(`before:${value}`);
+                explanationParts.push(getTranslation('explanation-datebefore', '', { datebefore: value }));
+            } else {
+                queryParts.push(`${key}:"${value}"`);
+                const explanationKey = `explanation-${key}`;
+                explanationParts.push(getTranslation(explanationKey, '', { [key]: value }));
+            }
         }
     });
 

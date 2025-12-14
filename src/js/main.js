@@ -74,6 +74,10 @@ async function initializeApp() {
     });
 
     document.getElementById('search-form').addEventListener('input', generateSearchString);
+
+    // Watch for changes in date inputs to update search string
+    document.getElementById('dateafter-value').addEventListener('change', generateSearchString);
+    document.getElementById('datebefore-value').addEventListener('change', generateSearchString);
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
