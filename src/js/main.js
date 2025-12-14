@@ -42,10 +42,40 @@ async function initializeApp() {
     const applyPresetButton = document.getElementById('apply-preset-button');
 
     if (presetCategorySelect && presetSelect && applyPresetButton) { // Null check for preset elements
-        populatePresetCategories(presetCategorySelect, presetSelect, populatePresets);
+        applyPresetButton.disabled = true; // Disable apply button initially
+
+        populatePresetCategories(presetCategorySelect, presetSelect);
+
+        // Select the first category by default if available
+        if (presetCategorySelect.options.length > 1) {
+            presetCategorySelect.selectedIndex = 1; // Select the first actual category
+            populatePresets(presetCategorySelect, presetSelect); // Populate presets for the selected category
+        }
+        // Select the first preset by default if available and enable button
+        if (presetSelect.options.length > 1) {
+            presetSelect.selectedIndex = 1; // Select the first actual preset
+            applyPresetButton.disabled = false;
+        }
 
         presetCategorySelect.addEventListener('change', () => {
             populatePresets(presetCategorySelect, presetSelect);
+            // After populating, select the first preset if available
+            if (presetSelect.options.length > 1) {
+                presetSelect.selectedIndex = 1;
+                applyPresetButton.disabled = false;
+            } else {
+                applyPresetButton.disabled = true;
+            }
+            generateSearchString(); // Update query after category change and default preset selection
+        });
+
+        presetSelect.addEventListener('change', () => {
+            if (presetSelect.value) {
+                applyPresetButton.disabled = false;
+            } else {
+                applyPresetButton.disabled = true;
+            }
+            generateSearchString(); // Update query after preset selection
         });
 
         applyPresetButton.addEventListener('click', () => {
@@ -84,7 +114,7 @@ async function initializeApp() {
                 setTranslations(lang, data);
                 applyTranslations();
                 if (presetCategorySelect && presetSelect) { // Re-populate presets on lang change
-                    populatePresetCategories(presetCategorySelect, presetSelect, populatePresets);
+                    populatePresetCategories(presetCategorySelect, presetSelect);
                 }
             } catch (error) {
                 console.error(`Could not fetch translations for ${lang}:`, error);

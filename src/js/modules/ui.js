@@ -30,7 +30,7 @@ export function populatePresets(categorySelectElement, presetSelectElement) {
     }
 }
 
-export function populatePresetCategories(categorySelectElement, presetSelectElement, populatePresetsFunc) {
+export function populatePresetCategories(categorySelectElement, presetSelectElement) {
     categorySelectElement.innerHTML = `<option value="">${getTranslation('placeholder-preset-category')}</option>`;
     for (const key in presetCategories) {
         const option = document.createElement('option');
@@ -38,8 +38,6 @@ export function populatePresetCategories(categorySelectElement, presetSelectElem
         option.textContent = presetCategories[key][`name_${getLanguage()}`] || presetCategories[key].name_en;
         categorySelectElement.appendChild(option);
     }
-    // Also populate presets for the initially selected category
-    populatePresetsFunc(categorySelectElement, presetSelectElement);
 }
 
 export function applyPreset(preset) {
@@ -83,7 +81,7 @@ export function applyTranslations() {
     const presetCategorySelect = document.getElementById('preset-category-select');
     const presetSelect = document.getElementById('preset-select');
     if (presetCategorySelect && presetSelect) {
-        populatePresetCategories(presetCategorySelect, presetSelect, populatePresets);
+        populatePresetCategories(presetCategorySelect, presetSelect);
     }
 
     const officialDocLink = document.getElementById('official-doc-link');
