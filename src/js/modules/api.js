@@ -9,7 +9,7 @@ function parseAdvancedSearchParams(query) {
     const params = {
         srsearch: query,
         srincategory: '',
-        srdeepcategory: '',
+        deepcategory: '',
         srhastemplate: '',
         srprefix: '',
         srincontent: '', // Corresponds to insource
@@ -19,8 +19,8 @@ function parseAdvancedSearchParams(query) {
     let currentQuery = query; // Use a distinct variable to track the evolving query string
 
     const definitions = {
-        srincategory: { regex: /incategory:("([^"]*?)"|([^\s]+))/gi, separator: ';' }, // Global regex
-        srdeepcategory: { regex: /deepcat:("([^"]*?)"|([^\s]+))/gi },
+        srincategory: { regex: /incategory:("([^"]*?)"|([^\s]+))/gi, separator: '|' }, // Global regex
+        deepcategory: { regex: /deepcat:("([^"]*?)"|([^\s]+))/gi },
         srhastemplate: { regex: /hastemplate:("([^"]*?)"|([^\s]+))/gi },
         srprefix: { regex: /prefix:("([^"]*?)"|([^\s]+))/gi },
         srincontent: { regex: /insource:("([^"]*?)"|([^\s]+))/gi },

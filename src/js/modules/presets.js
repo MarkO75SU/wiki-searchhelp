@@ -33,7 +33,7 @@ export const presetCategories = {
                 'option-intitle': false,
                 'option-wildcard': false,
                 'option-fuzzy': false,
-                'incategory-value': '',
+                'incategory-value': 'preset-medium-incategory',
                 'deepcat-value': '',
                 'linkfrom-value': '',
                 'prefix-value': '',
@@ -96,13 +96,11 @@ export const presetCategories = {
             cells: {
                 display_name_key: 'preset-biology-cells', // NEW
                 'search-query': 'preset-biology-cells-query',
-                'exact-phrase': 'preset-biology-cells-exact-phrase',
                 'without-words': '',
                 'any-words': 'preset-biology-cells-any-words',
                 'option-intitle': false,
                 'option-wildcard': false,
                 'option-fuzzy': false,
-                'incategory-value': 'preset-biology-cells-incategory',
                 'deepcat-value': 'preset-biology-cells-deepcat',
                 'linkfrom-value': '',
                 'prefix-value': '',
