@@ -129,8 +129,22 @@ export function generateSearchString() {
 
     // Update the UI with the generated string and explanation
     const displayElement = document.getElementById('generated-search-string-display');
+    const finalQuery = queryParts.join(' ').trim();
     if (displayElement) {
-        displayElement.textContent = queryParts.join(' ').trim() || getTranslation('generated-string-placeholder');
+        displayElement.value = finalQuery || getTranslation('generated-string-placeholder');
+    }
+
+    const openInWikipediaLink = document.getElementById('open-in-wikipedia-link');
+    if(openInWikipediaLink) {
+        if(finalQuery) {
+            const targetLang = getLanguage();
+            const searchUrl = `https://${targetLang}.wikipedia.org/w/index.php?search=${encodeURIComponent(finalQuery)}`;
+            openInWikipediaLink.href = searchUrl;
+            openInWikipediaLink.textContent = getTranslation('open-in-wikipedia-link');
+            openInWikipediaLink.style.display = 'inline-block';
+        } else {
+            openInWikipediaLink.style.display = 'none';
+        }
     }
 
     const explanationElement = document.getElementById('generated-string-explanation');
@@ -141,7 +155,6 @@ export function generateSearchString() {
             explanationElement.innerHTML = '';
         }
     }
-
-    const finalQuery = queryParts.join(' ').trim();
+    
     return finalQuery;
 }

@@ -148,12 +148,17 @@ async function initializeApp() {
     const datebeforeInput = document.getElementById('datebefore-value');
     if (datebeforeInput) { datebeforeInput.addEventListener('change', generateSearchString); }
 
+    const targetLangSelectForCopy = document.getElementById('target-wiki-lang');
+    if(targetLangSelectForCopy) {
+        targetLangSelectForCopy.addEventListener('change', generateSearchString);
+    }
+
     const copyIcon = document.querySelector('.copy-icon');
     const generatedSearchStringDisplay = document.getElementById('generated-search-string-display');
 
     if (copyIcon && generatedSearchStringDisplay) {
         copyIcon.addEventListener('click', async () => {
-            const textToCopy = generatedSearchStringDisplay.textContent;
+            const textToCopy = generatedSearchStringDisplay.value; // Use .value for input
             try {
                 await navigator.clipboard.writeText(textToCopy);
                 const originalIcon = copyIcon.textContent;

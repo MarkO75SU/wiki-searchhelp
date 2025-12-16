@@ -197,5 +197,6 @@
     "alert-invalid-csv-import": "Fehler beim Importieren von CSV: ",
     "alert-unsupported-file-type": "Nicht unterstützter Dateityp. Bitte wählen Sie eine .json- oder .csv-Datei aus.",
     "alert-failed-to-read-file": "Datei konnte nicht gelesen werden.",
-    "alert-imported-new-searches": "Neue Suchen erfolgreich importiert."
+    "alert-imported-new-searches": "Neue Suchen erfolgreich importiert.",
+    "open-in-wikipedia-link": "In Wikipedia öffnen"
 }
