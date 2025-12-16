@@ -409,23 +409,7 @@ select {
     text-align: center; /* Center text within the button */
 }
 
-#generate-search-string-button {
-    background-color: var(--success-color);
-    color: var(--text-light);
-}
 
-#generate-search-string-button:hover {
-    background-color: #218838;
-}
-
-#clear-form-button {
-    background-color: var(--secondary-color);
-    color: var(--text-light);
-}
-
-#clear-form-button:hover {
-    background-color: #5a6268;
-}
 
 .search-output {
     margin-top: 40px;
