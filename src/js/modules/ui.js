@@ -125,6 +125,7 @@ export function applyTranslations() {
             } else {
                 link.href = originalHref;
             }
+            link.textContent = getTranslation(id); // Add this line to translate the link text
         }
     });
 }
