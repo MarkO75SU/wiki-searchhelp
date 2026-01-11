@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="blog-page-title">Blog - WikiGUI</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <style>
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .blog-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+        .blog-card:hover {
+            transform: translateY(-5px);
+        }
+        .blog-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+        .blog-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        .blog-card .read-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        .blog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .blog-header h1 {
+            font-size: 2.5rem;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 id="app-title-blog">WikiGUI Blog</h1>
+            <div class="header-links">
+                <a href="../../index.html" class="header-button" id="back-to-tool-btn">Zurück zum Tool</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="blog-header">
+            <h1 id="blog-main-heading">Wissen rund um Wikipedia</h1>
+            <p id="blog-intro-text">Tauchen Sie ein in die Geschichte, Technik und Hintergründe der größten Enzyklopädie der Welt.</p>
+        </section>
+
+        <div class="blog-grid" id="blog-posts-container">
+            <!-- 30 Blog stubs will be generated here -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="privacy_de.html">Datenschutz</a></li>
+                    <li><a href="impressum.html">Impressum</a></li>
+                </ul>
+            </nav>
+            <p id="footer-text">&copy; 2025 WikiGUI Blog. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { getLanguage, setTranslations, applyTranslations } from '../js/modules/state.js';
+        
+        // Simple blog post data (30 items)
+        const blogPosts = [
+            { id: 1, title_de: "Die Geburt von Wikipedia", summary_de: "Von Nupedia zur freien Enzyklopädie: Wie alles begann.", title_en: "The Birth of Wikipedia", summary_en: "From Nupedia to the free encyclopedia: How it all started." },
+            { id: 2, title_de: "Jimmy Wales & Larry Sanger", summary_de: "Die Visionäre hinter dem Wiki-Konzept.", title_en: "Jimmy Wales & Larry Sanger", summary_en: "The visionaries behind the Wiki concept." },
+            { id: 3, title_de: "MediaWiki: Der Motor", summary_de: "Die Software, die globales Wissen ermöglicht.", title_en: "MediaWiki: The Engine", summary_en: "The software that enables global knowledge." },
+            { id: 4, title_de: "Profi-Suche mit WikiGUI", summary_de: "So nutzen Sie komplexe Suchanfragen effizient.", title_en: "Pro Search with WikiGUI", summary_en: "How to use complex search queries efficiently." },
+            { id: 5, title_de: "Spenden & Finanzen", summary_de: "Warum Wikipedia alle Jahre wieder um Hilfe bittet.", title_en: "Donations & Finances", summary_en: "Why Wikipedia asks for help every year." },
+            { id: 6, title_de: "Meistbearbeitete Seiten", summary_de: "Welche Artikel die meisten Änderungen erfahren.", title_en: "Most Edited Pages", summary_en: "Which articles experience the most changes." },
+            { id: 7, title_de: "Große Kontroversen", summary_de: "Ein Rückblick auf Wikipedia-Skandale.", title_en: "Big Controversies", summary_en: "A look back at Wikipedia scandals." },
+            { id: 8, title_de: "Die Rolle der Bots", summary_de: "Wie KI und Skripte die Wiki sauber halten.", title_en: "The Role of Bots", summary_en: "How AI and scripts keep the Wiki clean." },
+            { id: 9, title_de: "Edit-Wars verstehen", summary_de: "Wenn Community-Konflikte Inhalte formen.", title_en: "Understanding Edit Wars", summary_en: "When community conflicts shape content." },
+            { id: 10, title_de: "Wikipedia in der Bildung", summary_de: "Vom Tabu zum unverzichtbaren Werkzeug.", title_en: "Wikipedia in Education", summary_en: "From taboo to an essential tool." },
+            { id: 11, title_de: "Wikipedia-Editor werden", summary_de: "Eine Schritt-für-Schritt-Anleitung.", title_en: "Become a Wiki Editor", summary_en: "A step-by-step guide." },
+            { id: 12, title_de: "Die Macht der Kategorien", summary_de: "Navigieren im tiefen Netz der Wiki.", title_en: "The Power of Categories", summary_en: "Navigating the deep web of the Wiki." },
+            { id: 13, title_de: "Finanzielle Transparenz", summary_de: "Wohin gehen Ihre 3 Euro?", title_en: "Financial Transparency", summary_en: "Where do your 3 dollars go?" },
+            { id: 14, title_de: "Evolution des Logos", summary_de: "Die Geschichte der berühmten Weltkugel.", title_en: "Evolution of the Logo", summary_en: "The history of the famous globe." },
+            { id: 15, title_de: "Minderheitensprachen", summary_de: "Kulturerhalt durch Wikipedia.", title_en: "Minority Languages", summary_en: "Cultural preservation through Wikipedia." },
+            { id: 16, title_de: "Vandalismus erkennen", summary_de: "Wie man falsche Informationen entlarvt.", title_en: "Spotting Vandalism", summary_en: "How to debunk false information." },
+            { id: 17, title_de: "Die Administratoren", summary_de: "Wer hat wirklich die Macht?", title_en: "The Administrators", summary_en: "Who really holds the power?" },
+            { id: 18, title_de: "Wikipedia Offline", summary_de: "Kiwix und der Zugang ohne Internet.", title_en: "Wikipedia Offline", summary_en: "Kiwix and access without internet." },
+            { id: 19, title_de: "Visual Editor vs. Wikitext", summary_de: "Welche Bearbeitungsmethode ist besser?", title_en: "Visual Editor vs. Wikitext", summary_en: "Which editing method is better?" },
+            { id: 20, title_de: "Mobile Revolution", summary_de: "Wissen in der Hosentasche.", title_en: "Mobile Revolution", summary_en: "Knowledge in your pocket." },
+            { id: 21, title_de: "Das Non-Profit Modell", summary_de: "Funktioniert das Konzept wirklich?", title_en: "The Non-Profit Model", summary_en: "Does the concept really work?" },
+            { id: 22, title_de: "Der Blackout von 2012", summary_de: "Kampf für die Freiheit des Internets.", title_en: "The 2012 Blackout", summary_en: "Fighting for internet freedom." },
+            { id: 23, title_de: "Exzellente Artikel", summary_de: "Wie man den Status 'Featured' erreicht.", title_en: "Featured Articles", summary_en: "How to achieve 'Featured' status." },
+            { id: 24, title_de: "Zitate & Belege", summary_de: "Verifizierbarkeit über Wahrheit.", title_en: "Citations & Sources", summary_en: "Verifiability over truth." },
+            { id: 25, title_de: "Einfluss auf Google", summary_de: "Wie Wikipedia Suchergebnisse dominiert.", title_en: "Influence on Google", summary_en: "How Wikipedia dominates search results." },
+            { id: 26, title_de: "Skurrile Wiki-Seiten", summary_de: "Die seltsamsten Einträge der Enzyklopädie.", title_en: "Bizarre Wiki Pages", summary_en: "The strangest entries in the encyclopedia." },
+            { id: 27, title_de: "Gender Gap", summary_de: "Der Kampf für Repräsentation.", title_en: "Gender Gap", summary_en: "The fight for representation." },
+            { id: 28, title_de: "Forschung mit WikiGUI", summary_de: "Komplexe Themen schneller erschließen.", title_en: "Research with WikiGUI", summary_en: "Unlock complex topics faster." },
+            { id: 29, title_de: "Zukunft & KI", summary_de: "Wird KI die Wikipedia ersetzen?", title_en: "Future & AI", summary_en: "Will AI replace Wikipedia?" },
+            { id: 30, title_de: "Akademische Sicherheit", summary_de: "Wiki richtig zitieren in Arbeiten.", title_en: "Academic Safety", summary_en: "Correctly citing Wiki in papers." }
+        ];
+
+        const container = document.getElementById('blog-posts-container');
+        const lang = getLanguage() || 'de';
+
+        blogPosts.forEach(post => {
+            const card = document.createElement('div');
+            card.className = 'blog-card';
+            card.innerHTML = `
+                <h3>${lang === 'de' ? post.title_de : post.title_en}</h3>
+                <p>${lang === 'de' ? post.summary_de : post.summary_en}</p>
+                <a href="#" class="read-more">${lang === 'de' ? 'Weiterlesen' : 'Read more'} →</a>
+            `;
+            container.appendChild(card);
+        });
+    </script>
+</body>
+</html>
