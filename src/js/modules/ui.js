@@ -110,6 +110,15 @@ export function applyTranslations() {
         }
     });
 
+    // Translate Tooltips for Info Icons (using data-info-id)
+    document.querySelectorAll('.info-icon[data-info-id]').forEach(element => {
+        const infoKey = element.getAttribute('data-info-id');
+        const translation = getTranslation(infoKey);
+        if (translation) {
+            element.setAttribute('title', translation);
+        }
+    });
+
     // Explicitly translate the apply preset button and comment placeholder
     const applyPresetButton = document.getElementById('apply-preset-button');
     if (applyPresetButton) {
