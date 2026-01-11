@@ -58,12 +58,13 @@ export const presetCategories = {
             },
             ww2: {
                 display_name_key: 'ex-btn-title-ww2',
-                'search-query': '',
+                'search-query': 'preset-example-ww2-query',
                 'exact-phrase': '',
                 'without-words': '',
                 'any-words': '',
                 'option-intitle': true,
-                'search-query': 'preset-example-ww2-query'
+                'option-wildcard': false,
+                'option-fuzzy': false
             },
             created_2023: {
                 display_name_key: 'ex-btn-created-2023',

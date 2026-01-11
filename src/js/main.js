@@ -210,15 +210,15 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 
 // --- Example Search Functionality ---
 const exampleButtons = document.querySelectorAll('.example-search-item');
-const searchQueryInput = document.getElementById('search-query');
 
 exampleButtons.forEach(button => {
     button.addEventListener('click', () => {
-        const searchTerm = button.getAttribute('data-search-term');
-        if (searchQueryInput && searchTerm) {
-            searchQueryInput.value = searchTerm;
-            // Also need to trigger generation of the search string display
-            generateSearchString();
+        const presetId = button.getAttribute('data-preset-id');
+        if (presetId) {
+            const preset = presetCategories['examples']?.presets[presetId];
+            if (preset) {
+                applyPresetToForm(preset);
+            }
         }
     });
 });
