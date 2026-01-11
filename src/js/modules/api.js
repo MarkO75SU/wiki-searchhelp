@@ -60,7 +60,7 @@ function parseAdvancedSearchParams(query) {
  * @param {string} lang - The language of the Wikipedia to search.
  * @returns {Promise<object>} A promise that resolves to the full API response object.
  */
-export async function performWikipediaSearch(query, lang) {
+export async function performWikipediaSearch(query, lang, limit = 500) {
     const endpoint = `https://${lang}.wikipedia.org/w/api.php`;
     const parsedParams = parseAdvancedSearchParams(query);
 
@@ -70,6 +70,7 @@ export async function performWikipediaSearch(query, lang) {
         format: 'json',
         origin: '*',
         srinfo: 'totalhits', // Request totalhits for display
+        srlimit: limit,
         ...parsedParams
     };
     
