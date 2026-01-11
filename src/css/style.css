@@ -430,9 +430,20 @@ footer a:hover { color: var(--primary); }
     .preset-controls { grid-template-columns: 1fr; }
     .main-action-buttons { grid-template-columns: 1fr; }
     .accordion-content { grid-template-columns: 1fr; padding: var(--space-md); }
+    header { margin-bottom: var(--space-md); }
     header .container { flex-direction: column; text-align: center; }
     .title-group { align-items: center; }
     h2 { font-size: 1.75rem; }
+}
+
+/* Hide advanced sections by default */
+.search-group[data-advanced] {
+    display: none;
+}
+
+/* Show advanced sections when toggle is active */
+.search-form-container.advanced-view .search-group[data-advanced] {
+    display: block;
 }
 
 /* Modal Styling */
