@@ -62,10 +62,11 @@
             </div>
             <!-- Removed Navigation: Home, Search Help, About -->
             <div class="header-links">
+                <a href="src/html/hilfe.html" class="header-button" id="help-link">Hilfe</a>
                 <a href="src/html/blog.html" class="header-button" id="blog-link">Blog</a>
                 <span id="github-support-text"></span>
-                <a href="https://github.com/MarkO75SU/wiki-searchgui" target="_blank" class="header-button" id="github-repo-link"></a>
-                <a href="https://github.com/MarkO75SU/wiki-searchgui/archive/refs/heads/main.zip" class="header-button" id="download-zip-link"></a>
+                <a href="https://github.com/MarkO75SU/wiki-gui" target="_blank" class="header-button" id="github-repo-link">GitHub</a>
+                <a href="https://github.com/MarkO75SU/wiki-gui/archive/refs/heads/main.zip" class="header-button" id="download-zip-link">ZIP</a>
             </div>
         </div>
     </header>
@@ -369,6 +370,7 @@
                                     <li><a id="link-impressum" href="src/html/impressum.html">Impressum</a></li>
 
                                     <li><a id="link-faq" href="src/html/faq.html">_</a></li>
+                                    <li><a id="link-help" href="src/html/hilfe.html">Hilfe</a></li>
                                     <li><a id="link-blog" href="src/html/blog.html">Blog</a></li>
                                     <li><a id="link-report-issue" href="https://github.com/MarkO75SU/wiki-gui/issues">_</a></li>                </ul>
             </nav>
@@ -377,83 +379,6 @@
         </div>
     </footer>
 
-    <div id="params-explanation-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="params-modal-title">
-        <div class="modal-content">
-            <button id="params-modal-close" class="modal-close" aria-label="Close">×</button>
-            <h3 id="params-modal-title">Erklärungen zu Suchparametern</h3>
-            <div id="params-modal-body">
-<section>
-    <h2 id="modal-heading-main-query">Hauptsuchanfrage</h2>
-    <p><strong id="modal-label-keywords">Schlüsselwörter:</strong> <span id="modal-text-keywords">Geben Sie hier Ihre primären Suchbegriffe ein. Standardmäßig werden Begriffe mit 'UND' verknüpft. Verwenden Sie 'ODER' für Alternativen oder '-' vor einem Wort, um es auszuschließen. Verwenden Sie Anführungszeichen für exakte Phrasen.</span></p>
-    <p><em id="modal-label-example">Beispiel:</em> <code>"Albert Einstein" OR "Isaac Newton" -Biographie</code></p>
-
-    <p><strong id="modal-label-exact-phrase">Exakte Phrase:</strong> <span id="modal-text-exact-phrase">Suche nach einer bestimmten Wortfolge.</span></p>
-    <p><em id="modal-label-syntax">Wikipedia-Syntax:</em> <span id="modal-text-syntax-exact">Schließt den Text in doppelte Anführungszeichen (<code>"</code>) ein.</span></p>
-    <p><em>Beispiel:</em> <code>"Künstliche Intelligenz"</code></p>
-
-    <p><strong id="modal-label-exclude">Wörter ausschließen:</strong> <span id="modal-text-exclude">Ergebnisse entfernen, die bestimmte Wörter enthalten.</span></p>
-    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-exclude">Dem Wort ein Bindestrich (<code>-</code>) voranstellen.</span></p>
-    <p><em>Beispiel:</em> <code>Computer -Laptop</code></p>
-
-    <p><strong id="modal-label-any">Beliebige Wörter:</strong> <span id="modal-text-any">Artikel finden, die mindestens eines der angegebenen Wörter enthalten.</span></p>
-    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-any">Den Operator 'ODER' zwischen Wörtern verwenden.</span></p>
-    <p><em>Beispiel:</em> <code>Apfel ODER Orange</code></p>
-
-    <p><strong id="modal-label-wildcard">Platzhalter:</strong> <span id="modal-text-wildcard">Platzhalterzeichen für unbekannte oder variable Teile eines Wortes verwenden.</span></p>
-    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-wildcard">Verwendet typischerweise <code>*</code> (null oder mehr Zeichen) oder <code>?` (ein einzelnes Zeichen).</span></p>
-    <p><em>Beispiel:</em> <code>Comput*</code></p>
-
-    <p><strong id="modal-label-fuzzy">Unscharfe Suche:</strong> <span id="modal-text-fuzzy">Ergebnisse auch bei leichten Rechtschreibfehlern oder Variationen finden.</span></p>
-    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-fuzzy">Verwendet oft <code>~</code> am Ende eines Wortes.</span></p>
-    <p><em>Beispiel:</em> <code>Farbe~</code></p>
-</section>
-<section>
-    <h2 id="modal-heading-scope">Bereich & Ort</h2>
-    <p><strong id="modal-label-intitle">Im Titel (<code>intitle:</code>):</strong> <span id="modal-text-intitle">Beschränkt Ergebnisse auf Artikel, deren Titel bestimmte Wörter enthalten.</span></p>
-    <p><em>Beispiel:</em> <code>intitle:"Vereinigte Staaten"</code></p>
-
-    <p><strong id="modal-label-prefix">Präfix (<code>prefix:</code>):</strong> <span id="modal-text-prefix">Findet Seiten mit einem bestimmten Präfix im Titel (z.B. in einem bestimmten Namensraum).</span></p>
-    <p><em>Beispiel:</em> <code>prefix:Benutzer:</code></p>
-
-    <p><strong id="modal-label-incategory">In Kategorie (<code>incategory:</code>):</strong> <span id="modal-text-incategory">Begrenzt Ergebnisse auf Artikel, die Mitglieder einer bestimmten Kategorie sind.</span></p>
-    <p><em>Beispiel:</em> <code>incategory:"Künstliche Intelligenz"</code></p>
-
-    <p><strong id="modal-label-deepcat">Tiefe Kategorie (<code>deepcat:</code>):</strong> <span id="modal-text-deepcat">Schließt Artikel in Unterkategorien der angegebenen Kategorie ein.</span></p>
-    <p><em>Beispiel:</em> <code>deepcat:"Science Fiction"</code></p>
-
-    <p><strong id="modal-label-linkfrom">Verlinkt von (<code>linkfrom:</code>):</strong> <span id="modal-text-linkfrom">Findet Artikel, die auf eine bestimmte Seite verlinken.</span></p>
-    <p><em>Beispiel:</em> <code>linkfrom:Wikipedia:Autorenportal</code></p>
-
-    <p><strong id="modal-label-namespaces">Namensräume:</strong> <span id="modal-text-namespaces">Wählen Sie spezifische Wikipedia-Namensräume (z.B. Artikel, Benutzer, Datei, Kategorie) für die Suche aus.</span></p>
-</section>
-<section>
-    <h2 id="modal-heading-content">Inhalt & Technik</h2>
-    <p><strong id="modal-label-insource">Im Quelltext (<code>insource:</code>):</strong> <span id="modal-text-insource">Sucht im Wikitext-Inhalt der Seiten, nicht nur im angezeigten Text. Nützlich zum Finden spezifischer Markups oder Code-Schnipsel.</span></p>
-    <p><em>Beispiel:</em> <code>insource:/{{Infobox/</code></p>
-
-    <p><strong id="modal-label-hastemplate">Hat Vorlage (<code>hastemplate:</code>):</strong> <span id="modal-text-hastemplate">Findet Seiten, die eine bestimmte Vorlage verwenden.</span></p>
-    <p><em>Beispiel:</em> <code>hastemplate:"Infobox Land"</code></p>
-
-    <p><strong id="modal-label-filetype">Dateityp:</strong> <span id="modal-text-filetype">Suchergebnisse nach bestimmten Dateiendungen filtern (z.B. PNG, JPG, PDF).</span></p>
-    <p><em>Wikipedia-Syntax:</em> <code>filetype:extension</code></p>
-    <p><em>Beispiel:</em> <code>filetype:pdf</code></p>
-
-    <p><strong id="modal-label-filesize">Dateigröße:</strong> <span id="modal-text-filesize">Minimale und maximale Dateigrößen für Bild- oder Mediensuche angeben.</span></p>
-    <p><em>Wikipedia-Syntax:</em> <code>imagesize:value</code> oder <code>imagesize:min-max</code></p>
-    <p><em>Beispiel:</em> <code>imagesize:5MP</code></p>
-</section>
-<section>
-    <h2 id="modal-heading-date">Datumsfilter</h2>
-    <p><strong id="modal-label-dateafter">Datum nach:</strong> <span id="modal-text-dateafter">Begrenzt Ergebnisse auf Artikel, die an oder nach einem bestimmten Datum erstellt oder geändert wurden.</span></p>
-    <p><em>Format:</em> JJJJ-MM-TT</p>
-    <p><em>Beispiel:</em> <code>createdafter:2023-01-01</code> oder <code>touchedafter:2023-01-01</code></p>
-
-    <p><strong id="modal-label-datebefore">Datum vor:</strong> <span id="modal-text-datebefore">Begrenzt Ergebnisse auf Artikel, die an oder vor einem bestimmten Datum erstellt oder geändert wurden.</span></p>
-    <p><em>Format:</em> JJJJ-MM-TT</p>
-    <p><em>Beispiel:</em> <code>createdbefore:2024-12-31</code> oder <code>touchedbefore:2024-12-31</code></p>
-</section>
-            </div>
-    </div>
     <script src="src/js/main.js?v=1.1" type="module"></script>
 </body>
 </html>

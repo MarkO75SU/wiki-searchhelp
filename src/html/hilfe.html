@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="hilfe-page-title">Suchparameter Erklärungen - WikiGUI</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <style>
+        .help-container {
+            background: var(--bg-card);
+            padding: var(--space-xl);
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            margin-top: var(--space-lg);
+        }
+        .help-section {
+            margin-bottom: var(--space-xl);
+        }
+        .help-section h2 {
+            text-align: left;
+            border-bottom: 2px solid var(--slate-100);
+            padding-bottom: var(--space-xs);
+            margin-bottom: var(--space-md);
+        }
+        .help-item {
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md);
+            background: var(--slate-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--slate-100);
+        }
+        .help-item h3 {
+            color: var(--primary);
+            margin-bottom: var(--space-xs);
+            font-size: 1.25rem;
+        }
+        .help-item p {
+            margin-bottom: var(--space-sm);
+        }
+        .help-item code {
+            display: block;
+            padding: var(--space-sm);
+            background: var(--slate-900);
+            color: #10b981; /* Greenish */
+            border-radius: var(--radius-sm);
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        .help-item em {
+            font-weight: 700;
+            font-style: normal;
+            color: var(--slate-600);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="title-group">
+                <h1 id="app-title-help">WikiGUI Hilfe</h1>
+                <div class="language-selector">
+                    <button id="lang-de" class="lang-button" data-lang="de">DE</button>
+                    <button id="lang-en" class="lang-button" data-lang="en">EN</button>
+                </div>
+            </div>
+            <div class="header-links">
+                <a href="../../index.html" class="header-button">Zurück zum Tool</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="help-container">
+            <section class="help-section">
+                <h2 id="modal-heading-main-query">Hauptsuchanfrage</h2>
+                
+                <div class="help-item">
+                    <h3 id="modal-label-keywords">Schlüsselwörter</h3>
+                    <p id="modal-text-keywords">Geben Sie hier Ihre primären Suchbegriffe ein. Standardmäßig werden Begriffe mit 'UND' verknüpft. Verwenden Sie 'ODER' für Alternativen oder '-' vor einem Wort, um es auszuschließen. Verwenden Sie Anführungszeichen für exakte Phrasen.</p>
+                    <p><em>Beispiel:</em> <code>"Albert Einstein" OR "Isaac Newton" -Biographie</code></p>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-exact-phrase">Exakte Phrase</h3>
+                    <p id="modal-text-exact-phrase">Suche nach einer bestimmten Wortfolge.</p>
+                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-exact">Schließt den Text in doppelte Anführungszeichen (") ein.</span></p>
+                    <code>"Künstliche Intelligenz"</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-exclude">Wörter ausschließen</h3>
+                    <p id="modal-text-exclude">Ergebnisse entfernen, die bestimmte Wörter enthalten.</p>
+                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-exclude">Dem Wort ein Bindestrich (-) voranstellen.</span></p>
+                    <code>Computer -Laptop</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-any">Beliebige Wörter</h3>
+                    <p id="modal-text-any">Artikel finden, die mindestens eines der angegebenen Wörter enthalten.</p>
+                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-any">Den Operator 'ODER' zwischen Wörtern verwenden.</span></p>
+                    <code>Apfel ODER Orange</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-wildcard">Platzhalter</h3>
+                    <p id="modal-text-wildcard">Platzhalterzeichen für unbekannte oder variable Teile eines Wortes verwenden.</p>
+                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-wildcard">Verwendet typischerweise * (null oder mehr Zeichen) oder ? (ein einzelnes Zeichen).</span></p>
+                    <code>Comput*</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-fuzzy">Unscharfe Suche</h3>
+                    <p id="modal-text-fuzzy">Ergebnisse auch bei leichten Rechtschreibfehlern oder Variationen finden.</p>
+                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-fuzzy">Verwendet oft ~ am Ende eines Wortes.</span></p>
+                    <code>Farbe~</code>
+                </div>
+            </section>
+
+            <section class="help-section">
+                <h2 id="modal-heading-scope">Bereich & Ort</h2>
+                
+                <div class="help-item">
+                    <h3 id="modal-label-intitle">Im Titel (intitle:)</h3>
+                    <p id="modal-text-intitle">Beschränkt Ergebnisse auf Artikel, deren Titel bestimmte Wörter enthalten.</p>
+                    <code>intitle:"Vereinigte Staaten"</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-prefix">Präfix (prefix:)</h3>
+                    <p id="modal-text-prefix">Findet Seiten mit einem bestimmten Präfix im Titel (z.B. in einem bestimmten Namensraum).</p>
+                    <code>prefix:Benutzer:</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-incategory">In Kategorie (incategory:)</h3>
+                    <p id="modal-text-incategory">Begrenzt Ergebnisse auf Artikel, die Mitglieder einer bestimmten Kategorie sind.</p>
+                    <code>incategory:"Künstliche Intelligenz"</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-deepcat">Tiefe Kategorie (deepcat:)</h3>
+                    <p id="modal-text-deepcat">Schließt Artikel in Unterkategorien der angegebenen Kategorie ein.</p>
+                    <code>deepcat:"Science Fiction"</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-linkfrom">Verlinkt von (linkfrom:)</h3>
+                    <p id="modal-text-linkfrom">Findet Artikel, die auf eine bestimmte Seite verlinken.</p>
+                    <code>linkfrom:Wikipedia:Autorenportal</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-namespaces">Namensräume</h3>
+                    <p id="modal-text-namespaces">Wählen Sie spezifische Wikipedia-Namensräume (z.B. Artikel, Benutzer, Datei, Kategorie) für die Suche aus.</p>
+                </div>
+            </section>
+
+            <section class="help-section">
+                <h2 id="modal-heading-content">Inhalt & Technik</h2>
+                
+                <div class="help-item">
+                    <h3 id="modal-label-insource">Im Quelltext (insource:)</h3>
+                    <p id="modal-text-insource">Sucht im Wikitext-Inhalt der Seiten, nicht nur im angezeigten Text. Nützlich zum Finden spezifischer Markups oder Code-Schnipsel.</p>
+                    <code>insource:/\{\{Infobox/</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-hastemplate">Hat Vorlage (hastemplate:)</h3>
+                    <p id="modal-text-hastemplate">Findet Seiten, die eine bestimmte Vorlage verwenden.</p>
+                    <code>hastemplate:"Infobox Land"</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-filetype">Dateityp</h3>
+                    <p id="modal-text-filetype">Suchergebnisse nach bestimmten Dateiendungen filtern (z.B. PNG, JPG, PDF).<br><em>Wikipedia-Syntax:</em> <code>filetype:extension</code></p>
+                    <code>filetype:pdf</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-filesize">Dateigröße</h3>
+                    <p id="modal-text-filesize">Minimale und maximale Dateigrößen für Bild- oder Mediensuche angeben.<br><em>Wikipedia-Syntax:</em> <code>imagesize:value</code> oder <code>imagesize:min-max</code></p>
+                    <code>imagesize:5MP</code>
+                </div>
+            </section>
+
+            <section class="help-section">
+                <h2 id="modal-heading-date">Datumsfilter</h2>
+                
+                <div class="help-item">
+                    <h3 id="modal-label-dateafter">Datum nach</h3>
+                    <p id="modal-text-dateafter">Begrenzt Ergebnisse auf Artikel, die an oder nach einem bestimmten Datum erstellt oder geändert wurden.</p>
+                    <p><em>Format:</em> JJJJ-MM-TT</p>
+                    <code>createdafter:2023-01-01</code>
+                </div>
+
+                <div class="help-item">
+                    <h3 id="modal-label-datebefore">Datum vor</h3>
+                    <p id="modal-text-datebefore">Begrenzt Ergebnisse auf Artikel, die an oder vor einem bestimmten Datum erstellt oder geändert wurden.</p>
+                    <p><em>Format:</em> JJJJ-MM-TT</p>
+                    <code>createdbefore:2024-12-31</code>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="privacy_de.html">Datenschutz</a></li>
+                    <li><a href="impressum.html">Impressum</a></li>
+                </ul>
+            </nav>
+            <p id="footer-text">&copy; 2025 WikiGUI. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { getLanguage, setLanguage, setTranslations } from '../js/modules/state.js';
+        import { applyTranslations } from '../js/modules/ui.js';
+        
+        async function initHelp() {
+            const lang = getLanguage() || 'de';
+            try {
+                const response = await fetch(`../../translations/${lang}.json`);
+                const data = await response.json();
+                setTranslations(lang, data);
+                applyTranslations();
+            } catch (e) {
+                console.error(e);
+            }
+
+            document.querySelectorAll('.lang-button').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const newLang = e.target.dataset.lang;
+                    setLanguage(newLang);
+                    location.reload();
+                });
+            });
+        }
+        initHelp();
+    </script>
+</body>
+</html>

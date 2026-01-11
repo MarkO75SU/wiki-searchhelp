@@ -1,6 +1,6 @@
 // src/js/main.js
 import { setLanguage, setTranslations, getLanguage, getTranslation } from './modules/state.js';
-import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, setupParameterExplanation, downloadResults } from './modules/ui.js';
+import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { saveCurrentSearch, loadSavedSearches, handleSavedSearchActions } from './modules/storage.js';
 import { presetCategories } from './modules/presets.js';
@@ -197,8 +197,6 @@ async function initializeApp() {
         }
         generateSearchString(); // Generate string after everything else is set up
         updateAdvancedModeDescription(); // Initial call for description
-        // Initialize the parameter explanation UI (button + modal)
-        setupParameterExplanation();
 
     } catch (error) {
         console.error(`Could not fetch initial translations for ${initialLang}:`, error);
