@@ -10,7 +10,7 @@
     --info: #0ea5e9;
     --radius: 12px;
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 * {
