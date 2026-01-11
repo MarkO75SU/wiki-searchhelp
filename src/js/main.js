@@ -109,6 +109,7 @@ async function initializeApp() {
         button.addEventListener('click', async (event) => {
             const lang = event.target.dataset.lang;
             setLanguage(lang);
+            clearForm(); // Clear all fields on language switch
             try {
                 const response = await fetch(`translations/${lang}.json`);
                 const data = await response.json();
