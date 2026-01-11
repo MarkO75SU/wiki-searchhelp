@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -279,14 +279,14 @@
             <div class="example-searches-container">
                 <h3 id="example-searches-heading">Example Searches</h3>
                 <div class="example-list">
-                    <button class="example-search-item" data-search-term='Albert Einstein' title="Find articles related to Albert Einstein.">Albert Einstein</button>
-                    <button class="example-search-item" data-search-term='"Artificial Intelligence"' title='Find exact phrase "Artificial Intelligence".'>Exact Phrase: "Artificial Intelligence"</button>
-                    <button class="example-search-item" data-search-term='Jaguar -car' title="Find 'Jaguar' excluding 'car'.">Jaguar (Animal)</button>
-                    <button class="example-search-item" data-search-term='Mars OR Venus' title="Find articles about Mars OR Venus.">Mars OR Venus</button>
-                    <button class="example-search-item" data-search-term='incategory:"20th-century physicists"' title='Find articles in "20th-century physicists" category.'>Category: "20th-century physicists"</button>
-                    <button class="example-search-item" data-search-term='intitle:"World War II"' title='Find articles titled "World War II".'>In Title: "World War II"</button>
-                    <button class="example-search-item" data-search-term='createdafter:2023-01-01 AND createdbefore:2023-12-31' title="Find articles created in 2023.">Created in 2023</button>
-                    <button class="example-search-item" data-search-term='\"Quantum Mechanics\" insource:/\{\{Infobox/ -physics' title='Combined search: QM, with Infobox template, excluding physics.'>Complex Query</button>
+                    <button id="ex-btn-einstein" class="example-search-item" data-search-term='Albert Einstein'>Albert Einstein</button>
+                    <button id="ex-btn-ai" class="example-search-item" data-search-term='"Künstliche Intelligenz"'>Exakte Phrase: "Künstliche Intelligenz"</button>
+                    <button id="ex-btn-jaguar" class="example-search-item" data-search-term='Jaguar -Auto'>Jaguar (Tier)</button>
+                    <button id="ex-btn-planets" class="example-search-item" data-search-term='Mars ODER Venus'>Mars ODER Venus</button>
+                    <button id="ex-btn-cat-physics" class="example-search-item" data-search-term='incategory:"Physiker (20. Jahrhundert)"'>Kategorie: "Physiker (20. Jahrhundert)"</button>
+                    <button id="ex-btn-title-ww2" class="example-search-item" data-search-term='intitle:"Zweiter Weltkrieg"'>Im Titel: "Zweiter Weltkrieg"</button>
+                    <button id="ex-btn-created-2023" class="example-search-item" data-search-term='createdafter:2023-01-01 AND createdbefore:2023-12-31'>Erstellt in 2023</button>
+                    <button id="ex-btn-complex" class="example-search-item" data-search-term='"Quantenmechanik" insource:/{{Infobox/ -Physik'>Komplexe Abfrage</button>
                 </div>
             </div>
 
@@ -335,84 +335,84 @@
                                     <li><a id="link-faq" href="src/html/faq.html">_</a></li>
                                     <li><a id="link-report-issue" href="https://github.com/MarkO75SU/wiki-searchgui/issues">_</a></li>                </ul>
             </nav>
-            <p id="footer-text">&copy; 2025 WikiGUI. All rights reserved.</p>
+            <p id="footer-text">&copy; 2025 WikiGUI. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
 
     <div id="params-explanation-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="params-modal-title">
         <div class="modal-content">
             <button id="params-modal-close" class="modal-close" aria-label="Close">×</button>
-            <h3 id="params-modal-title">Search Parameter Explanations</h3>
+            <h3 id="params-modal-title">Erklärungen zu Suchparametern</h3>
             <div id="params-modal-body">
 <section>
-    <h2>Main Query</h2>
-    <p><strong>Keywords:</strong> Enter your primary search terms here. By default, terms are combined with 'AND'. Use 'OR' for alternatives, or '-' before a word to exclude it. Use quotes for exact phrases.</p>
-    <p><em>Example:</em> <code>"Albert Einstein" OR "Isaac Newton" -biography</code></p>
+    <h2 id="modal-heading-main-query">Hauptsuchanfrage</h2>
+    <p><strong id="modal-label-keywords">Schlüsselwörter:</strong> <span id="modal-text-keywords">Geben Sie hier Ihre primären Suchbegriffe ein. Standardmäßig werden Begriffe mit 'UND' verknüpft. Verwenden Sie 'ODER' für Alternativen oder '-' vor einem Wort, um es auszuschließen. Verwenden Sie Anführungszeichen für exakte Phrasen.</span></p>
+    <p><em id="modal-label-example">Beispiel:</em> <code>"Albert Einstein" OR "Isaac Newton" -Biographie</code></p>
 
-    <p><strong>Exact Phrase:</strong> Search for a specific sequence of words.</p>
-    <p><em>Wikipedia Syntax:</em> Encloses the text in double quotes (<code>"</code>).</p>
-    <p><em>Example:</em> <code>"artificial intelligence"</code></p>
+    <p><strong id="modal-label-exact-phrase">Exakte Phrase:</strong> <span id="modal-text-exact-phrase">Suche nach einer bestimmten Wortfolge.</span></p>
+    <p><em id="modal-label-syntax">Wikipedia-Syntax:</em> <span id="modal-text-syntax-exact">Schließt den Text in doppelte Anführungszeichen (<code>"</code>) ein.</span></p>
+    <p><em>Beispiel:</em> <code>"Künstliche Intelligenz"</code></p>
 
-    <p><strong>Exclude Words:</strong> Remove results that contain certain words.</p>
-    <p><em>Wikipedia Syntax:</em> Prefix the word with a hyphen (<code>-</code>).</p>
-    <p><em>Example:</em> <code>computer -laptop</code></p>
+    <p><strong id="modal-label-exclude">Wörter ausschließen:</strong> <span id="modal-text-exclude">Ergebnisse entfernen, die bestimmte Wörter enthalten.</span></p>
+    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-exclude">Dem Wort ein Bindestrich (<code>-</code>) voranstellen.</span></p>
+    <p><em>Beispiel:</em> <code>Computer -Laptop</code></p>
 
-    <p><strong>Any Words:</strong> Find articles that contain at least one of the specified words.</p>
-    <p><em>Wikipedia Syntax:</em> Use the 'OR' operator between words.</p>
-    <p><em>Example:</em> <code>apple OR orange</code></p>
+    <p><strong id="modal-label-any">Beliebige Wörter:</strong> <span id="modal-text-any">Artikel finden, die mindestens eines der angegebenen Wörter enthalten.</span></p>
+    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-any">Den Operator 'ODER' zwischen Wörtern verwenden.</span></p>
+    <p><em>Beispiel:</em> <code>Apfel ODER Orange</code></p>
 
-    <p><strong>Wildcard:</strong> Use placeholder characters for unknown or variable parts of a word.</p>
-    <p><em>Wikipedia Syntax:</em> Typically uses <code>*</code> (zero or more characters) or <code>?</code> (a single character).</p>
-    <p><em>Example:</em> <code>comput*</code></p>
+    <p><strong id="modal-label-wildcard">Platzhalter:</strong> <span id="modal-text-wildcard">Platzhalterzeichen für unbekannte oder variable Teile eines Wortes verwenden.</span></p>
+    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-wildcard">Verwendet typischerweise <code>*</code> (null oder mehr Zeichen) oder <code>?` (ein einzelnes Zeichen).</span></p>
+    <p><em>Beispiel:</em> <code>Comput*</code></p>
 
-    <p><strong>Fuzzy Search:</strong> Find results even with slight misspellings or variations.</p>
-    <p><em>Wikipedia Syntax:</em> Often uses <code>~</code> at the end of a word.</p>
-    <p><em>Example:</em> <code>color~</code></p>
+    <p><strong id="modal-label-fuzzy">Unscharfe Suche:</strong> <span id="modal-text-fuzzy">Ergebnisse auch bei leichten Rechtschreibfehlern oder Variationen finden.</span></p>
+    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-fuzzy">Verwendet oft <code>~</code> am Ende eines Wortes.</span></p>
+    <p><em>Beispiel:</em> <code>Farbe~</code></p>
 </section>
 <section>
-    <h2>Scope & Location</h2>
-    <p><strong>In Title (<code>intitle:</code>):</strong> Restricts results to articles whose titles contain specific words.</p>
-    <p><em>Example:</em> <code>intitle:"United States"</code></p>
+    <h2 id="modal-heading-scope">Bereich & Ort</h2>
+    <p><strong id="modal-label-intitle">Im Titel (<code>intitle:</code>):</strong> <span id="modal-text-intitle">Beschränkt Ergebnisse auf Artikel, deren Titel bestimmte Wörter enthalten.</span></p>
+    <p><em>Beispiel:</em> <code>intitle:"Vereinigte Staaten"</code></p>
 
-    <p><strong>Prefix (<code>prefix:</code>):</strong> Finds pages with a specific prefix in their title (e.g., in a specific namespace).</p>
-    <p><em>Example:</em> <code>prefix:User:</code></p>
+    <p><strong id="modal-label-prefix">Präfix (<code>prefix:</code>):</strong> <span id="modal-text-prefix">Findet Seiten mit einem bestimmten Präfix im Titel (z.B. in einem bestimmten Namensraum).</span></p>
+    <p><em>Beispiel:</em> <code>prefix:Benutzer:</code></p>
 
-    <p><strong>In Category (<code>incategory:</code>):</strong> Limits results to articles that are members of a specific category.</p>
-    <p><em>Example:</em> <code>incategory:"Artificial intelligence"</code></p>
+    <p><strong id="modal-label-incategory">In Kategorie (<code>incategory:</code>):</strong> <span id="modal-text-incategory">Begrenzt Ergebnisse auf Artikel, die Mitglieder einer bestimmten Kategorie sind.</span></p>
+    <p><em>Beispiel:</em> <code>incategory:"Künstliche Intelligenz"</code></p>
 
-    <p><strong>Deep Category (<code>deepcat:</code>):</strong> Includes articles in subcategories of the specified category.</p>
-    <p><em>Example:</em> <code>deepcat:"Science fiction"</code></p>
+    <p><strong id="modal-label-deepcat">Tiefe Kategorie (<code>deepcat:</code>):</strong> <span id="modal-text-deepcat">Schließt Artikel in Unterkategorien der angegebenen Kategorie ein.</span></p>
+    <p><em>Beispiel:</em> <code>deepcat:"Science Fiction"</code></p>
 
-    <p><strong>Link From (<code>linkfrom:</code>):</strong> Finds articles that link to a specified page.</p>
-    <p><em>Example:</em> <code>linkfrom:Wikipedia:Village pump</code></p>
+    <p><strong id="modal-label-linkfrom">Verlinkt von (<code>linkfrom:</code>):</strong> <span id="modal-text-linkfrom">Findet Artikel, die auf eine bestimmte Seite verlinken.</span></p>
+    <p><em>Beispiel:</em> <code>linkfrom:Wikipedia:Autorenportal</code></p>
 
-    <p><strong>Namespaces:</strong> Select specific Wikipedia namespaces (e.g., Main Article, User, File, Category) to search within.</p>
+    <p><strong id="modal-label-namespaces">Namensräume:</strong> <span id="modal-text-namespaces">Wählen Sie spezifische Wikipedia-Namensräume (z.B. Artikel, Benutzer, Datei, Kategorie) für die Suche aus.</span></p>
 </section>
 <section>
-    <h2>Content & Technical</h2>
-    <p><strong>In Source (<code>insource:</code>):</strong> Searches within the wikitext content of pages, not just the displayed text. Useful for finding specific markup or code snippets.</p>
-    <p><em>Example:</em> <code>insource:/Â£{{Infobox/</code></p>
+    <h2 id="modal-heading-content">Inhalt & Technik</h2>
+    <p><strong id="modal-label-insource">Im Quelltext (<code>insource:</code>):</strong> <span id="modal-text-insource">Sucht im Wikitext-Inhalt der Seiten, nicht nur im angezeigten Text. Nützlich zum Finden spezifischer Markups oder Code-Schnipsel.</span></p>
+    <p><em>Beispiel:</em> <code>insource:/{{Infobox/</code></p>
 
-    <p><strong>Has Template (<code>hastemplate:</code>):</strong> Finds pages that use a specific template.</p>
-    <p><em>Example:</em> <code>hastemplate:"Infobox country"</code></p>
+    <p><strong id="modal-label-hastemplate">Hat Vorlage (<code>hastemplate:</code>):</strong> <span id="modal-text-hastemplate">Findet Seiten, die eine bestimmte Vorlage verwenden.</span></p>
+    <p><em>Beispiel:</em> <code>hastemplate:"Infobox Land"</code></p>
 
-    <p><strong>File Type:</strong> Filter search results for specific file extensions (e.g., PNG, JPG, PDF).</p>
-    <p><em>Wikipedia Syntax:</em> <code>filetype:extension</code></p>
-    <p><em>Example:</em> <code>filetype:pdf</code></p>
+    <p><strong id="modal-label-filetype">Dateityp:</strong> <span id="modal-text-filetype">Suchergebnisse nach bestimmten Dateiendungen filtern (z.B. PNG, JPG, PDF).</span></p>
+    <p><em>Wikipedia-Syntax:</em> <code>filetype:extension</code></p>
+    <p><em>Beispiel:</em> <code>filetype:pdf</code></p>
 
-    <p><strong>File Size:</strong> Specify minimum and maximum file sizes for image or media searches.</p>
-    <p><em>Wikipedia Syntax:</em> <code>imagesize:value</code> or <code>imagesize:min-max</code></p>
-    <p><em>Example:</em> <code>imagesize:5MP</code></p>
+    <p><strong id="modal-label-filesize">Dateigröße:</strong> <span id="modal-text-filesize">Minimale und maximale Dateigrößen für Bild- oder Mediensuche angeben.</span></p>
+    <p><em>Wikipedia-Syntax:</em> <code>imagesize:value</code> oder <code>imagesize:min-max</code></p>
+    <p><em>Beispiel:</em> <code>imagesize:5MP</code></p>
 </section>
 <section>
-    <h2>Date Filters</h2>
-    <p><strong>Date After:</strong> Limits results to articles created or modified on or after a specific date.</p>
-    <p><em>Format:</em> YYYY-MM-DD</p>
-    <p><em>Example:</em> <code>createdafter:2023-01-01</code> or <code>touchedafter:2023-01-01</code></p>
+    <h2 id="modal-heading-date">Datumsfilter</h2>
+    <p><strong id="modal-label-dateafter">Datum nach:</strong> <span id="modal-text-dateafter">Begrenzt Ergebnisse auf Artikel, die an oder nach einem bestimmten Datum erstellt oder geändert wurden.</span></p>
+    <p><em>Format:</em> JJJJ-MM-TT</p>
+    <p><em>Beispiel:</em> <code>createdafter:2023-01-01</code> oder <code>touchedafter:2023-01-01</code></p>
 
-    <p><strong>Date Before:</strong> Limits results to articles created or modified on or before a specific date.</p>
-    <p><em>Format:</em> YYYY-MM-DD</p>
-    <p><em>Example:</em> <code>createdbefore:2024-12-31</code> or <code>touchedbefore:2024-12-31</code></p>
+    <p><strong id="modal-label-datebefore">Datum vor:</strong> <span id="modal-text-datebefore">Begrenzt Ergebnisse auf Artikel, die an oder vor einem bestimmten Datum erstellt oder geändert wurden.</span></p>
+    <p><em>Format:</em> JJJJ-MM-TT</p>
+    <p><em>Beispiel:</em> <code>createdbefore:2024-12-31</code> oder <code>touchedbefore:2024-12-31</code></p>
 </section>
             </div>
     </div>

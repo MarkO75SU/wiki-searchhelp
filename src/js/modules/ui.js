@@ -89,6 +89,11 @@ export function applyTranslations() {
                 }
             }
         }
+        
+        const titleTranslation = getTranslation(key + '-title');
+        if (titleTranslation) {
+            element.title = titleTranslation;
+        }
     });
 
     // Explicitly translate the apply preset button and comment placeholder
