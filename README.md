@@ -26,7 +26,7 @@ This is a static web application. No backend server or compilation is required.
     ```bash
     git clone https://github.com/MarkO75SU/wiki-gui.git
     ```
-2.  **Run:** Open the `wikigui.html` file in any modern web browser.
+2.  **Run:** Open the `index.html` file in any modern web browser.
 
 ### Usage
 
