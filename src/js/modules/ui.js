@@ -372,7 +372,22 @@ export function populateCategoryOptions(selectElement) {
         { value: 'History', key: 'category-History' },
         { value: 'Art', key: 'category-Art' },
         { value: 'Technology', key: 'category-Technology' },
-        { value: 'Geography', key: 'category-Geography' }
+        { value: 'Geography', key: 'category-Geography' },
+        { value: 'Philosophy', key: 'category-Philosophy' },
+        { value: 'Religion', key: 'category-Religion' },
+        { value: 'Society', key: 'category-Society' },
+        { value: 'Health', key: 'category-Health' },
+        { value: 'Mathematics', key: 'category-Mathematics' },
+        { value: 'Nature', key: 'category-Nature' },
+        { value: 'Culture', key: 'category-Culture' },
+        { value: 'People', key: 'category-People' },
+        { value: 'Politics', key: 'category-Politics' },
+        { value: 'Sport', key: 'category-Sport' },
+        { value: 'Music', key: 'category-Music' },
+        { value: 'Literature', key: 'category-Literature' },
+        { value: 'Law', key: 'category-Law' },
+        { value: 'Economy', key: 'category-Economy' },
+        { value: 'Education', key: 'category-Education' }
     ];
 
     categories.forEach(cat => {
