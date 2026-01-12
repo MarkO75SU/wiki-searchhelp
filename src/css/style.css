@@ -87,6 +87,87 @@ body.dark footer a {
     color: var(--slate-400);
 }
 
+/* --- Toast Notifications --- */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toast {
+    background: var(--slate-900);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    font-weight: 600;
+    font-size: 0.9rem;
+    animation: toast-in 0.3s ease forwards;
+}
+
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(1rem); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Skeleton Loading --- */
+.skeleton {
+    background: linear-gradient(90deg, var(--slate-100) 25%, var(--slate-200) 50%, var(--slate-100) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text { height: 1rem; margin-bottom: 0.5rem; width: 100%; }
+.skeleton-title { height: 1.5rem; width: 60%; margin-bottom: 1rem; }
+
+/* --- Result Thumbnails --- */
+.result-item {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.result-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background: var(--slate-100);
+    flex-shrink: 0;
+}
+
+.result-content { flex-grow: 1; }
+
+/* --- Cookie Banner --- */
+#cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--slate-900);
+    color: white;
+    padding: 1.5rem;
+    z-index: 10000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 2px solid var(--primary);
+}
+
+@media (max-width: 768px) {
+    #cookie-banner { flex-direction: column; text-align: center; gap: 1rem; }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {

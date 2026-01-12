@@ -60,40 +60,30 @@ function parseAdvancedSearchParams(query) {
  * @param {string} lang - The language of the Wikipedia to search.
  * @returns {Promise<object>} A promise that resolves to the full API response object.
  */
-export async function performWikipediaSearch(query, lang, limit = 500) {
-    const endpoint = `https://${lang}.wikipedia.org/w/api.php`;
-    const parsedParams = parseAdvancedSearchParams(query);
-
-    const apiParams = {
-        action: 'query',
-        list: 'search',
-        format: 'json',
-        origin: '*',
-        srinfo: 'totalhits', // Request totalhits for display
-        srlimit: limit,
-        ...parsedParams
-    };
+export async function performWikipediaSearch(query, lang = 'de', limit = 10) {
+    // Basic search call to get list of results
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=search&srsearch=${encodeURIComponent(query)}&srlimit=${limit}&prop=pageimages&piprop=thumbnail&pithumbsize=150`;
     
-    // Remove any empty parameters to keep the URL clean
-    Object.keys(apiParams).forEach(key => {
-        if (!apiParams[key]) {
-            delete apiParams[key];
-        }
-    });
-
-    const params = new URLSearchParams(apiParams);
-    const url = `${endpoint}?${params}`;
-    console.log("Wikipedia Search API URL:", url);
-
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
         return await response.json();
     } catch (error) {
-        console.error("Error during Wikipedia search:", error);
-        return { query: { search: [], searchinfo: { totalhits: 0 } } };
+        console.error("Wikipedia search error:", error);
+        return null;
+    }
+}
+
+/**
+ * Fetches additional info (like images) for specific titles.
+ */
+export async function fetchArticlesInfo(titles, lang = 'de') {
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&titles=${encodeURIComponent(titles.join('|'))}&prop=pageimages&piprop=thumbnail&pithumbsize=150`;
+    try {
+        const response = await fetch(url);
+        return await response.json();
+    } catch (error) {
+        console.error("Wikipedia info error:", error);
+        return null;
     }
 }
 

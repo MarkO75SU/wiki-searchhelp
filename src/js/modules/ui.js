@@ -1,9 +1,10 @@
 // src/js/modules/ui.js
 import { getTranslation, getLanguage } from './state.js';
 import { generateSearchString } from './search.js';
-import { performWikipediaSearch, fetchArticleSummary } from './api.js';
+import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo } from './api.js';
 import { presetCategories } from './presets.js';
 import { updateHistory } from './history.js';
+import { showToast } from './toast.js';
 
 let allSearchResults = []; // Store full search results for downloading
 
@@ -257,28 +258,32 @@ export function clearForm() {
 
 export async function handleSearchFormSubmit(event) {
     event.preventDefault();
-    const { apiQuery } = generateSearchString(); // Destructure apiQuery
+    const { apiQuery } = generateSearchString();
     const lang = document.getElementById('target-wiki-lang').value;
     const resultsContainer = document.getElementById('simulated-search-results');
     const searchResultsHeading = document.getElementById('search-results-heading');
     
-    if (!apiQuery) return; // Use apiQuery for validation
+    if (!apiQuery) return;
 
-    resultsContainer.innerHTML = `<li><div class="loading-indicator">${getTranslation('loading-indicator')}</div></li>`;
+    // Skeleton Loading State
+    resultsContainer.innerHTML = Array(3).fill(0).map(() => `
+        <li class="result-item">
+            <div class="result-thumbnail skeleton"></div>
+            <div class="result-content">
+                <div class="skeleton-title skeleton"></div>
+                <div class="skeleton-text skeleton"></div>
+                <div class="skeleton-text skeleton" style="width: 80%"></div>
+            </div>
+        </li>
+    `).join('');
     
-    // Fetch up to 500 results for the download feature
-    const { wikiSearchUrlParams } = generateSearchString();
-    const targetUrl = `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`;
-    updateHistory(targetUrl);
-
-    const apiResponse = await performWikipediaSearch(apiQuery, lang, 500); // Pass apiQuery and limit
-    allSearchResults = apiResponse?.query?.search || []; // Store all results
-    const results = allSearchResults.slice(0, 10); // Display only first 10
+    const apiResponse = await performWikipediaSearch(apiQuery, lang, 500);
+    allSearchResults = apiResponse?.query?.search || [];
+    const topResults = allSearchResults.slice(0, 10);
     const totalHits = apiResponse?.query?.searchinfo?.totalhits || 0;
 
     const resultsActions = document.getElementById('results-actions-container');
 
-    // Update the results heading with the total number of hits
     if (searchResultsHeading) {
         searchResultsHeading.textContent = getTranslation('search-results-heading', '', { totalResults: totalHits });
     }
@@ -293,17 +298,36 @@ export async function handleSearchFormSubmit(event) {
 
     if (resultsActions) resultsActions.style.display = 'block';
 
-    for (const result of results) {
+    // Fetch images for top 10 results at once
+    const infoResponse = await fetchArticlesInfo(topResults.map(r => r.title), lang);
+    const pagesInfo = infoResponse?.query?.pages || {};
+
+    for (const result of topResults) {
         const summary = await fetchArticleSummary(result.title, lang);
+        
+        // Find thumbnail if exists
+        const pageId = Object.keys(pagesInfo).find(id => pagesInfo[id].title === result.title);
+        const thumbUrl = pagesInfo[pageId]?.thumbnail?.source;
+
         const listItem = document.createElement('li');
+        listItem.className = 'result-item';
         listItem.innerHTML = `
-            <a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">
-                <strong>${result.title}</strong>
-            </a>
-            <p>${summary}</p>
+            ${thumbUrl ? `<img src="${thumbUrl}" class="result-thumbnail" alt="${result.title}">` : '<div class="result-thumbnail" style="display:flex; align-items:center; justify-content:center; background:var(--slate-100); color:var(--slate-400); font-size:2rem;">📄</div>'}
+            <div class="result-content">
+                <a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">
+                    <strong>${result.title}</strong>
+                </a>
+                <p>${summary}</p>
+            </div>
         `;
         resultsContainer.appendChild(listItem);
     }
+
+    // Save to history AFTER rendering to ensure clean flow
+    const { wikiSearchUrlParams } = generateSearchString();
+    const targetUrl = `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`;
+    updateHistory(targetUrl);
+    showToast(getTranslation('toast-search-complete') || 'Suche abgeschlossen.');
 }
 
 export function downloadResults() {

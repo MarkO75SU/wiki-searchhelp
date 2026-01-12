@@ -7,6 +7,7 @@ import { presetCategories } from './modules/presets.js';
 import { renderHistory } from './modules/history.js';
 import { setupCategoryAutocomplete } from './modules/autocomplete.js';
 import { performNetworkAnalysis } from './modules/network.js';
+import { showToast } from './modules/toast.js';
 
 async function initializeApp() {
     const initialLang = getLanguage();
@@ -57,7 +58,7 @@ async function initializeApp() {
     const dateBefore = document.getElementById('datebefore-value');
     const validateDates = () => {
         if (dateAfter.value && dateBefore.value && dateAfter.value > dateBefore.value) {
-            alert(getTranslation('alert-date-invalid') || 'Das Startdatum darf nicht nach dem Enddatum liegen.');
+            showToast(getTranslation('alert-date-invalid') || 'Das Startdatum darf nicht nach dem Enddatum liegen.');
             dateAfter.value = '';
         }
     };
@@ -82,6 +83,27 @@ async function initializeApp() {
     if (downloadResultsBtn) {
         downloadResultsBtn.addEventListener('click', downloadResults);
     }
+
+    // Cookie Banner Logic
+    const cookieBanner = document.getElementById('cookie-banner');
+    const cookieAccept = document.getElementById('cookie-accept');
+    const cookieDecline = document.getElementById('cookie-decline');
+    const cookieConsent = localStorage.getItem('cookieConsent');
+
+    if (!cookieConsent && cookieBanner) {
+        cookieBanner.style.display = 'flex';
+    }
+
+    cookieAccept?.addEventListener('click', () => {
+        localStorage.setItem('cookieConsent', 'accepted');
+        cookieBanner.style.display = 'none';
+        showToast(getTranslation('toast-cookies-accepted') || 'Cookies akzeptiert.');
+    });
+
+    cookieDecline?.addEventListener('click', () => {
+        localStorage.setItem('cookieConsent', 'declined');
+        cookieBanner.style.display = 'none';
+    });
 
     const analyzeNetworkBtn = document.getElementById('analyze-network-button');
     analyzeNetworkBtn?.addEventListener('click', () => {
