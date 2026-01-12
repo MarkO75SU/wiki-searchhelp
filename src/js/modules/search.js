@@ -24,6 +24,7 @@ export function generateSearchString() {
     const withoutWords = getValue('without-words');
     const anyWords = getValue('any-words');
     const optionFuzzy = getValue('option-fuzzy');
+    const optionWildcard = getValue('option-wildcard');
     const optionIntitle = getValue('option-intitle');
 
     // --- Main Query & Basic Operators ---
@@ -33,8 +34,12 @@ export function generateSearchString() {
     if (mainQuery) {
         if (optionFuzzy) {
             // Apply fuzzy to each word, don't quote as a single phrase
-            mainSearchTermForApi = mainQuery.split(/\s+/).map(word => `${word}~`).join(' ');
+            mainSearchTermForApi = mainQuery.split(/\s+/).map(word => word.endsWith('~') ? word : `${word}~`).join(' ');
             explanationParts.push(getTranslation('explanation-fuzzy-applied', '', { mainQuery }));
+        } else if (optionWildcard) {
+            // Apply wildcard to each word if missing, don't quote
+            mainSearchTermForApi = mainQuery.split(/\s+/).map(word => word.endsWith('*') ? word : `${word}*`).join(' ');
+            explanationParts.push(getTranslation('explanation-wildcard-applied', '', { mainQuery }));
         } else if (!optionIntitle && (mainSearchTermForApi.includes(' ') || /[\(\)]/.test(mainSearchTermForApi))) {
             // Quote main query if it contains spaces and not already quoted
             if (!(mainSearchTermForApi.startsWith('"') && mainSearchTermForApi.endsWith('"'))) {

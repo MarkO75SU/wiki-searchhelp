@@ -126,6 +126,7 @@
     "explanation-intitle": "Search for pages with \"{mainQuery}\" specifically in their title.",
     "explanation-main-query": "Search for pages containing the terms \"{mainQuery}\".",
     "explanation-fuzzy-applied": "Applying fuzzy search to \"{mainQuery}\" to include similar terms.",
+    "explanation-wildcard-applied": "Applying wildcard search to \"{mainQuery}\" (find word parts).",
     "explanation-exact-phrase": "Including the exact phrase \"{exactPhrase}\".",
     "explanation-without-words": "Excluding pages that contain any of these words: \"{withoutWords}\".",
     "explanation-any-words": "Including pages with at least one of these words: \"{anyWords}\".",

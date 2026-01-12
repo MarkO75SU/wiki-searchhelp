@@ -126,6 +126,7 @@
     "explanation-intitle": "Suche nach Seiten mit \"{mainQuery}\" speziell in ihrem Titel.",
     "explanation-main-query": "Suche nach Seiten, die die Begriffe \"{mainQuery}\" enthalten.",
     "explanation-fuzzy-applied": "Anwenden der Fuzzy-Suche auf \"{mainQuery}\", um ähnliche Begriffe einzubeziehen.",
+    "explanation-wildcard-applied": "Anwenden der Platzhalter-Suche auf \"{mainQuery}\" (Wortteile finden).",
     "explanation-exact-phrase": "Einschließlich der exakten Phrase \"{exactPhrase}\".",
     "explanation-without-words": "Ausschließen von Seiten, die eines dieser Wörter enthalten: \"{withoutWords}\".",
     "explanation-any-words": "Einschließlich Seiten mit mindestens einem dieser Wörter: \"{anyWords}\".",
