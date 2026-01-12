@@ -2,9 +2,11 @@
 import { setLanguage, setTranslations, getLanguage, getTranslation } from './modules/state.js';
 import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
-import { saveCurrentSearch, loadSavedSearches, handleSavedSearchActions } from './modules/storage.js';
 import { presetCategories } from './modules/presets.js';
-import { renderJournal, addJournalEntry, clearJournal } from './modules/journal.js';
+import { renderJournal, clearJournal } from './modules/journal.js';
+import { setupCategoryAutocomplete } from './modules/autocomplete.js';
+import { performNetworkAnalysis } from './modules/network.js';
+import { showToast } from './modules/toast.js';
 
 async function initializeApp() {
     const initialLang = getLanguage();
@@ -189,8 +191,6 @@ async function initializeApp() {
         clearForm();
         generateSearchString();
     }); }
-
-    // Redundant save button removed from HTML, handling auto-save in ui.js submit logic
 
     document.querySelectorAll('.lang-button').forEach(button => {
         button.addEventListener('click', async (event) => {
