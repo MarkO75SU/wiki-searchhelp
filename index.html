@@ -384,27 +384,17 @@
                 </ul>
             </div>
 
-            <div class="saved-searches-container">
-                <h3 id="saved-searches-heading"></h3>
-                <div class="save-search-input-group">
-                    <input type="text" id="save-search-comment">
-                    <button id="save-search-button"></button>
-                </div>
+            <div class="saved-searches-container journal-container">
+                <h3 id="journal-heading">Dein Such-Journal</h3>
                 <div class="import-export-group">
                     <button id="export-json-button" class="export-button"></button>
                     <button id="export-csv-button" class="export-button"></button>
                     <label for="import-file-input" class="import-label" id="import-label"></label>
                     <input type="file" id="import-file-input" accept=".json,.csv" style="display: none;">
+                    <button id="clear-journal-btn" class="export-button" style="color: #e11d48;">Journal leeren</button>
                 </div>
-                <ul id="saved-searches-list">
-                    <!-- Saved searches will be dynamically inserted here -->
-                </ul>
-            </div>
-
-            <div class="saved-searches-container history-container">
-                <h3 id="history-heading"></h3>
-                <ul id="history-list">
-                    <!-- Recent searches will be dynamically inserted here -->
+                <ul id="journal-list">
+                    <!-- Journal entries (History + Saved) will be dynamically inserted here -->
                 </ul>
             </div>
         </section>

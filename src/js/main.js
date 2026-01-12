@@ -4,18 +4,14 @@ import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunct
 import { generateSearchString } from './modules/search.js';
 import { saveCurrentSearch, loadSavedSearches, handleSavedSearchActions } from './modules/storage.js';
 import { presetCategories } from './modules/presets.js';
-import { renderHistory } from './modules/history.js';
-import { setupCategoryAutocomplete } from './modules/autocomplete.js';
-import { performNetworkAnalysis } from './modules/network.js';
-import { showToast } from './modules/toast.js';
+import { renderJournal, addJournalEntry, clearJournal } from './modules/journal.js';
 
 async function initializeApp() {
     const initialLang = getLanguage();
     document.documentElement.lang = initialLang;
 
     addAccordionFunctionality();
-    loadSavedSearches();
-    renderHistory();
+    renderJournal();
 
     // Fill form from URL params (Shareable URL)
     const urlParams = new URLSearchParams(window.location.search);
@@ -185,20 +181,16 @@ async function initializeApp() {
     const searchForm = document.getElementById('search-form');
     if (searchForm) { searchForm.addEventListener('submit', handleSearchFormSubmit); }
     
+    const clearJournalBtn = document.getElementById('clear-journal-btn');
+    if (clearJournalBtn) { clearJournalBtn.addEventListener('click', clearJournal); }
+
     const clearFormBtn = document.getElementById('clear-form-button');
     if (clearFormBtn) { clearFormBtn.addEventListener('click', () => {
         clearForm();
         generateSearchString();
     }); }
 
-    const saveSearchBtn = document.getElementById('save-search-button');
-    if (saveSearchBtn) { saveSearchBtn.addEventListener('click', () => {
-        const { apiQuery } = generateSearchString();
-        saveCurrentSearch(apiQuery);
-    }); }
-
-    const savedSearchesList = document.getElementById('saved-searches-list');
-    if (savedSearchesList) { savedSearchesList.addEventListener('click', handleSavedSearchActions); }
+    // Redundant save button removed from HTML, handling auto-save in ui.js submit logic
 
     document.querySelectorAll('.lang-button').forEach(button => {
         button.addEventListener('click', async (event) => {

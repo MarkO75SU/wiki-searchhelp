@@ -3,7 +3,7 @@ import { getTranslation, getLanguage } from './state.js';
 import { generateSearchString } from './search.js';
 import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo } from './api.js';
 import { presetCategories } from './presets.js';
-import { updateHistory } from './history.js';
+import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';
 
 let allSearchResults = []; // Store full search results for downloading
@@ -323,9 +323,9 @@ export async function handleSearchFormSubmit(event) {
         resultsContainer.appendChild(listItem);
     }
 
-    // Save to history AFTER rendering to ensure clean flow
+    // Save to journal AFTER rendering to ensure clean flow
     const targetUrl = `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`;
-    updateHistory(apiQuery, targetUrl); // Pass query text AND URL
+    addJournalEntry(apiQuery, targetUrl); 
     showToast(getTranslation('toast-search-complete') || 'Suche abgeschlossen.');
 }
 
