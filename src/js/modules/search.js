@@ -166,6 +166,11 @@ export function generateSearchString() {
         // No direct API query equivalent for namespaces here, handled by API search.
     }
 
+    // Force fulltext search to prevent automatic redirect to exact article matches
+    if (apiQueryParts.length > 0) {
+        wikiSearchParams.set('fulltext', 'Search');
+    }
+
     // Final construction of API query string
     const finalApiQuery = apiQueryParts.join(' ').trim();
 
