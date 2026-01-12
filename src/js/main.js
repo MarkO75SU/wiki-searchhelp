@@ -3,7 +3,7 @@ import { setLanguage, setTranslations, getLanguage, getTranslation } from './mod
 import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { presetCategories } from './modules/presets.js';
-import { renderJournal, clearJournal } from './modules/journal.js';
+import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal } from './modules/journal.js';
 import { setupCategoryAutocomplete } from './modules/autocomplete.js';
 import { performNetworkAnalysis } from './modules/network.js';
 import { showToast } from './modules/toast.js';
@@ -14,6 +14,11 @@ async function initializeApp() {
 
     addAccordionFunctionality();
     renderJournal();
+
+    // Journal Actions
+    document.getElementById('delete-selected-btn')?.addEventListener('click', deleteSelectedEntries);
+    document.getElementById('export-json-button')?.addEventListener('click', () => exportJournal('json'));
+    document.getElementById('export-csv-button')?.addEventListener('click', () => exportJournal('csv'));
 
     // Fill form from URL params (Shareable URL)
     const urlParams = new URLSearchParams(window.location.search);

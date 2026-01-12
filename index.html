@@ -386,13 +386,18 @@
 
             <div class="saved-searches-container journal-container">
                 <h3 id="journal-heading">Dein Such-Journal</h3>
-                <div class="import-export-group">
-                    <button id="export-json-button" class="export-button"></button>
-                    <button id="export-csv-button" class="export-button"></button>
-                    <label for="import-file-input" class="import-label" id="import-label"></label>
-                    <input type="file" id="import-file-input" accept=".json,.csv" style="display: none;">
-                    <button id="clear-journal-btn" class="export-button" style="color: #e11d48;">Journal leeren</button>
+                
+                <div class="journal-controls" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--slate-50); border-radius: var(--radius-md); align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; color: var(--slate-700);">
+                        <input type="checkbox" id="journal-select-all-checkbox"> <span id="journal-select-all">Alle auswählen</span>
+                    </label>
+                    <div style="flex-grow: 1;"></div>
+                    <button id="export-json-button" class="export-button" title="JSON Export">JSON</button>
+                    <button id="export-csv-button" class="export-button" title="CSV Export">CSV</button>
+                    <button id="delete-selected-btn" class="export-button" style="color: #e11d48; border-color: #fecaca;">🗑️ Auswahl</button>
+                    <button id="clear-journal-btn" class="export-button" style="color: #e11d48; border-color: #ef4444; font-weight: 800;">Journal leeren</button>
                 </div>
+
                 <ul id="journal-list">
                     <!-- Journal entries (History + Saved) will be dynamically inserted here -->
                 </ul>
@@ -429,6 +434,6 @@
         </div>
     </div>
 
-    <script src="src/js/main.js?v=1.6" type="module"></script>
+    <script src="src/js/main.js?v=1.7" type="module"></script>
 </body>
 </html>
