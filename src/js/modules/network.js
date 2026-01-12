@@ -10,10 +10,10 @@ export async function performNetworkAnalysis(articles) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Fetch categories for all articles
+    // Fetch visible categories for all articles (clshow=!hidden is key!)
     const lang = getLanguage();
     const titles = articles.map(a => a.title);
-    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&titles=${encodeURIComponent(titles.join('|'))}&prop=categories&cllimit=20`;
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&titles=${encodeURIComponent(titles.join('|'))}&prop=categories&cllimit=50&clshow=!hidden`;
 
     try {
         const response = await fetch(url);
@@ -23,7 +23,10 @@ export async function performNetworkAnalysis(articles) {
         // Map articles to their categories
         const articleData = articles.map(article => {
             const pageId = Object.keys(pages).find(id => pages[id].title === article.title);
-            const categories = pages[pageId]?.categories?.map(c => c.title) || [];
+            // Clean category names (remove "Kategorie:" or "Category:")
+            const categories = pages[pageId]?.categories?.map(c => 
+                c.title.replace(/^(Kategorie:|Category:)/i, '').trim()
+            ) || [];
             return {
                 title: article.title,
                 categories: categories,
@@ -33,26 +36,36 @@ export async function performNetworkAnalysis(articles) {
             };
         });
 
-        // Calculate connections (Shared Categories)
+        // Calculate connections (Shared Categories OR Shared Keywords in Title)
         const edges = [];
         for (let i = 0; i < articleData.length; i++) {
             for (let j = i + 1; j < articleData.length; j++) {
-                const shared = articleData[i].categories.filter(cat => 
+                // Check 1: Shared Categories
+                const sharedCats = articleData[i].categories.filter(cat => 
                     articleData[j].categories.includes(cat)
                 );
                 
-                if (shared.length > 0) {
+                // Check 2: Shared significant keywords in title (fallback)
+                const wordsI = articleData[i].title.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+                const wordsJ = articleData[j].title.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+                const sharedWords = wordsI.filter(w => wordsJ.includes(w));
+
+                if (sharedCats.length > 0 || sharedWords.length > 0) {
                     articleData[i].connections++;
                     articleData[j].connections++;
-                    edges.push({ from: articleData[i], to: articleData[j], strength: shared.length });
+                    edges.push({ 
+                        from: articleData[i], 
+                        to: articleData[j], 
+                        strength: sharedCats.length + sharedWords.length 
+                    });
                 }
             }
         }
 
         // Draw Edges (Connections)
-        ctx.strokeStyle = 'rgba(14, 165, 233, 0.3)'; // Primary accent color
+        ctx.strokeStyle = 'rgba(14, 165, 233, 0.6)'; // More opaque lines
         edges.forEach(edge => {
-            ctx.lineWidth = Math.min(edge.strength, 5); // Thicker lines for more shared categories
+            ctx.lineWidth = Math.max(1, Math.min(edge.strength * 1.5, 6)); 
             ctx.beginPath();
             ctx.moveTo(edge.from.x, edge.from.y);
             ctx.lineTo(edge.to.x, edge.to.y);
