@@ -98,6 +98,7 @@ export async function fetchArticleSummary(title, lang) {
     const params = new URLSearchParams({
         action: 'query',
         prop: 'extracts',
+        exsentences: 10,
         exintro: true,
         explaintext: true,
         titles: title,
