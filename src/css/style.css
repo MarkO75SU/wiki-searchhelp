@@ -35,6 +35,56 @@
     --space-md: 1.5rem;
     --space-lg: 2rem;
     --space-xl: 3rem;
+
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- Dark Mode Variables --- */
+body.dark {
+    --bg-body: #020617;
+    --bg-card: #0f172a;
+    --slate-50: #1e293b;
+    --slate-100: #334155;
+    --slate-200: #475569;
+    --slate-800: #f1f5f9;
+    --slate-900: #f8fafc;
+    --border: #334155;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    color: var(--slate-800);
+}
+
+body.dark .search-interface {
+    background: var(--bg-card);
+    border-color: var(--slate-700);
+}
+
+body.dark .search-group, 
+body.dark .presets-container,
+body.dark .saved-searches-container,
+body.dark #simulated-search-results li {
+    background: #1e293b;
+    border-color: var(--slate-700);
+    color: white;
+}
+
+body.dark h2, body.dark h3 {
+    color: white;
+}
+
+body.dark input, body.dark select {
+    background: #0f172a;
+    color: white;
+    border-color: var(--slate-700);
+}
+
+body.dark .accordion-header {
+    background: #334155;
+    color: white;
+}
+
+body.dark footer a {
+    color: var(--slate-400);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

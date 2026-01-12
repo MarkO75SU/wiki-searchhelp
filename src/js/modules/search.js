@@ -114,6 +114,16 @@ export function generateSearchString() {
         datebefore: getValue('datebefore-value')
     };
 
+    // Geo Search
+    const geoRadius = getValue('geo-radius');
+    const geoCoord = getValue('geo-coord');
+    if (geoCoord) {
+        const radius = geoRadius || 5000;
+        wikiSearchParams.set('nearcoord', `${radius},${geoCoord}`);
+        apiQueryParts.push(`nearcoord:${radius},${geoCoord}`);
+        explanationParts.push(`Suche im Umkreis von ${radius}m um ${geoCoord}.`);
+    }
+
     Object.entries(rawParams).forEach(([key, value]) => {
         if (value) {
             if (Array.isArray(value)) { // Handle filetype array
@@ -185,6 +195,32 @@ export function generateSearchString() {
 
     const targetLang = getLanguage();
     const searchUrl = finalApiQuery ? `https://${targetLang}.wikipedia.org/wiki/Special:Search?${wikiSearchParams.toString()}` : '';
+
+    // Update Browser URL for Sharing (without reloading)
+    const shareParams = new URLSearchParams();
+    const allInputs = document.querySelectorAll('#search-form input, #search-form select');
+    allInputs.forEach(input => {
+        if (input.type === 'checkbox' && input.checked) shareParams.set(input.id, 'true');
+        else if (input.value && input.type !== 'checkbox') shareParams.set(input.id, input.value);
+    });
+    const newUrl = `${window.location.pathname}?${shareParams.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+
+    // Results Counter Preview
+    const badge = document.getElementById('results-preview-badge');
+    const countSpan = document.getElementById('results-preview-count');
+    
+    if (finalApiQuery) {
+        clearTimeout(countDebounceTimer);
+        countDebounceTimer = setTimeout(async () => {
+            const apiResponse = await performWikipediaSearch(finalApiQuery, targetLang, 1);
+            const totalHits = apiResponse?.query?.searchinfo?.totalhits || 0;
+            if (countSpan) countSpan.textContent = totalHits.toLocaleString();
+            if (badge) badge.style.display = 'flex';
+        }, 1000);
+    } else {
+        if (badge) badge.style.display = 'none';
+    }
 
     // Update the UI with the generated string and explanation
     const displayElement = document.getElementById('generated-search-string-display');

@@ -3,6 +3,7 @@ import { getTranslation, getLanguage } from './state.js';
 import { generateSearchString } from './search.js';
 import { performWikipediaSearch, fetchArticleSummary } from './api.js';
 import { presetCategories } from './presets.js';
+import { updateHistory } from './history.js';
 
 let allSearchResults = []; // Store full search results for downloading
 
@@ -266,6 +267,10 @@ export async function handleSearchFormSubmit(event) {
     resultsContainer.innerHTML = `<li><div class="loading-indicator">${getTranslation('loading-indicator')}</div></li>`;
     
     // Fetch up to 500 results for the download feature
+    const { wikiSearchUrlParams } = generateSearchString();
+    const targetUrl = `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`;
+    updateHistory(targetUrl);
+
     const apiResponse = await performWikipediaSearch(apiQuery, lang, 500); // Pass apiQuery and limit
     allSearchResults = apiResponse?.query?.search || []; // Store all results
     const results = allSearchResults.slice(0, 10); // Display only first 10

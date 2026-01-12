@@ -4,6 +4,9 @@ import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunct
 import { generateSearchString } from './modules/search.js';
 import { saveCurrentSearch, loadSavedSearches, handleSavedSearchActions } from './modules/storage.js';
 import { presetCategories } from './modules/presets.js';
+import { renderHistory } from './modules/history.js';
+import { setupCategoryAutocomplete } from './modules/autocomplete.js';
+import { performNetworkAnalysis } from './modules/network.js';
 
 async function initializeApp() {
     const initialLang = getLanguage();
@@ -11,6 +14,23 @@ async function initializeApp() {
 
     addAccordionFunctionality();
     loadSavedSearches();
+    renderHistory();
+
+    // Fill form from URL params (Shareable URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.forEach((value, key) => {
+        const element = document.getElementById(key);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = value === 'true';
+            } else {
+                element.value = value;
+            }
+        }
+    });
+
+    // Setup Autocomplete
+    setupCategoryAutocomplete(document.getElementById('incategory-value'));
 
     // Mobile Menu Toggle
     const menuToggle = document.getElementById('menu-toggle');
@@ -22,10 +42,53 @@ async function initializeApp() {
         });
     }
 
+    // Dark Mode Logic
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) document.body.classList.add('dark');
+
+    darkModeToggle?.addEventListener('click', () => {
+        const wasDark = document.body.classList.toggle('dark');
+        localStorage.setItem('darkMode', wasDark);
+    });
+
+    // Date Validation
+    const dateAfter = document.getElementById('dateafter-value');
+    const dateBefore = document.getElementById('datebefore-value');
+    const validateDates = () => {
+        if (dateAfter.value && dateBefore.value && dateAfter.value > dateBefore.value) {
+            alert(getTranslation('alert-date-invalid') || 'Das Startdatum darf nicht nach dem Enddatum liegen.');
+            dateAfter.value = '';
+        }
+    };
+    dateAfter?.addEventListener('change', validateDates);
+    dateBefore?.addEventListener('change', validateDates);
+
+    // Geo Location Logic
+    const getLocationBtn = document.getElementById('get-location-btn');
+    const geoCoordInput = document.getElementById('geo-coord');
+    getLocationBtn?.addEventListener('click', () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                geoCoordInput.value = `${pos.coords.latitude.toFixed(4)},${pos.coords.longitude.toFixed(4)}`;
+                generateSearchString();
+            }, (err) => {
+                alert('Standort konnte nicht ermittelt werden.');
+            });
+        }
+    });
+
     const downloadResultsBtn = document.getElementById('download-results-button');
     if (downloadResultsBtn) {
         downloadResultsBtn.addEventListener('click', downloadResults);
     }
+
+    const analyzeNetworkBtn = document.getElementById('analyze-network-button');
+    analyzeNetworkBtn?.addEventListener('click', () => {
+        const results = Array.from(document.querySelectorAll('#simulated-search-results li strong'))
+            .map(el => ({ title: el.textContent }));
+        performNetworkAnalysis(results);
+    });
 
     // Advanced mode toggle
     const advancedToggle = document.getElementById('advanced-mode-toggle');
