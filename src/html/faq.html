@@ -135,7 +135,6 @@
                 `).join('');
             }
 
-            const searchInput = document.getElementById('faq-search');
             searchInput?.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase().trim();
                 const faqItems = document.querySelectorAll('.faq-item');
@@ -143,11 +142,14 @@
 
                 if (query.length >= 3) {
                     faqItems.forEach(item => {
-                        item.style.display = item.textContent.toLowerCase().includes(query) ? 'block' : 'none';
+                        const isMatch = item.textContent.toLowerCase().includes(query);
+                        item.style.display = isMatch ? 'block' : 'none';
                     });
+                    
                     sections.forEach(section => {
-                        const visible = section.querySelectorAll('.faq-item[style="display: block;"]');
-                        section.style.display = visible.length > 0 ? 'block' : 'none';
+                        const items = section.querySelectorAll('.faq-item');
+                        const hasVisibleItems = Array.from(items).some(item => item.style.display !== 'none');
+                        section.style.display = hasVisibleItems ? 'block' : 'none';
                     });
                 } else {
                     faqItems.forEach(item => item.style.display = 'block');

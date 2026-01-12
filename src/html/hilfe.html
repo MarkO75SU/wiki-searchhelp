@@ -279,8 +279,9 @@
                     
                     // Hide empty sections
                     sections.forEach(section => {
-                        const visibleItems = section.querySelectorAll('.help-item[style="display: block;"]');
-                        section.style.display = visibleItems.length > 0 ? 'block' : 'none';
+                        const items = section.querySelectorAll('.help-item');
+                        const hasVisibleItems = Array.from(items).some(item => item.style.display !== 'none');
+                        section.style.display = hasVisibleItems ? 'block' : 'none';
                     });
                 } else {
                     helpItems.forEach(item => item.style.display = 'block');
