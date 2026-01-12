@@ -180,10 +180,12 @@
     "faq-cat-2-title": "2. Features & Funktionalität",
     "faq-q4": "Wie funktioniert das Feld 'Alle diese Wörter'?",
     "faq-a4": "Die Eingabe von Begriffen in das Feld 'Alle diese Wörter' bedeutet, dass alle von ihnen in den Suchergebnissen vorhanden sein müssen.",
-    "faq-q5": "Wie funktioniert das Kategorie-Dropdown?",
-    "faq-a5": "Das 'Kategorie'-Dropdown ermöglicht es dir, eine vordefinierte Wikipedia-Kategorie auszuwählen, um den Suchparameter 'In Kategorie' schnell auszufüllen.",
-    
-    "faq-cat-3-title": "3. Wikipedia vs. KI-Suche",
+        "faq-q5": "Wie funktioniert das Kategorie-Dropdown?",
+        "faq-a5": "Das 'Kategorie'-Dropdown ermöglicht es dir, eine vordefinierte Wikipedia-Kategorie auszuwählen, um den Suchparameter 'In Kategorie' schnell auszufüllen.",
+        "faq-q9": "Nach welcher Logik werden die Suchergebnisse erzeugt?",
+        "faq-a9": "Die Suche erfolgt in zwei Schritten: Zuerst übersetzt WikiGUI deine Eingaben in die komplexe Wikipedia-Suchsyntax (Boolesche Logik wie UND, ODER, Ausschluss). Danach übernimmt die Wikipedia-Suchmaschine (CirrusSearch) das Ranking. Dabei werden Treffer im Titel höher bewertet als im Text. Zudem werden Wortnähe und die Popularität der Artikel berücksichtigt, um dir die relevantesten Ergebnisse zuerst anzuzeigen.",
+        
+        "faq-cat-3-title": "3. Wikipedia vs. KI-Suche",
     "faq-q6": "Warum sollte ich Wikipedia nutzen, wenn ich KI (wie ChatGPT) fragen kann?",
     "faq-a6": "KI-Modelle können 'halluzinieren' (Fakten erfinden). Wikipedia bietet Transparenz durch Quellenangaben. WikiGUI ermöglicht dir zudem die Suche nach Metadaten (Dateitypen), was KI nicht kann.",
     "faq-q7": "Was ist der Vorteil von WikiGUI gegenüber einer einfachen KI-Antwort?",

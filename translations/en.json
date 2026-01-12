@@ -182,6 +182,8 @@
     "faq-a4": "Entering terms in the 'All these words' field means all of them must be present in the search results.",
     "faq-q5": "How does the category dropdown work?",
     "faq-a5": "The 'Category' dropdown allows you to select a predefined Wikipedia category to pre-fill the search parameter.",
+    "faq-q9": "According to what logic are the search results generated?",
+    "faq-a9": "The search follows a two-step process: First, WikiGUI translates your input into complex Wikipedia search syntax (Boolean logic like AND, OR, exclusions). Then, Wikipedia's search engine (CirrusSearch) takes over the ranking. Hits in the title are weighted higher than those in the text. Word proximity and article popularity are also considered to show you the most relevant results first.",
     
     "faq-cat-3-title": "3. Wikipedia vs. AI-Search",
     "faq-q6": "Why should I use Wikipedia when I can ask AI (like ChatGPT)?",
