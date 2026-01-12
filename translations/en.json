@@ -167,6 +167,31 @@
     "app-title-help": "WikiGUI Help",
     "search-faq-placeholder": "Search FAQ...",
     "search-help-placeholder": "Search Help...",
+    
+    "faq-cat-1-title": "1. Getting Started",
+    "faq-q1": "What is WikiGUI?",
+    "faq-a1": "WikiGUI is a web-based tool that assists users in building complex search queries for Wikipedia by providing an intuitive interface for various search parameters.",
+    "faq-q2": "Is WikiGUI free to use?",
+    "faq-a2": "WikiGUI is provided under an open license. Basic use is free. Please refer to the license files for details.",
+    "faq-q3": "Do I need to install anything to use WikiGUI?",
+    "faq-a3": "No, WikiGUI is a web application. You can use it directly from your web browser without any installation.",
+    
+    "faq-cat-2-title": "2. Features & Functionality",
+    "faq-q4": "How does the 'All these words' field work?",
+    "faq-a4": "Entering terms in the 'All these words' field means all of them must be present in the search results.",
+    "faq-q5": "How does the category dropdown work?",
+    "faq-a5": "The 'Category' dropdown allows you to select a predefined Wikipedia category to pre-fill the search parameter.",
+    
+    "faq-cat-3-title": "3. Wikipedia vs. AI-Search",
+    "faq-q6": "Why should I use Wikipedia when I can ask AI (like ChatGPT)?",
+    "faq-a6": "AI models can 'hallucinate' (invent facts). Wikipedia provides transparency through citations. WikiGUI also allows for targeted metadata searches (file types, dates) which AI cannot do.",
+    "faq-q7": "What is the advantage of WikiGUI over a simple AI answer?",
+    "faq-a7": "WikiGUI treats Wikipedia like a database. You can search for specific original sources (like PDFs), while AI usually only provides a summary.",
+    
+    "faq-cat-4-title": "4. Troubleshooting & Support",
+    "faq-q8": "How do I report a bug or ask a question?",
+    "faq-a8": "Use the 'Report an Issue' link in the footer. This will take you to our GitHub Issues page.",
+    
     "lang-de-option": "German (de)",
     "lang-en-option": "English (en)",
     "lang-fr-option": "French (fr)",

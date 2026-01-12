@@ -71,41 +71,11 @@
 
     <main class="container">
         <div class="faq-search-container" style="margin-top: 2rem;">
-            <input type="text" id="faq-search" placeholder="Search FAQ..." style="width: 100%; height: 56px; padding: 0 1.5rem; border-radius: 16px; border: 1.5px solid var(--slate-200); font-size: 1.1rem; box-shadow: var(--shadow-md);">
+            <input type="text" id="faq-search" placeholder="FAQ durchsuchen..." style="width: 100%; height: 56px; padding: 0 1.5rem; border-radius: 16px; border: 1.5px solid var(--slate-200); font-size: 1.1rem; box-shadow: var(--shadow-md);">
         </div>
 
-        <div class="faq-container">
-            <section class="faq-section">
-                <h2>1. Getting Started</h2>
-                <ul>
-                    <li class="faq-item"><strong>Q: What is WikiGUI?</strong>A: WikiGUI is a web-based tool that assists users in building complex search queries for Wikipedia by providing an intuitive interface for various search parameters.</li>
-                    <li class="faq-item"><strong>Q: Is WikiGUI free to use?</strong>A: WikiGUI is provided under an open license. Basic use is free. Please refer to the license files for details.</li>
-                    <li class="faq-item"><strong>Q: Do I need to install anything to use WikiGUI?</strong>A: No, WikiGUI is a web application. You can use it directly from your web browser without any installation.</li>
-                </ul>
-            </section>
-
-            <section class="faq-section">
-                <h2>2. Features & Funktionalität</h2>
-                <ul>
-                    <li class="faq-item"><strong>Q: How does the "All these words" field work?</strong>A: Entering terms in the "All these words" field means all of them must be present in the search results.</li>
-                    <li class="faq-item"><strong>Q: How does the category dropdown work?</strong>A: The "Category" dropdown allows you to select a predefined Wikipedia category to pre-fill the search parameter.</li>
-                </ul>
-            </section>
-
-            <section class="faq-section">
-                <h2>3. Wikipedia vs. AI-Search</h2>
-                <ul>
-                    <li class="faq-item"><strong>Q: Why should I use Wikipedia when I can ask AI (like ChatGPT)?</strong>A: AI models can "hallucinate" (invent facts). Wikipedia provides transparency through citations. WikiGUI also allows for targeted metadata searches (file types, dates) which AI cannot do.</li>
-                    <li class="faq-item"><strong>Q: What is the advantage of WikiGUI over a simple AI answer?</strong>A: WikiGUI treats Wikipedia like a database. You can search for specific original sources (like PDFs), while AI usually only provides a summary.</li>
-                </ul>
-            </section>
-
-            <section class="faq-section">
-                <h2>4. Troubleshooting & Support</h2>
-                <ul>
-                    <li class="faq-item"><strong>Q: How do I report a bug or ask a question?</strong>A: Use the "Report an Issue" link in the footer. This will take you to our GitHub Issues page.</li>
-                </ul>
-            </section>
+        <div class="faq-container" id="faq-list">
+            <!-- FAQ items will be rendered here dynamically -->
         </div>
     </main>
 
@@ -114,12 +84,12 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="privacy_de.html">Privacy</a></li>
-                    <li><a href="impressum.html">Imprint</a></li>
+                    <li><a href="privacy_de.html">Datenschutz</a></li>
+                    <li><a href="impressum.html">Impressum</a></li>
                 </ul>
             </nav>
             <p id="footer-disclaimer" style="font-size: 0.75rem; margin-bottom: 1rem; opacity: 0.7;"></p>
-            <p id="footer-text">&copy; 2025 WikiGUI. All rights reserved.</p>
+            <p id="footer-text">&copy; 2025 WikiGUI. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
 
@@ -137,14 +107,40 @@
                 
                 const searchInput = document.getElementById('faq-search');
                 if (searchInput) searchInput.placeholder = getTranslation('search-faq-placeholder');
+
+                renderFAQ();
             } catch (e) { console.error(e); }
 
-            const searchInput = document.getElementById('faq-search');
-            const faqItems = document.querySelectorAll('.faq-item');
-            const sections = document.querySelectorAll('.faq-section');
+            function renderFAQ() {
+                const container = document.getElementById('faq-list');
+                const faqs = [
+                    { cat: 'faq-cat-1-title', items: [{q: 'faq-q1', a: 'faq-a1'}, {q: 'faq-q2', a: 'faq-a2'}, {q: 'faq-q3', a: 'faq-a3'}] },
+                    { cat: 'faq-cat-2-title', items: [{q: 'faq-q4', a: 'faq-a4'}, {q: 'faq-q5', a: 'faq-a5'}] },
+                    { cat: 'faq-cat-3-title', items: [{q: 'faq-q6', a: 'faq-a6'}, {q: 'faq-q7', a: 'faq-a7'}] },
+                    { cat: 'faq-cat-4-title', items: [{q: 'faq-q8', a: 'faq-a8'}] }
+                ];
 
+                container.innerHTML = faqs.map(section => `
+                    <section class="faq-section">
+                        <h2>${getTranslation(section.cat)}</h2>
+                        <ul>
+                            ${section.items.map(item => `
+                                <li class="faq-item">
+                                    <strong>${lang === 'de' ? 'F: ' : 'Q: '}${getTranslation(item.q)}</strong>
+                                    ${lang === 'de' ? 'A: ' : 'A: '}${getTranslation(item.a)}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </section>
+                `).join('');
+            }
+
+            const searchInput = document.getElementById('faq-search');
             searchInput?.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase().trim();
+                const faqItems = document.querySelectorAll('.faq-item');
+                const sections = document.querySelectorAll('.faq-section');
+
                 if (query.length >= 3) {
                     faqItems.forEach(item => {
                         item.style.display = item.textContent.toLowerCase().includes(query) ? 'block' : 'none';

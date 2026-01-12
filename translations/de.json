@@ -169,6 +169,31 @@
     "app-title-help": "WikiGUI Hilfe",
     "search-faq-placeholder": "FAQ durchsuchen...",
     "search-help-placeholder": "Hilfe durchsuchen...",
+    
+    "faq-cat-1-title": "1. Erste Schritte",
+    "faq-q1": "Was ist WikiGUI?",
+    "faq-a1": "WikiGUI ist ein webbasiertes Werkzeug, das Benutzer dabei unterstützt, komplexe Suchanfragen für Wikipedia zu erstellen, indem es eine intuitive Oberfläche für verschiedene Suchparameter bietet.",
+    "faq-q2": "Ist die Nutzung von WikiGUI kostenlos?",
+    "faq-a2": "WikiGUI wird unter einer offenen Lizenz zur Verfügung gestellt. Die grundlegende Nutzung ist kostenlos. Bitte beachten Sie die Lizenz-Dateien für Details.",
+    "faq-q3": "Muss ich etwas installieren, um WikiGUI zu nutzen?",
+    "faq-a3": "Nein, WikiGUI ist eine Webanwendung. Sie können es direkt in Ihrem Webbrowser ohne Installation nutzen.",
+    
+    "faq-cat-2-title": "2. Features & Funktionalität",
+    "faq-q4": "Wie funktioniert das Feld 'Alle diese Wörter'?",
+    "faq-a4": "Die Eingabe von Begriffen in das Feld 'Alle diese Wörter' bedeutet, dass alle von ihnen in den Suchergebnissen vorhanden sein müssen.",
+    "faq-q5": "Wie funktioniert das Kategorie-Dropdown?",
+    "faq-a5": "Das 'Kategorie'-Dropdown ermöglicht es Ihnen, eine vordefinierte Wikipedia-Kategorie auszuwählen, um den Such parameter 'In Kategorie' schnell auszufüllen.",
+    
+    "faq-cat-3-title": "3. Wikipedia vs. KI-Suche",
+    "faq-q6": "Warum sollte ich Wikipedia nutzen, wenn ich KI (wie ChatGPT) fragen kann?",
+    "faq-a6": "KI-Modelle können 'halluzinieren' (Fakten erfinden). Wikipedia bietet Transparenz durch Quellenangaben. WikiGUI ermöglicht zudem die Suche nach Metadaten (Dateitypen), was KI nicht kann.",
+    "faq-q7": "Was ist der Vorteil von WikiGUI gegenüber einer einfachen KI-Antwort?",
+    "faq-a7": "WikiGUI macht Wikipedia zu einer Datenbank. Sie können gezielt nach Originalquellen (z.B. PDFs) suchen, während KI meist nur zusammenfasst.",
+    
+    "faq-cat-4-title": "4. Fehlerbehebung & Support",
+    "faq-q8": "Wie kann ich einen Fehler melden oder eine Frage stellen?",
+    "faq-a8": "Verwenden Sie den Link 'Problem melden' in der Fußzeile. Dieser führt Sie zu unserer GitHub-Issues-Seite.",
+    
     "lang-de-option": "Deutsch (de)",
     "lang-en-option": "Englisch (en)",
     "lang-fr-option": "Französisch (fr)",
