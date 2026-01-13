@@ -178,7 +178,7 @@ body {
     font-family: var(--font-family);
     line-height: 1.6;
     background-color: var(--bg-body);
-    color: var(--slate-800);
+    color: var(--text-main);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -195,6 +195,7 @@ header {
     margin-bottom: var(--space-xl);
     box-shadow: var(--shadow-lg);
     position: relative;
+    color: var(--text-main);
 }
 
 header .container {
