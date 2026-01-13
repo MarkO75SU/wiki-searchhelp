@@ -4,6 +4,15 @@ import { fetchArticlesCategories } from './api.js';
 
 let lastAnalysisData = { nodes: [], edges: [] };
 
+const VIZ_CONFIG = {
+    canvasHeight: 800,
+    layoutRadius: 200,
+    centerY: 400,
+    nodeBaseRadius: 8,
+    maxNodeExtraRadius: 20,
+    labelOffset: 12
+};
+
 export function exportNetworkAsJSON() {
     if (!lastAnalysisData.nodes.length) return;
     
@@ -108,8 +117,8 @@ function layoutNodes(nodes, width) {
     nodes.forEach((node, i) => {
         const angle = (i / nodes.length) * Math.PI * 2;
         const centerX = width / 2;
-        const centerY = 400;
-        const layoutRadius = 200;
+        const centerY = VIZ_CONFIG.centerY;
+        const layoutRadius = VIZ_CONFIG.layoutRadius;
         node.x = centerX + Math.cos(angle) * layoutRadius;
         node.y = centerY + Math.sin(angle) * layoutRadius;
     });
@@ -120,7 +129,7 @@ function drawNetwork(canvas, visualNodes, allEdges) {
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
-    canvas.height = 800 * dpr;
+    canvas.height = VIZ_CONFIG.canvasHeight * dpr;
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -140,7 +149,7 @@ function drawNetwork(canvas, visualNodes, allEdges) {
     });
 
     visualNodes.forEach(node => {
-        const radius = 8 + Math.min(node.totalStrength, 20);
+        const radius = VIZ_CONFIG.nodeBaseRadius + Math.min(node.totalStrength, VIZ_CONFIG.maxNodeExtraRadius);
         ctx.shadowBlur = 10;
         ctx.shadowColor = '#2563eb';
         ctx.fillStyle = '#2563eb';
@@ -152,9 +161,9 @@ function drawNetwork(canvas, visualNodes, allEdges) {
         ctx.fillStyle = 'white';
         ctx.font = 'bold 12px sans-serif';
         const dx = node.x - (rect.width / 2);
-        const dy = node.y - 400;
+        const dy = node.y - VIZ_CONFIG.centerY;
         const angle = Math.atan2(dy, dx);
-        const labelDist = radius + 12;
+        const labelDist = radius + VIZ_CONFIG.labelOffset;
         const labelX = node.x + Math.cos(angle) * labelDist;
         const labelY = node.y + Math.sin(angle) * labelDist;
         
