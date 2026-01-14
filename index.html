@@ -39,11 +39,6 @@
 
             <div class="search-form-container">
                 <form id="search-form">
-                    <div class="form-group" style="margin-bottom: 2rem;">
-                        <label for="target-wiki-lang" id="label-target-wiki-lang"></label>
-                        <select id="target-wiki-lang"></select>
-                    </div>
-
                     <!-- STEP 01: MAIN QUERY -->
                     <div class="search-group" id="group-main-query">
                         <h3 class="accordion-header">
@@ -51,6 +46,12 @@
                             <span class="accordion-arrow"></span>
                         </h3>
                         <div class="accordion-content">
+                            <div class="form-group span-full" style="margin-bottom: 1.5rem;">
+                                <label for="target-wiki-lang" id="label-target-wiki-lang">
+                                    <span class="info-icon" data-info-id="info-target-lang-text">?</span>
+                                </label>
+                                <select id="target-wiki-lang"></select>
+                            </div>
                             <div class="modifiers-grid">
                                 <div class="option-group">
                                     <input type="checkbox" id="option-wildcard">
