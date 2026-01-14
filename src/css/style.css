@@ -240,6 +240,15 @@ input:focus, select:focus {
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Subtle glow */
 }
 
+.file-size-inputs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.file-size-inputs input {
+    flex: 1;
+}
+
 /* --- Accordions --- */
 .search-group {
     border: 1px solid var(--border-color);
@@ -275,6 +284,62 @@ input:focus, select:focus {
     padding: 1.5rem;
     background-color: var(--bg-surface);
     border-top: 1px solid var(--border-color);
+}
+
+/* --- Checkbox Option Groups (Chips) --- */
+#namespaces-options, #filetype-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+#namespaces-options .option-group, 
+#filetype-options .option-group {
+    position: relative;
+    display: flex;
+}
+
+#namespaces-options .option-group input[type="checkbox"],
+#filetype-options .option-group input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+#namespaces-options .option-group label,
+#filetype-options .option-group label {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background-color: var(--bg-element);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 0; /* Reset label margin */
+    user-select: none;
+}
+
+#namespaces-options .option-group label:hover,
+#filetype-options .option-group label:hover {
+    background-color: var(--bg-element-hover);
+    border-color: var(--primary);
+}
+
+#namespaces-options .option-group input[type="checkbox"]:checked + label,
+#filetype-options .option-group input[type="checkbox"]:checked + label {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+#namespaces-options .option-group input[type="checkbox"]:focus + label,
+#filetype-options .option-group input[type="checkbox"]:focus + label {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
 }
 
 /* --- Action Buttons --- */
