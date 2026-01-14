@@ -96,13 +96,35 @@ button:hover, .header-button:hover, .lang-button:hover {
     border-color: var(--primary);
 }
 
+/* Global styles for .menu-toggle (always visible hamburger) */
+.menu-toggle {
+    display: flex; /* Always show hamburger */
+    flex-direction: column;
+    gap: 5px;
+    width: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative; /* Add position for potential positioning */
+    z-index: 1000; /* Ensure it's above other content */
+}
+.menu-toggle span {
+    height: 3px;
+    background: var(--text-primary);
+    width: 100%;
+    border-radius: 2px;
+}
+
 /* --- Navigation --- */
 .header-nav ul {
-    display: flex;
+    display: none; /* Hidden by default, toggled by hamburger */
     list-style: none;
     gap: 0.5rem;
     flex-wrap: wrap;
     align-items: center;
+}
+.header-nav ul.active {
+    display: flex; /* Show when active */
 }
 
 /* --- Info Icons --- */
@@ -195,6 +217,15 @@ input:focus, select:focus {
     border-radius: var(--radius);
     overflow: hidden;
     margin-bottom: 1rem;
+}
+
+/* Advanced Mode Styling */
+.search-group[data-advanced] {
+    display: none; /* Hidden by default */
+}
+
+.search-form-container.advanced-view .search-group[data-advanced] {
+    display: block; /* Show when advanced mode is active */
 }
 
 .accordion-header {
@@ -361,40 +392,13 @@ footer nav ul {
         padding: 1rem;
     }
     
-    /* Mobile Menu (Hidden by default) */
-    .header-nav ul {
-        display: none;
+    /* When active on mobile, arrange vertically */
+    .header-nav ul.active {
         flex-direction: column;
         width: 100%;
         text-align: center;
-        gap: 0.5rem;
         margin-top: 1rem;
     }
-    
-    .header-nav ul.active {
-        display: flex;
-    }
-    
-    .menu-toggle {
-        display: flex; /* Show hamburger only on mobile */
-        flex-direction: column;
-        gap: 5px;
-        width: 30px;
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
-    .menu-toggle span {
-        height: 3px;
-        background: var(--text-primary);
-        width: 100%;
-        border-radius: 2px;
-    }
-}
-
-@media (min-width: 769px) {
-    .menu-toggle { display: none; }
-    .header-nav ul { display: flex; }
 }
 
 /* --- Blog Grid --- */
