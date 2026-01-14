@@ -16,8 +16,8 @@
     --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     
     /* --- Semantic Spacing --- */
-    --section-gap: 6rem;
-    --group-gap: 3rem;
+    --section-gap: 3rem;
+    --group-gap: 1.5rem;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -129,9 +129,9 @@ header {
 .search-interface {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    padding: 3rem;
+    padding: 2.5rem;
     border-radius: var(--radius);
-    margin-top: 4rem;
+    margin-top: 2rem;
 }
 
 #main-heading { font-size: 2rem; margin-bottom: 0.5rem; }
@@ -140,14 +140,14 @@ header {
     font-size: 0.85rem;
     border-left: 3px solid var(--primary);
     padding-left: 1rem;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 /* --- Presets --- */
 .presets-section {
-    margin-top: 4rem;
+    margin-top: 2rem;
     margin-bottom: var(--section-gap);
-    padding-bottom: 4rem;
+    padding-bottom: 2.5rem;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -664,8 +664,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 /* --- Footer --- */
 footer {
     background: #000;
-    padding: 5rem 0;
-    margin-top: 10rem;
+    padding: 4rem 0;
+    margin-top: 6rem;
     text-align: center;
     border-top: 1px solid var(--border-color);
 }
