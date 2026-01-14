@@ -96,17 +96,17 @@ button:hover, .header-button:hover, .lang-button:hover {
     border-color: var(--primary);
 }
 
-/* Global styles for .menu-toggle (always visible hamburger) */
+/* Global styles for .menu-toggle (hidden on desktop) */
 .menu-toggle {
-    display: none; /* Hidden on desktop */
+    display: none; /* Hidden on desktop by default */
     flex-direction: column;
     gap: 5px;
     width: 30px;
     background: none;
     border: none;
     cursor: pointer;
-    position: relative; /* Add position for potential positioning */
-    z-index: 1000; /* Ensure it's above other content */
+    position: relative;
+    z-index: 1000;
 }
 .menu-toggle span {
     height: 3px;
@@ -131,7 +131,7 @@ button:hover, .header-button:hover, .lang-button:hover {
 
 /* --- Navigation --- */
 .header-nav ul {
-    display: flex; /* Visible by default for now */
+    display: flex; /* Visible by default on desktop */
     list-style: none;
     gap: 0.5rem;
     flex-wrap: wrap;
@@ -224,6 +224,12 @@ input:focus, select:focus {
     background-color: var(--bg-body);
     padding: 0.75rem;
     border-radius: var(--radius);
+    border: 1px solid var(--border-color); /* Add a default border */
+}
+
+.mode-toggle-container.advanced-mode-active {
+    border-color: var(--primary); /* Highlight with primary color when active */
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Subtle glow */
 }
 
 /* --- Accordions --- */
@@ -396,55 +402,50 @@ footer nav ul {
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
     header .container {
-        display: flex; /* Ensure it's a flex container */
-        flex-direction: row;
-        justify-content: space-between; /* Space out header-left and menu-toggle */
-        align-items: center;
-        flex-wrap: wrap; /* Allow items to wrap if necessary */
+        flex-direction: column;
     }
     
-    .header-left {
-        display: flex; /* Group title and language selector */
-        align-items: center;
-        flex-grow: 1; /* Allow header-left to take available space */
-        gap: 1rem; /* Space between title group and language selector */
+    .main-action-buttons {
+        grid-template-columns: 1fr;
     }
-
-    .title-group {
-        /* No flex-grow needed here anymore, as header-left manages space */
+    
+    .search-interface {
+        padding: 1rem;
     }
-
-    .language-selector {
-        /* No margin-left needed here anymore, gap in header-left handles it */
-    }
-
+    
+    /* Mobile-specific styles for the hamburger menu and nav list */
     .menu-toggle {
-        display: flex; /* Show hamburger */
-        margin-left: 0.5rem; /* Add some space if needed */
-    }
-
-    .header-nav {
-        width: 100%; /* Ensure nav takes full width below header items */
-        order: 4; /* Place it below other header items */
-        margin-top: 1rem; /* Space from elements above */
+        display: flex; /* Show hamburger only on mobile */
     }
 
     .header-nav ul {
         display: none; /* Hide nav list by default on mobile */
-    }
-
-    /* When active on mobile, arrange vertically */
-    .header-nav ul.active {
-        display: flex;
         flex-direction: column;
         width: 100%;
         text-align: center;
+        gap: 0.5rem;
         margin-top: 1rem;
-        background-color: var(--bg-element);
-        padding: 1rem;
-        border-radius: var(--radius);
+        background-color: var(--bg-element); /* Add background for visibility */
+        padding: 1rem; /* Add padding */
+        border-radius: var(--radius); /* Add border-radius */
+    }
+
+    .header-nav ul.active {
+        display: flex; /* Show nav list when active */
     }
 }
+
+/* --- Desktop Responsiveness for Header (hiding hamburger, showing nav list) --- */
+@media (min-width: 769px) {
+    .menu-toggle {
+        display: none; /* Hide hamburger on desktop */
+    }
+
+    .header-nav ul {
+        display: flex; /* Show nav list on desktop */
+    }
+}
+
 
 /* --- Blog Grid --- */
 .blog-grid {
@@ -468,4 +469,5 @@ footer nav ul {
 
 .blog-card p {
     color: var(--text-secondary);
+    margin-bottom: 1rem;
 }

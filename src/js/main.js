@@ -7,8 +7,10 @@ import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal } fro
 import { setupCategoryAutocomplete } from './modules/autocomplete.js';
 import { performNetworkAnalysis, exportNetworkAsJSON } from './modules/network.js';
 import { showToast } from './modules/toast.js';
+import { loadHeader } from './modules/headerLoader.js'; // Added headerLoader import
 
 async function initializeApp() {
+    loadHeader('header-placeholder', 'src/html/header.html'); // Call loadHeader
     const initialLang = getLanguage();
     document.documentElement.lang = initialLang;
 
@@ -111,6 +113,7 @@ async function initializeApp() {
     const advancedToggle = document.getElementById('advanced-mode-toggle');
     const searchFormContainer = document.querySelector('.search-form-container');
     const advancedModeDescription = document.getElementById('advanced-mode-description');
+    const modeToggleContainer = document.querySelector('.mode-toggle-container'); // Get modeToggleContainer
 
     function updateAdvancedModeDescription() {
         if (!advancedToggle || !advancedModeDescription) return;
@@ -127,16 +130,24 @@ async function initializeApp() {
         }
     }
 
-    if (advancedToggle && searchFormContainer && advancedModeDescription) {
+    if (advancedToggle && searchFormContainer && advancedModeDescription && modeToggleContainer) { // Add modeToggleContainer to check
         advancedToggle.addEventListener('change', () => {
             if (advancedToggle.checked) {
                 searchFormContainer.classList.add('advanced-view');
+                modeToggleContainer.classList.add('advanced-mode-active'); // Add class
             } else {
                 searchFormContainer.classList.remove('advanced-view');
+                modeToggleContainer.classList.remove('advanced-mode-active'); // Remove class
             }
             updateAdvancedModeDescription();
         });
         updateAdvancedModeDescription(); // Initial call
+        // Also update the class on initial load based on checkbox state
+        if (advancedToggle.checked) {
+            modeToggleContainer.classList.add('advanced-mode-active');
+        } else {
+            modeToggleContainer.classList.remove('advanced-mode-active');
+        }
     }
 
     // New Preset Logic Setup
@@ -203,7 +214,7 @@ async function initializeApp() {
             }
 
             try {
-                const response = await fetch(`translations/${lang}.json`);
+                const response = await fetch(`translations/${lang}.json?v=${Date.now()}`);
                 const data = await response.json();
                 setTranslations(lang, data);
                 applyTranslations();
@@ -260,7 +271,7 @@ async function initializeApp() {
 
     // Initial language fetch and UI update
     try {
-        const response = await fetch(`translations/${initialLang}.json`);
+        const response = await fetch(`translations/${initialLang}.json?v=${Date.now()}`);
         const data = await response.json();
         setTranslations(initialLang, data);
         applyTranslations(); // Apply initial translations to all elements

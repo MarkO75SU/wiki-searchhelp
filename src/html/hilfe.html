@@ -78,39 +78,7 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="title-group">
-                <h1 id="app-title">WikiGUI</h1>
-                <div class="language-selector">
-                    <button id="lang-de" class="lang-button" data-lang="de">DE</button>
-                    <button id="lang-en" class="lang-button" data-lang="en">EN</button>
-                </div>
-            </div>
-            <!-- Header Navigation -->
-            <nav class="header-nav">
-                <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul id="nav-list">
-                    <li><a href="blog.html" class="header-button" id="link-blog-header">Blog</a></li>
-                    <li><a href="faq.html" class="header-button" id="link-faq-header">FAQ</a></li>
-                    <li class="dropdown">
-                        <button class="header-button" id="link-github-header">GitHub</button>
-                        <div class="dropdown-content">
-                            <a href="https://github.com/MarkO75SU/wiki-gui" target="_blank" id="link-github-repo">Repository</a>
-                            <a href="https://github.com/MarkO75SU/wiki-gui/archive/refs/heads/main.zip" id="link-download-zip">Download ZIP</a>
-                        </div>
-                    </li>
-                    <li><a href="hilfe.html" class="header-button" id="link-help-header">Hilfe</a></li>
-                    <li><a href="https://github.com/MarkO75SU/wiki-gui/issues" target="_blank" class="header-button" id="link-report-issue-header">Problem melden</a></li>
-                    <li><a href="../../index.html" class="header-button">Home</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div id="header-placeholder"></div>
 
     <main class="container">
         <div class="search-box-container" style="margin-top: 2rem;">
@@ -158,7 +126,7 @@
                 <div class="help-item">
                     <h3 id="modal-label-fuzzy">Unscharfe Suche</h3>
                     <p id="modal-text-fuzzy">Finde Ergebnisse auch bei leichten Rechtschreibfehlern oder Variationen.</p>
-                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-fuzzy">Verwendet oft ~ am Ende eines Wortes.</span></p>
+                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-any">Verwendet oft ~ am Ende eines Wortes.</span></p>
                     <code>Farbe~</code>
                 </div>
             </section>
@@ -267,8 +235,10 @@
     <script type="module">
         import { getLanguage, setLanguage, setTranslations, getTranslation } from '../js/modules/state.js';
         import { applyTranslations } from '../js/modules/ui.js';
+        import { loadHeader } from '../js/modules/headerLoader.js'; // Added headerLoader import
         
         async function initHelp() {
+            loadHeader('header-placeholder', 'header.html'); // Call loadHeader
             const lang = getLanguage() || 'de';
             const searchInput = document.getElementById('help-search'); // Moved declaration out of try block and to higher scope
             try {
