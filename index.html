@@ -373,43 +373,36 @@
                 </div>
                 <div id="generated-string-explanation" class="search-string-explanation"></div>
                                 
-                                <h3 id="search-results-heading"></h3>
-                <div class="results-actions" style="margin-bottom: 1rem; display: none;" id="results-actions-container">
-                    <button type="button" id="download-results-button" class="header-button" style="background: var(--info); border: none; cursor: pointer;"></button>
-                    <button type="button" id="analyze-network-button" class="header-button" style="background: var(--accent); border: none; cursor: pointer; margin-left: 0.5rem;">Netzwerk-Analyse</button>
-                    <button type="button" id="export-network-button" class="header-button" style="background: var(--success, #10b981); border: none; cursor: pointer; margin-left: 0.5rem; display: none;">Netzwerk exportieren</button>
+                <h3 id="search-results-heading"></h3>
+                <div class="results-actions" id="results-actions-container">
+                    <button type="button" id="download-results-button" class="btn-action"></button>
+                    <button type="button" id="analyze-network-button" class="btn-action btn-accent"></button>
+                    <button type="button" id="export-network-button" class="btn-action btn-success"></button>
                 </div>
                 
-                <div id="network-analysis-container" style="display: none; background: var(--slate-900); border-radius: var(--radius-lg); padding: var(--space-md); margin-bottom: 1rem; color: white;">
-                    <h4 id="network-title">Themen-Verknüpfungen</h4>
-                    <canvas id="network-canvas" width="800" height="400" style="width: 100%; border: 1px solid var(--slate-700); margin-bottom: 1rem;"></canvas>
-                    <div id="network-explanation" class="network-explanation" style="font-size: 0.85rem; line-height: 1.4; color: var(--slate-300); border-top: 1px solid var(--slate-700); padding-top: 1rem;">
-                        <!-- Dynamic explanation will be inserted here -->
-                    </div>
+                <div id="network-analysis-container" class="network-panel">
+                    <h4 id="network-title"></h4>
+                    <canvas id="network-canvas" width="800" height="400"></canvas>
+                    <div id="network-explanation" class="network-explanation"></div>
                 </div>
-                <ul id="simulated-search-results">
-                    <!-- Simulated results will be inserted here -->
-                    <li><div class="loading-indicator" style="display: none;"></div></li>
-                </ul>
+                <ul id="simulated-search-results"></ul>
             </div>
 
             <div class="saved-searches-container journal-container">
-                <h3 id="journal-heading">Dein Such-Journal</h3>
+                <h3 id="journal-heading"></h3>
                 
-                <div class="journal-controls" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--slate-50); border-radius: var(--radius-md); align-items: center;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; color: var(--slate-700);">
-                        <input type="checkbox" id="journal-select-all-checkbox"> <span id="journal-select-all">Alle auswählen</span>
+                <div class="journal-controls">
+                    <label class="select-all-label">
+                        <input type="checkbox" id="journal-select-all-checkbox"> <span id="journal-select-all"></span>
                     </label>
-                    <div style="flex-grow: 1;"></div>
-                    <button id="export-json-button" class="export-button" title="JSON Export">JSON</button>
-                    <button id="export-csv-button" class="export-button" title="CSV Export">CSV</button>
-                    <button id="delete-selected-btn" class="export-button" style="color: #e11d48; border-color: #fecaca;">🗑️ Auswahl</button>
-                    <button id="clear-journal-btn" class="export-button" style="color: #e11d48; border-color: #ef4444; font-weight: 800;">Journal leeren</button>
+                    <div class="spacer"></div>
+                    <button id="export-json-button" class="btn-export">JSON</button>
+                    <button id="export-csv-button" class="btn-export">CSV</button>
+                    <button id="delete-selected-btn" class="btn-export btn-danger">🗑️</button>
+                    <button id="clear-journal-btn" class="btn-export btn-danger-bold"></button>
                 </div>
 
-                <ul id="journal-list">
-                    <!-- Journal entries (History + Saved) will be dynamically inserted here -->
-                </ul>
+                <ul id="journal-list"></ul>
             </div>
         </section>
     </main>
