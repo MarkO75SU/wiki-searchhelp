@@ -199,15 +199,16 @@ label {
 }
 
 input, select {
-    height: var(--control-h);
+    min-height: var(--control-h);
     background: #000;
     border: 1px solid var(--border-color);
     color: #fff;
-    padding: 0 1rem;
+    padding: 0.75rem 1rem;
     font-size: 1rem;
     border-radius: var(--radius);
     width: 100%;
     transition: border-color 0.2s;
+    line-height: 1.2;
 }
 
 input:focus, select:focus {
@@ -224,7 +225,7 @@ input:focus, select:focus {
 
 .option-group input { display: none; }
 .option-group label {
-    height: 40px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -235,9 +236,10 @@ input:focus, select:focus {
     font-weight: 600;
     cursor: pointer;
     text-align: center;
-    padding: 0;
+    padding: 0.5rem;
     margin: 0;
     text-transform: none;
+    line-height: 1.2;
 }
 
 .option-group input:checked + label {
