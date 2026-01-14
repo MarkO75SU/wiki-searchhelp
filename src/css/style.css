@@ -98,7 +98,7 @@ button:hover, .header-button:hover, .lang-button:hover {
 
 /* Global styles for .menu-toggle (always visible hamburger) */
 .menu-toggle {
-    display: flex; /* Always show hamburger */
+    display: none; /* Hidden on desktop */
     flex-direction: column;
     gap: 5px;
     width: 30px;
@@ -113,6 +113,20 @@ button:hover, .header-button:hover, .lang-button:hover {
     background: var(--text-primary);
     width: 100%;
     border-radius: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hamburger Animation */
+.menu-toggle.open span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.open span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
 }
 
 /* --- Navigation --- */
@@ -382,9 +396,23 @@ footer nav ul {
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
     header .container {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
     
+    .title-group {
+        flex-grow: 1;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .header-nav {
+        width: 100%;
+        order: 3;
+    }
+
     .main-action-buttons {
         grid-template-columns: 1fr;
     }
@@ -393,12 +421,20 @@ footer nav ul {
         padding: 1rem;
     }
     
+    .header-nav ul {
+        display: none;
+    }
+
     /* When active on mobile, arrange vertically */
     .header-nav ul.active {
+        display: flex;
         flex-direction: column;
         width: 100%;
         text-align: center;
         margin-top: 1rem;
+        background-color: var(--bg-element);
+        padding: 1rem;
+        border-radius: var(--radius);
     }
 }
 
@@ -424,5 +460,4 @@ footer nav ul {
 
 .blog-card p {
     color: var(--text-secondary);
-    margin-bottom: 1rem;
 }
