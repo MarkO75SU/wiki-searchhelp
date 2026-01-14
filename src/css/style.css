@@ -416,8 +416,7 @@ footer nav ul {
     /* Mobile-specific styles for the hamburger menu and nav list */
     .menu-toggle {
         display: flex; /* Show hamburger only on mobile */
-        border: 2px solid red !important; /* DEBUG */
-        background-color: yellow !important; /* DEBUG */
+        /* REMOVE DEBUG STYLES HERE */
     }
 
     .header-nav ul {
