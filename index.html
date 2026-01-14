@@ -170,7 +170,7 @@
                                         <div class="option-group"><input type="checkbox" id="filetype-jpg" value="jpg"><label for="filetype-jpg" id="filetype-jpg-label"></label></div>
                                         <div class="option-group"><input type="checkbox" id="filetype-ogg" value="ogg"><label for="filetype-ogg" id="filetype-ogg-label"></label></div>
                                         <div class="option-group"><input type="checkbox" id="filetype-pdf" value="pdf"><label for="filetype-pdf" id="filetype-pdf-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-png" value="png"><label for="ns-main" id="filetype-png-label"></label></div>
+                                        <div class="option-group"><input type="checkbox" id="filetype-png" value="png"><label for="filetype-png" id="filetype-png-label"></label></div>
                                         <div class="option-group"><input type="checkbox" id="filetype-svg" value="svg"><label for="filetype-svg" id="filetype-svg-label"></label></div>
                                         <div class="option-group"><input type="checkbox" id="filetype-webp" value="webp"><label for="filetype-webp" id="filetype-webp-label"></label></div>
                                     </div>
@@ -186,9 +186,55 @@
                         </div>
                     </div>
 
+                    <!-- STEP 04: DATE FILTERS -->
+                    <div class="search-group" id="group-date-filters" data-advanced>
+                        <h3 class="accordion-header">
+                            <span id="heading-date-filters"></span>
+                            <span class="accordion-arrow"></span>
+                        </h3>
+                        <div class="accordion-content">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="dateafter-value" id="label-dateafter"></label>
+                                    <input type="date" id="dateafter-value">
+                                </div>
+                                <div class="form-group">
+                                    <label for="datebefore-value" id="label-datebefore"></label>
+                                    <input type="date" id="datebefore-value">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 05: GEO SEARCH -->
+                    <div class="search-group" id="group-geo-search" data-advanced>
+                        <h3 class="accordion-header">
+                            <span id="heading-geo-search"></span>
+                            <span class="accordion-arrow"></span>
+                        </h3>
+                        <div class="accordion-content">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="geo-radius" id="label-geo-radius"></label>
+                                    <input type="number" id="geo-radius">
+                                </div>
+                                <div class="form-group">
+                                    <label for="geo-coord" id="label-geo-coord"></label>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="geo-coord">
+                                        <button type="button" id="get-location-btn" class="btn-preset" style="padding: 0 1rem;">📍</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="main-action-buttons">
                         <button type="submit" id="generate-search-string-button"></button>
                         <button type="button" id="clear-form-button"></button>
+                        <div id="results-preview-badge" class="preview-badge">
+                            <span id="results-preview-count">0</span>&nbsp;<span id="results-preview-text">Treffer (geschätzt)</span>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -207,11 +253,43 @@
                     <button type="button" id="download-results-button" class="btn-action"></button>
                     <button type="button" id="analyze-network-button" class="btn-action btn-accent"></button>
                 </div>
+
+                <div id="network-analysis-container" class="network-panel">
+                    <h4 id="network-title"></h4>
+                    <canvas id="network-canvas" width="800" height="400"></canvas>
+                    <div id="network-explanation" class="network-explanation"></div>
+                </div>
                 
                 <ul id="simulated-search-results"></ul>
             </div>
+
+            <!-- JOURNAL SECTION (RESTORED & ALIGNED) -->
+            <div class="journal-container">
+                <h3 id="journal-heading"></h3>
+                <div class="journal-controls">
+                    <label class="select-all-label">
+                        <input type="checkbox" id="journal-select-all-checkbox"> <span id="journal-select-all"></span>
+                    </label>
+                    <div class="spacer"></div>
+                    <button id="export-json-button" class="btn-export">JSON</button>
+                    <button id="export-csv-button" class="btn-export">CSV</button>
+                    <button id="delete-selected-btn" class="btn-export btn-danger">🗑️</button>
+                    <button id="clear-journal-btn" class="btn-export btn-danger-bold"></button>
+                </div>
+                <ul id="journal-list"></ul>
+            </div>
         </section>
     </main>
+
+    <div id="cookie-banner">
+        <div class="cookie-content">
+            <p id="cookie-text"></p>
+        </div>
+        <div class="cookie-actions">
+            <button id="cookie-accept" class="btn-action btn-accent">OK</button>
+            <button id="cookie-decline" class="btn-action">NO</button>
+        </div>
+    </div>
 
     <footer id="footer">
         <div class="container">
