@@ -117,14 +117,15 @@ button:hover, .header-button:hover, .lang-button:hover {
 
 /* --- Navigation --- */
 .header-nav ul {
-    display: none; /* Hidden by default, toggled by hamburger */
+    display: flex; /* Visible by default for now */
     list-style: none;
     gap: 0.5rem;
     flex-wrap: wrap;
     align-items: center;
 }
 .header-nav ul.active {
-    display: flex; /* Show when active */
+    /* This rule will be used if JS toggles it */
+    /* On mobile, this will expand it */
 }
 
 /* --- Info Icons --- */
