@@ -416,6 +416,8 @@ footer nav ul {
     /* Mobile-specific styles for the hamburger menu and nav list */
     .menu-toggle {
         display: flex; /* Show hamburger only on mobile */
+        border: 2px solid red !important; /* DEBUG */
+        background-color: yellow !important; /* DEBUG */
     }
 
     .header-nav ul {
@@ -469,5 +471,4 @@ footer nav ul {
 
 .blog-card p {
     color: var(--text-secondary);
-    margin-bottom: 1rem;
 }
