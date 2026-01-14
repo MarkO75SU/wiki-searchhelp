@@ -74,14 +74,15 @@
                 <ul id="nav-list">
                     <li><a href="blog.html" class="header-button" id="link-blog-header">Blog</a></li>
                     <li><a href="faq.html" class="header-button" id="link-faq-header">FAQ</a></li>
-                    <li><a href="hilfe.html" class="header-button" id="link-help-header">Hilfe</a></li>
                     <li class="dropdown">
-                        <button class="header-button" id="link-support-header">Support</button>
+                        <button class="header-button" id="link-github-header">GitHub</button>
                         <div class="dropdown-content">
-                            <a href="https://github.com/MarkO75SU/wiki-gui" target="_blank" id="link-github-repo">GitHub</a>
-                            <a href="https://github.com/MarkO75SU/wiki-gui/archive/refs/heads/main.zip" id="link-download-zip">ZIP</a>
+                            <a href="https://github.com/MarkO75SU/wiki-gui" target="_blank" id="link-github-repo">Repository</a>
+                            <a href="https://github.com/MarkO75SU/wiki-gui/archive/refs/heads/main.zip" id="link-download-zip">Download ZIP</a>
                         </div>
                     </li>
+                    <li><a href="hilfe.html" class="header-button" id="link-help-header">Hilfe</a></li>
+                    <li><a href="https://github.com/MarkO75SU/wiki-gui/issues" target="_blank" class="header-button" id="link-report-issue-header">Problem melden</a></li>
                     <li><a href="../../index.html" class="header-button">Home</a></li>
                 </ul>
             </nav>
@@ -113,7 +114,8 @@
     </footer>
 
     <script type="module">
-        import { getLanguage, setLanguage, setTranslations, applyTranslations } from '../js/modules/state.js';
+        import { getLanguage, setLanguage, setTranslations, getTranslation } from '../js/modules/state.js';
+        import { applyTranslations } from '../js/modules/ui.js'; // Corrected import
         
         async function initBlog() {
             const lang = getLanguage() || 'de';
@@ -121,19 +123,16 @@
                 const response = await fetch(`../../translations/${lang}.json`);
                 const data = await response.json();
                 setTranslations(lang, data);
-                // We need to import applyTranslations from ui module, but it's already used in index.html
-                // Let's import it from ui.js
+                applyTranslations(); // Now directly callable
             } catch (e) {
                 console.error(e);
             }
         }
 
-        import { applyTranslations as applyUiTranslations } from '../js/modules/ui.js';
-
         // Re-wrapping everything to include the menu toggle
         const runInit = async () => {
             await initBlog();
-            applyUiTranslations();
+            applyTranslations(); // Changed from applyUiTranslations()
 
             // Language switching
             document.querySelectorAll('.lang-button').forEach(btn => {
@@ -179,7 +178,7 @@
                 { id: 22, title_de: "Der Blackout von 2012", summary_de: "Kampf für die Freiheit des Internets.", title_en: "The 2012 Blackout", summary_en: "Fighting for internet freedom." },
                 { id: 23, title_de: "Exzellente Artikel", summary_de: "Wie man den Status 'Featured' erreicht.", title_en: "Featured Articles", summary_en: "How to achieve 'Featured' status." },
                 { id: 24, title_de: "Zitate & Belege", summary_de: "Verifizierbarkeit über Wahrheit.", title_en: "Citations & Sources", summary_en: "Verifiability over truth." },
-                { id: 25, title_de: "Einfluss auf Google", summary_de: "Wie Wikipedia Suchergebnisse dominiert.", title_en: "Influence on Google", summary_en: "How Wikipedia dominates search results." },
+                { id: 25, title_de: "Einfluss auf Google", summary_de: "Wie Wikipedia Suchergebnisse dominiert.", title_en: "Influence on Google", summary_en: "How Wikipedia dominiertes search results." },
                 { id: 26, title_de: "Skurrile Wiki-Seiten", summary_de: "Die seltsamsten Einträge der Enzyklopädie.", title_en: "Bizarre Wiki Pages", summary_en: "The strangest entries in the encyclopedia." },
                 { id: 27, title_de: "Gender Gap", summary_de: "Der Kampf für Repräsentation.", title_en: "Gender Gap", summary_en: "The fight for representation." },
                 { id: 28, title_de: "Forschung mit WikiGUI", summary_de: "Erschließe dir komplexe Themen schneller.", title_en: "Research with WikiGUI", summary_en: "Unlock complex topics faster." },

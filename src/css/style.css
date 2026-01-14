@@ -360,12 +360,41 @@ footer nav ul {
     .search-interface {
         padding: 1rem;
     }
-
-    /* Navigation adjustments for mobile */
+    
+    /* Mobile Menu (Hidden by default) */
     .header-nav ul {
-        justify-content: center;
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+        gap: 0.5rem;
         margin-top: 1rem;
     }
+    
+    .header-nav ul.active {
+        display: flex;
+    }
+    
+    .menu-toggle {
+        display: flex; /* Show hamburger only on mobile */
+        flex-direction: column;
+        gap: 5px;
+        width: 30px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .menu-toggle span {
+        height: 3px;
+        background: var(--text-primary);
+        width: 100%;
+        border-radius: 2px;
+    }
+}
+
+@media (min-width: 769px) {
+    .menu-toggle { display: none; }
+    .header-nav ul { display: flex; }
 }
 
 /* --- Blog Grid --- */
