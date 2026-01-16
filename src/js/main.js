@@ -1,6 +1,6 @@
 // src/js/main.js
 import { setLanguage, setTranslations, getLanguage, getTranslation } from './modules/state.js';
-import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults } from './modules/ui.js';
+import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { presetCategories } from './modules/presets.js';
 import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal } from './modules/journal.js';
@@ -261,6 +261,7 @@ async function initializeApp() {
         if (!data) throw new Error('No translation data loaded');
         setTranslations(initialLang, data);
         applyTranslations(); // Apply initial translations to all elements
+        setupResultFilter(); // Initialize result filter functionality
 
         // ONLY after translations are loaded, populate presets and generate initial string
         if (presetCategorySelect && presetSelect) { // Null check for preset elements

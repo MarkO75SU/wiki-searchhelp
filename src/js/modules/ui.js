@@ -199,6 +199,11 @@ export function applyTranslations() {
     if (insourceValueInput) {
         insourceValueInput.placeholder = getTranslation('insource-placeholder');
     }
+
+    const resultFilterInput = document.getElementById('result-filter-input');
+    if (resultFilterInput) {
+        resultFilterInput.placeholder = getTranslation('filter-results-placeholder');
+    }
     
     // Translate preset category and preset select labels
     const presetCategorySelect = document.getElementById('preset-category-select');
@@ -261,6 +266,9 @@ export function clearForm() {
     const resultsContainer = document.getElementById('simulated-search-results');
     if (resultsContainer) resultsContainer.innerHTML = '';
 
+    const filterInput = document.getElementById('result-filter-input');
+    if (filterInput) filterInput.value = '';
+
     generateSearchString(); // Call generateSearchString directly
 }
 
@@ -305,6 +313,12 @@ export async function handleSearchFormSubmit(event) {
     }
 
     if (resultsActions) resultsActions.style.display = 'block';
+
+    // Auto-expand the results table section when results are displayed
+    const resultsTableSection = document.getElementById('results-table-section');
+    if (resultsTableSection) {
+        resultsTableSection.classList.add('active');
+    }
 
     // Fetch images and summaries for top 10 results at once
     const titles = topResults.map(r => r.title);
@@ -445,6 +459,29 @@ export function populateCategoryOptions(selectElement) {
         option.value = cat.value;
         option.textContent = getTranslation(cat.key);
         selectElement.appendChild(option);
+    });
+}
+
+export function setupResultFilter() {
+    const filterInput = document.getElementById('result-filter-input');
+    const resultsList = document.getElementById('simulated-search-results');
+
+    if (!filterInput || !resultsList) return;
+
+    filterInput.addEventListener('input', () => {
+        const filterText = filterInput.value.toLowerCase();
+        const listItems = resultsList.children;
+
+        for (let i = 0; i < listItems.length; i++) {
+            const item = listItems[i];
+            const textContent = item.textContent ? item.textContent.toLowerCase() : '';
+
+            if (textContent.includes(filterText)) {
+                item.style.display = ''; // Show the item
+            } else {
+                item.style.display = 'none'; // Hide the item
+            }
+        }
     });
 }
 

@@ -488,9 +488,42 @@ input:checked + .slider:before { transform: translateX(22px); }
 .result-content h3 { font-size: 1.25rem; color: var(--primary); margin-bottom: 0.5rem; }
 .result-content p { font-size: 0.95rem; color: var(--text-secondary); }
 
+/* --- Network Graph Section --- */
+#network-graph-section {
+    margin-bottom: 1.5rem;
+}
+
+#network-graph-section .accordion-header {
+    background: rgba(255,255,255,0.02);
+    padding: 5px;
+    font-size: 0.8rem;
+    border-bottom: none;
+}
+
+#network-graph-section.active .accordion-header {
+    background: rgba(255,255,255,0.05);
+    border-bottom: 2px solid var(--primary);
+}
+
+/* --- Results Table Section --- */
+#results-table-section {
+    margin-bottom: 1.5rem;
+}
+
+#results-table-section .accordion-header {
+    background: rgba(255,255,255,0.02);
+    padding: 5px;
+    font-size: 0.8rem;
+    border-bottom: none;
+}
+
+#results-table-section.active .accordion-header {
+    background: rgba(255,255,255,0.05);
+    border-bottom: 2px solid var(--primary);
+}
+
 /* --- Network Panel --- */
 .network-panel {
-    display: none;
     background: #000;
     border: 1px solid var(--border-color);
     padding: 5px;
@@ -748,5 +781,43 @@ footer nav a {
     
     .accordion-content { padding: 5px; }
     .journal-controls { flex-direction: column; align-items: stretch; }
-    .journal-item-footer { grid-template-columns: 1fr; }
-}
+        .journal-item-footer { grid-template-columns: 1fr; }
+    }
+    
+    /* --- Cookie Banner Overlay --- */
+    #cookie-banner {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+    }
+    
+    .cookie-content {
+        background: var(--bg-surface);
+        padding: 2rem;
+        border-radius: var(--radius);
+        text-align: center;
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    #cookie-banner p {
+        margin-bottom: 1.5rem;
+        color: var(--text-secondary);
+    }
+    
+    .cookie-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    

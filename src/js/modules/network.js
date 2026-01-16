@@ -33,11 +33,18 @@ export async function performNetworkAnalysis(allArticles) {
     const canvas = document.getElementById('network-canvas');
     const exportBtn = document.getElementById('export-network-button');
     const explanationEl = document.getElementById('network-explanation');
+    const networkSection = document.getElementById('network-graph-section');
     
     if (!container || !canvas || !allArticles.length) return;
 
     const articles = allArticles.slice(0, 250);
     container.style.display = 'block';
+    
+    // Auto-expand the network graph section when analysis is triggered
+    if (networkSection) {
+        networkSection.classList.add('active');
+    }
+    
     if (exportBtn) exportBtn.style.display = 'none';
     
     if (explanationEl) explanationEl.innerHTML = `<p><em>${getTranslation('network-loading', 'Analyse läuft...') }</em></p>`;
