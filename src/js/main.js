@@ -1,5 +1,5 @@
 // src/js/main.js
-import { setLanguage, setTranslations, getLanguage, getTranslation } from './modules/state.js';
+import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMode, getSearchMode } from './modules/state.js';
 import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { presetCategories } from './modules/presets.js';
@@ -12,6 +12,45 @@ import { initializeCookieBanner } from './modules/cookie.js';
 import { fetchJson } from './modules/api.js';
 import { getCurrentPosition } from './modules/utils.js';
 
+const SAVE_STATE_KEY = 'wikiGuiFormState';
+
+function saveFormState() {
+    const form = document.getElementById('search-form');
+    if (!form) return;
+
+    const state = {};
+    form.querySelectorAll('input, select, textarea').forEach(element => {
+        if (element.id) { // Only save elements with an ID
+            if (element.type === 'checkbox') {
+                state[element.id] = element.checked;
+            } else {
+                state[element.id] = element.value;
+            }
+        }
+    });
+    sessionStorage.setItem(SAVE_STATE_KEY, JSON.stringify(state));
+}
+
+function loadFormState() {
+    const savedState = sessionStorage.getItem(SAVE_STATE_KEY);
+    if (!savedState) return;
+
+    const state = JSON.parse(savedState);
+    const form = document.getElementById('search-form');
+    if (!form) return;
+
+    for (const id in state) {
+        const element = document.getElementById(id);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = state[id];
+            } else {
+                element.value = state[id];
+            }
+        }
+    }
+}
+
 async function initializeApp() {
     await loadHeader('header-placeholder', 'src/html/header.html'); // AWAIT the header load
     initializeCookieBanner();
@@ -20,6 +59,12 @@ async function initializeApp() {
 
     addAccordionFunctionality();
     renderJournal();
+
+    // Load saved form state from sessionStorage
+    loadFormState();
+
+    // Setup Search Mode Tabs
+    setupSearchModeTabs();
 
     // Journal Actions
     document.getElementById('delete-selected-btn')?.addEventListener('click', deleteSelectedEntries);
@@ -71,17 +116,6 @@ async function initializeApp() {
                 if (!data) return;
                 setTranslations(lang, data);
                 applyTranslations();
-                // Ensure presets are populated AFTER new language is set and translations applied
-                if (presetCategorySelect && presetSelect) {
-                    populatePresetCategories(presetCategorySelect, presetSelect);
-                    if (presetCategorySelect.options.length > 1) {
-                        presetCategorySelect.selectedIndex = 1;
-                        populatePresets(presetCategorySelect, presetSelect);
-                        applyPresetButton.disabled = false;
-                    } else {
-                        applyPresetButton.disabled = true;
-                    }
-                }
                 updateAdvancedModeDescription(); // Update description on language change
                 generateSearchString(); // Update generated string for new language context
             } catch (error) {
@@ -116,13 +150,22 @@ async function initializeApp() {
         }
     });
 
-    const downloadResultsBtn = document.getElementById('download-results-button');
+    const downloadResultsBtn = document.getElementById('download-results-button'); // Network tab's download
     if (downloadResultsBtn) {
         downloadResultsBtn.addEventListener('click', downloadResults);
     }
+    const downloadResultsBtnNormal = document.getElementById('download-results-button-normal'); // Normal tab's download
+    if (downloadResultsBtnNormal) {
+        downloadResultsBtnNormal.addEventListener('click', downloadResults);
+    }
 
-    const analyzeNetworkBtn = document.getElementById('analyze-network-button');
+    const analyzeNetworkBtn = document.getElementById('analyze-network-button'); // Network tab's analyze
     analyzeNetworkBtn?.addEventListener('click', () => {
+        const results = getAllSearchResults();
+        performNetworkAnalysis(results);
+    });
+    const analyzeNetworkBtnNormal = document.getElementById('analyze-network-button-normal'); // Normal tab's analyze
+    analyzeNetworkBtnNormal?.addEventListener('click', () => {
         const results = getAllSearchResults();
         performNetworkAnalysis(results);
     });
@@ -223,14 +266,19 @@ async function initializeApp() {
         generateSearchString();
     }); }
 
-    if (searchForm) { searchForm.addEventListener('input', generateSearchString); }
+    if (searchForm) {
+        searchForm.addEventListener('input', () => {
+            generateSearchString();
+            saveFormState();
+        });
+    }
     const dateafterInput = document.getElementById('dateafter-value');
-    if (dateafterInput) { dateafterInput.addEventListener('change', generateSearchString); }
+    if (dateafterInput) { dateafterInput.addEventListener('change', () => { generateSearchString(); saveFormState(); }); }
     const datebeforeInput = document.getElementById('datebefore-value');
-    if (datebeforeInput) { datebeforeInput.addEventListener('change', generateSearchString); }
+    if (datebeforeInput) { datebeforeInput.addEventListener('change', () => { generateSearchString(); saveFormState(); }); }
     const targetLangSelectForCopy = document.getElementById('target-wiki-lang');
     if(targetLangSelectForCopy) {
-        targetLangSelectForCopy.addEventListener('change', generateSearchString);
+        targetLangSelectForCopy.addEventListener('change', () => { generateSearchString(); saveFormState(); });
     }
 
     const generatedSearchStringDisplay = document.getElementById('generated-search-string-display');
@@ -263,10 +311,8 @@ async function initializeApp() {
         applyTranslations(); // Apply initial translations to all elements
         setupResultFilter(); // Initialize result filter functionality
 
-        // ONLY after translations are loaded, populate presets and generate initial string
-        if (presetCategorySelect && presetSelect) { // Null check for preset elements
-            populatePresetCategories(presetCategorySelect, presetSelect);
-
+        // Populate presets for the first time
+        if (presetCategorySelect && presetSelect) {
             // Select the first category by default if available
             if (presetCategorySelect.options.length > 1) {
                 presetCategorySelect.selectedIndex = 1; // Select the first actual category
@@ -285,6 +331,55 @@ async function initializeApp() {
         console.error(`Could not fetch initial translations for ${initialLang}:`, error);
     }
 
+}
+
+function setupSearchModeTabs() {
+    const tabButtons = document.querySelectorAll('.btn-tab'); // Updated selector
+    const normalSearchArea = document.getElementById('normal-search-area');
+    const networkSearchArea = document.getElementById('network-search-area');
+    const searchInterface = document.querySelector('.search-interface');
+
+    const initialMode = getSearchMode();
+    if (searchInterface) {
+        searchInterface.classList.add(`search-mode-${initialMode}`);
+    }
+
+    // Show correct area on init
+    if (initialMode === 'normal') {
+        normalSearchArea.style.display = 'block';
+        networkSearchArea.style.display = 'none';
+    } else {
+        normalSearchArea.style.display = 'none';
+        networkSearchArea.style.display = 'block';
+    }
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const mode = button.dataset.mode;
+            setSearchMode(mode);
+
+            // Update active tab
+            tabButtons.forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+
+            // Update area visibility
+            if (searchInterface) {
+                searchInterface.classList.remove('search-mode-normal', 'search-mode-network');
+                searchInterface.classList.add(`search-mode-${mode}`);
+            }
+
+            // Show correct area
+            if (mode === 'normal') {
+                normalSearchArea.style.display = 'block';
+                networkSearchArea.style.display = 'none';
+            } else {
+                normalSearchArea.style.display = 'none';
+                networkSearchArea.style.display = 'block';
+            }
+
+            // No clearForm() or generateSearchString() here, state is persisted
+        });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);

@@ -118,7 +118,11 @@ export function generateSearchString() {
     wikiSearchParams.set('ns0', '1'); // Standardmäßig Artikel durchsuchen
 
     const finalApiQuery = apiQueryParts.join(' ').trim();
-    const targetLang = getLanguage();
+    
+    // Use target-wiki-lang from UI if available, otherwise fallback to UI language
+    const targetLangSelect = document.getElementById('target-wiki-lang');
+    const targetLang = targetLangSelect ? targetLangSelect.value : getLanguage();
+    
     const searchUrl = `https://${targetLang}.wikipedia.org/wiki/Special:Search?${wikiSearchParams.toString()}`;
 
     // Browser URL für Sharing (live)
@@ -140,12 +144,13 @@ export function generateSearchString() {
     if (badge && badgeCount) {
         if (finalApiQuery) {
             clearTimeout(countDebounceTimer);
+            badgeCount.textContent = '...'; // Show loading indicator
+            badge.style.display = 'flex'; // Ensure badge is visible
             countDebounceTimer = setTimeout(async () => {
                 const res = await performWikipediaSearch(finalApiQuery, targetLang, 1);
                 const count = res?.query?.searchinfo?.totalhits || 0;
                 badgeCount.textContent = count.toLocaleString();
-                badge.style.display = 'flex';
-            }, 1000);
+            }, 400); // Reduced debounce time
         } else {
             badge.style.display = 'none';
         }

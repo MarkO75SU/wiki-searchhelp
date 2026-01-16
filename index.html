@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title"></title>
-    <meta name="description" id="meta-description" content="">
-    <link rel="stylesheet" href="src/css/style.css?v=1.13">
-    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="description" id="meta-description">
+    <meta property="og:title" content="WikiGUI">
+    <meta property="og:description" id="og-description">
+    <title id="page-title">WikiGUI</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/css/style.css?v=1.13">
 </head>
 <body>
     <div id="header-placeholder"></div>
+    <header id="header">
+        <div class="container">
+            <div class="logo"><span id="app-title">WikiGUI</span></div>
+            <button class="menu-toggle" id="menu-toggle">☰</button>
+            <nav id="nav" class="nav-wrapper">
+                <ul class="nav-list" id="nav-list">
+                    <li><a id="nav-home"></a></li>
+                    <li><a id="nav-help"></a></li>
+                    <li><a id="nav-about"></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
     <main class="container">
         <section class="search-interface">
-            <h2 id="main-heading"></h2>
-            <p id="main-heading-disclaimer" class="heading-disclaimer"></p>
-            
+            <h1 id="main-heading"></h1>
+            <a id="official-doc-link" target="_blank"></a>
+
             <div class="presets-section">
                 <div class="presets-header">
                     <h3 id="presets-heading"></h3>
@@ -33,300 +46,361 @@
                         <label for="preset-select" id="label-select-preset"></label>
                         <select id="preset-select"></select>
                     </div>
-                    <button type="button" id="apply-preset-button" class="btn-preset"></button>
+                    <button type="button" id="apply-preset-button" class="btn btn-tertiary"></button>
                 </div>
             </div>
 
-            <div class="search-form-container">
-                <form id="search-form">
-                    <!-- STEP 01: MAIN QUERY -->
-                    <div class="search-group" id="group-main-query">
-                        <h3 class="accordion-header">
-                            <span id="heading-main-query"></span>
-                            <span class="accordion-arrow"></span>
-                        </h3>
-                        <div class="accordion-content">
-                            <div class="form-group span-full" style="margin-bottom: 1.5rem;">
-                                <label for="target-wiki-lang" id="label-target-wiki-lang">
-                                    <span class="info-icon" data-info-id="info-target-lang-text">?</span>
-                                </label>
-                                <select id="target-wiki-lang"></select>
-                            </div>
-                            <div class="modifiers-grid">
-                                <div class="option-group">
-                                    <input type="checkbox" id="option-wildcard">
-                                    <label for="option-wildcard" id="label-option-wildcard"></label>
-                                </div>
-                                <div class="option-group">
-                                    <input type="checkbox" id="option-fuzzy">
-                                    <label for="option-fuzzy" id="label-fuzzy"></label>
-                                </div>
-                            </div>
-                            <div class="form-grid">
-                                <div class="form-group span-full">
-                                    <label for="search-query" id="label-search-query">
-                                        <span class="info-icon" data-info-id="info-all-words-text">?</span>
-                                    </label>
-                                    <input type="text" id="search-query">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exact-phrase" id="label-exact-phrase">
-                                        <span class="info-icon" data-info-id="info-exact-phrase-text">?</span>
-                                    </label>
-                                    <input type="text" id="exact-phrase">
-                                </div>
-                                <div class="form-group">
-                                    <label for="without-words" id="label-without-words">
-                                        <span class="info-icon" data-info-id="info-without-words-text">?</span>
-                                    </label>
-                                    <input type="text" id="without-words">
-                                </div>
-                                <div class="form-group span-full">
-                                    <label for="any-words" id="label-any-words">
-                                        <span class="info-icon" data-info-id="info-any-words-text">?</span>
-                                    </label>
-                                    <input type="text" id="any-words">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- SEARCH MODE TABS -->
+            <div class="search-mode-tabs">
+                <button type="button" class="btn btn-tab active" data-mode="normal" id="tab-normal-search">
+                    <span id="tab-label-normal"></span>
+                </button>
+                <button type="button" class="btn btn-tab" data-mode="network" id="tab-network-search">
+                    <span id="tab-label-network"></span>
+                </button>
+            </div>
 
-                    <div class="mode-toggle-wrapper">
-                        <div class="mode-toggle-container">
-                            <span id="label-advanced-mode"></span>
-                            <label class="switch">
-                                <input type="checkbox" id="advanced-mode-toggle">
-                                <span class="slider round"></span>
+            <!-- ===== NORMALE SUCHE AREA ===== -->
+            <div class="search-mode-area" data-mode="normal" id="normal-search-area">
+                <div class="search-mode-info">
+                    <p id="normal-search-description"></p>
+                </div>
+
+                <div class="search-form-container">
+                    <form id="search-form">
+                        <div class="form-group span-full" style="margin-bottom: 1.5rem;">
+                            <label for="target-wiki-lang" id="label-target-wiki-lang">
+                                <span class="info-icon" data-info-id="info-target-lang-text">?</span>
                             </label>
+                            <select id="target-wiki-lang"></select>
                         </div>
-                        <div id="advanced-mode-description" class="advanced-mode-hint"></div>
-                    </div>
 
-                    <!-- STEP 02: SCOPE & LOCATION -->
-                    <div class="search-group" id="group-scope-location" data-advanced>
-                        <h3 class="accordion-header">
-                            <span id="heading-scope-location"></span>
-                            <span class="accordion-arrow"></span>
-                        </h3>
-                        <div class="accordion-content">
-                            <div class="form-grid">
-                                <div class="option-group span-full">
-                                    <input type="checkbox" id="option-intitle">
-                                    <label for="option-intitle" id="label-intitle">
-                                        <span class="info-icon" data-info-id="info-intitle-text">?</span>
-                                    </label>
-                                </div>
-                                <div class="form-group">
-                                    <label for="prefix-value" id="label-prefix-value">
-                                        <span class="info-icon" data-info-id="info-prefix-value-text">?</span>
-                                    </label>
-                                    <input type="text" id="prefix-value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="incategory-value" id="label-incategory">
-                                        <span class="info-icon" data-info-id="info-incategory-text">?</span>
-                                    </label>
-                                    <input type="text" id="incategory-value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="deepcat-value" id="label-deepcat">
-                                        <span class="info-icon" data-info-id="info-deepcat-text">?</span>
-                                    </label>
-                                    <input type="text" id="deepcat-value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="linkfrom-value" id="label-linkfrom">
-                                        <span class="info-icon" data-info-id="info-linkfrom-text">?</span>
-                                    </label>
-                                    <input type="text" id="linkfrom-value">
-                                </div>
-                                <div class="form-group span-full">
-                                    <label for="category-select" id="label-category-dropdown">
-                                        <span class="info-icon" data-info-id="info-category-dropdown-text">?</span>
-                                    </label>
-                                    <select id="category-select"></select>
-                                </div>
-                                <div class="form-group span-full">
-                                    <label id="label-namespaces">
-                                        <span class="info-icon" data-info-id="info-namespaces-text">?</span>
-                                    </label>
-                                    <div id="namespaces-options" class="chips-grid">
-                                        <div class="option-group"><input type="checkbox" id="ns-main" value="0"><label for="ns-main" id="label-ns-main"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-user" value="2"><label for="ns-user" id="label-ns-user"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-user-talk" value="3"><label for="ns-user-talk" id="label-ns-user-talk"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-file" value="6"><label for="ns-file" id="label-ns-file"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-file-talk" value="7"><label for="ns-file-talk" id="label-ns-file-talk"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-help" value="12"><label for="ns-help" id="label-ns-help"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-help-talk" value="13"><label for="ns-help-talk" id="label-ns-help-talk"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-category" value="14"><label for="ns-category" id="label-ns-category"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-category-talk" value="15"><label for="ns-category-talk" id="label-ns-category-talk"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-portal" value="100"><label for="ns-portal" id="label-ns-portal"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-template" value="10"><label for="ns-template" id="label-ns-template"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="ns-template-talk" value="11"><label for="ns-template-talk" id="label-ns-template-talk"></label></div>
+                        <!-- STEP 01: MAIN QUERY -->
+                        <div class="search-group active" id="group-main-query">
+                            <h3 class="accordion-header">
+                                <span id="heading-main-query"></span>
+                                <span class="accordion-arrow"></span>
+                            </h3>
+                            <div class="accordion-content" id="content-group-main-query">
+
+                                <div class="form-grid">
+                                    <div class="form-group span-full">
+                                        <label for="search-query" id="label-search-query">
+                                            <span class="info-icon" data-info-id="info-main-query">?</span>
+                                        </label>
+                                        <input type="text" id="search-query">
+                                    </div>
+                                    <div class="form-group span-full">
+                                        <label for="search-query-adv" id="label-search-query-adv">
+                                            <span class="info-icon" data-info-id="info-all-words-text">?</span>
+                                        </label>
+                                        <input type="text" id="search-query-adv">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exact-phrase" id="label-exact-phrase">
+                                            <span class="info-icon" data-info-id="info-exact-phrase-text">?</span>
+                                        </label>
+                                        <input type="text" id="exact-phrase">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="without-words" id="label-without-words">
+                                            <span class="info-icon" data-info-id="info-without-words-text">?</span>
+                                        </label>
+                                        <input type="text" id="without-words">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="any-words" id="label-any-words">
+                                            <span class="info-icon" data-info-id="info-any-words-text">?</span>
+                                        </label>
+                                        <input type="text" id="any-words">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- STEP 03: CONTENT & TECHNICAL -->
-                    <div class="search-group" id="group-content-technical" data-advanced>
-                        <h3 class="accordion-header">
-                            <span id="heading-content-technical"></span>
-                            <span class="accordion-arrow"></span>
-                        </h3>
-                        <div class="accordion-content">
+                        <div class="mode-toggle-wrapper">
+                            <div class="mode-toggle-container">
+                                <span id="label-advanced-mode"></span>
+                                <label class="switch">
+                                    <input type="checkbox" id="advanced-mode-toggle">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div id="advanced-mode-description" class="advanced-mode-hint"></div>
+                        </div>
+
+                        <!-- STEP 02: SCOPE & LOCATION -->
+                        <div class="search-group" id="group-scope-location">
+                            <h3 class="group-heading">
+                                <span id="heading-scope-location"></span>
+                            </h3>
                             <div class="form-grid">
-                                <div class="form-group span-full">
-                                    <label for="insource-value" id="label-insource">
-                                        <span class="info-icon" data-info-id="info-insource-text">?</span>
-                                    </label>
-                                    <input type="text" id="insource-value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="hastemplate-value" id="label-hastemplate">
-                                        <span class="info-icon" data-info-id="info-hastemplate-text">?</span>
-                                    </label>
-                                    <input type="text" id="hastemplate-value">
-                                </div>
-                                <div class="form-group">
-                                    <label id="label-filetype">
-                                        <span class="info-icon" data-info-id="info-filetype-text">?</span>
-                                    </label>
-                                    <div id="filetype-options" class="chips-grid">
-                                        <div class="option-group"><input type="checkbox" id="filetype-bmp" value="bmp"><label for="filetype-bmp" id="filetype-bmp-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-gif" value="gif"><label for="filetype-gif" id="filetype-gif-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-jpg" value="jpg"><label for="filetype-jpg" id="filetype-jpg-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-ogg" value="ogg"><label for="filetype-ogg" id="filetype-ogg-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-pdf" value="pdf"><label for="filetype-pdf" id="filetype-pdf-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-png" value="png"><label for="filetype-png" id="filetype-png-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-svg" value="svg"><label for="filetype-svg" id="filetype-svg-label"></label></div>
-                                        <div class="option-group"><input type="checkbox" id="filetype-webp" value="webp"><label for="filetype-webp" id="filetype-webp-label"></label></div>
+                                    <div class="option-group span-full">
+                                        <input type="checkbox" id="option-intitle">
+                                        <label for="option-intitle" id="label-intitle">
+                                            <span class="info-icon" data-info-id="info-intitle-text">?</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prefix-value" id="label-prefix-value">
+                                            <span class="info-icon" data-info-id="info-prefix-value-text">?</span>
+                                        </label>
+                                        <input type="text" id="prefix-value">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="incategory-value" id="label-incategory">
+                                            <span class="info-icon" data-info-id="info-incategory-text">?</span>
+                                        </label>
+                                        <input type="text" id="incategory-value">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="deepcat-value" id="label-deepcat">
+                                            <span class="info-icon" data-info-id="info-deepcat-text">?</span>
+                                        </label>
+                                        <input type="text" id="deepcat-value">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="linkfrom-value" id="label-linkfrom">
+                                            <span class="info-icon" data-info-id="info-linkfrom-text">?</span>
+                                        </label>
+                                        <input type="text" id="linkfrom-value">
+                                    </div>
+                                    <div class="form-group span-full">
+                                        <label for="category-select" id="label-category-dropdown">
+                                            <span class="info-icon" data-info-id="info-category-dropdown-text">?</span>
+                                        </label>
+                                        <select id="category-select"></select>
+                                    </div>
+                                    <div class="form-group span-full">
+                                        <label id="label-namespaces">
+                                            <span class="info-icon" data-info-id="info-namespaces-text">?</span>
+                                        </label>
+                                        <div id="namespaces-options" class="chips-grid">
+                                            <div class="option-group"><input type="checkbox" id="ns-main" value="0"><label for="ns-main" id="label-ns-main"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-user" value="2"><label for="ns-user" id="label-ns-user"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-user-talk" value="3"><label for="ns-user-talk" id="label-ns-user-talk"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-file" value="6"><label for="ns-file" id="label-ns-file"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-file-talk" value="7"><label for="ns-file-talk" id="label-ns-file-talk"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-help" value="12"><label for="ns-help" id="label-ns-help"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-help-talk" value="13"><label for="ns-help-talk" id="label-ns-help-talk"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-category" value="14"><label for="ns-category" id="label-ns-category"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-category-talk" value="15"><label for="ns-category-talk" id="label-ns-category-talk"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-portal" value="100"><label for="ns-portal" id="label-ns-portal"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-template" value="10"><label for="ns-template" id="label-ns-template"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="ns-template-talk" value="11"><label for="ns-template-talk" id="label-ns-template-talk"></label></div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group span-full">
-                                    <label id="label-filesize">
-                                        <span class="info-icon" data-info-id="info-filesize-text">?</span>
-                                    </label>
-                                    <div class="form-grid" style="gap: 0.5rem;">
-                                        <input type="number" id="filesize-min">
-                                        <input type="number" id="filesize-max">
+                        </div>
+
+                        <!-- STEP 03: CONTENT & TECHNICAL -->
+                        <div class="search-group" id="group-content-technical" data-advanced>
+                            <h3 class="accordion-header">
+                                <span id="heading-content-technical"></span>
+                                <span class="accordion-arrow"></span>
+                            </h3>
+                            <div class="accordion-content" id="content-group-content-technical">
+                                <div class="form-grid">
+                                    <div class="form-group span-full">
+                                        <label for="insource-value" id="label-insource">
+                                            <span class="info-icon" data-info-id="info-insource-text">?</span>
+                                        </label>
+                                        <input type="text" id="insource-value">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="hastemplate-value" id="label-hastemplate">
+                                            <span class="info-icon" data-info-id="info-hastemplate-text">?</span>
+                                        </label>
+                                        <input type="text" id="hastemplate-value">
+                                    </div>
+                                    <div class="form-group">
+                                        <label id="label-filetype">
+                                            <span class="info-icon" data-info-id="info-filetype-text">?</span>
+                                        </label>
+                                        <div id="filetype-options" class="chips-grid">
+                                            <div class="option-group"><input type="checkbox" id="filetype-bmp" value="bmp"><label for="filetype-bmp" id="filetype-bmp-label"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="filetype-gif" value="gif"><label for="filetype-gif" id="filetype-gif-label"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="filetype-jpg" value="jpg"><label for="filetype-jpg" id="filetype-jpg-label"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="filetype-ogg" value="ogg"><label for="filetype-ogg" id="filetype-ogg-label"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="filetype-pdf" value="pdf"><label for="filetype-pdf" id="filetype-pdf-label"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="filetype-png" value="png"><label for="filetype-png" id="filetype-png-label"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="filetype-svg" value="svg"><label for="filetype-svg" id="filetype-svg-label"></label></div>
+                                            <div class="option-group"><input type="checkbox" id="filetype-webp" value="webp"><label for="filetype-webp" id="filetype-webp-label"></label></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group span-full">
+                                        <label id="label-filesize">
+                                            <span class="info-icon" data-info-id="info-filesize-text">?</span>
+                                        </label>
+                                        <div class="form-grid" style="gap: 0.5rem;">
+                                            <input type="number" id="filesize-min">
+                                            <input type="number" id="filesize-max">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- STEP 04: DATE FILTERS -->
-                    <div class="search-group" id="group-date-filters" data-advanced>
-                        <h3 class="accordion-header">
-                            <span id="heading-date-filters"></span>
-                            <span class="accordion-arrow"></span>
-                        </h3>
-                        <div class="accordion-content">
+                        <!-- STEP 04: DATE FILTERS -->
+                        <div class="search-group" id="group-date-filters">
+                            <h3 class="group-heading">
+                                <span id="heading-date-filters"></span>
+                            </h3>
                             <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="dateafter-value" id="label-dateafter">
-                                        <span class="info-icon" data-info-id="info-date-filters">?</span>
-                                    </label>
-                                    <input type="date" id="dateafter-value">
-                                </div>
-                                <div class="form-group">
-                                    <label for="datebefore-value" id="label-datebefore"></label>
-                                    <input type="date" id="datebefore-value">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- STEP 05: GEO SEARCH -->
-                    <div class="search-group" id="group-geo-search" data-advanced>
-                        <h3 class="accordion-header">
-                            <span id="heading-geo-search"></span>
-                            <span class="accordion-arrow"></span>
-                        </h3>
-                        <div class="accordion-content">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="geo-radius" id="label-geo-radius">
-                                        <span class="info-icon" data-info-id="info-geo-search">?</span>
-                                    </label>
-                                    <input type="number" id="geo-radius">
-                                </div>
-                                <div class="form-group">
-                                    <label for="geo-coord" id="label-geo-coord"></label>
-                                    <div style="display: flex; gap: 0.5rem;">
-                                        <input type="text" id="geo-coord">
-                                        <button type="button" id="get-location-btn" class="btn-preset" style="padding: 0 1rem;">📍</button>
+                                    <div class="form-group">
+                                        <label for="dateafter-value" id="label-dateafter">
+                                            <span class="info-icon" data-info-id="info-date-filters">?</span>
+                                        </label>
+                                        <input type="date" id="dateafter-value">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="datebefore-value" id="label-datebefore"></label>
+                                        <input type="date" id="datebefore-value">
                                     </div>
                                 </div>
+                        </div>
+
+                        <!-- STEP 05: GEO SEARCH -->
+                        <div class="search-group" id="group-geo-search">
+                            <h3 class="group-heading">
+                                <span id="heading-geo-search"></span>
+                            </h3>
+                            <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="geo-radius" id="label-geo-radius">
+                                            <span class="info-icon" data-info-id="info-geo-search">?</span>
+                                        </label>
+                                        <input type="number" id="geo-radius">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="geo-coord" id="label-geo-coord"></label>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <input type="text" id="geo-coord">
+                                            <button type="button" id="get-location-btn" class="btn-preset" style="padding: 0 1rem;">📍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div class="main-action-buttons">
+                            <button type="submit" id="generate-search-string-button" class="btn btn-primary"></button>
+                            <button type="button" id="clear-form-button" class="btn btn-secondary"></button>
+                            <div id="results-preview-badge" class="preview-badge">
+                                <span id="results-preview-count">0</span>&nbsp;<span id="results-preview-text">Treffer (geschätzt)</span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="main-action-buttons">
-                        <button type="submit" id="generate-search-string-button"></button>
-                        <button type="button" id="clear-form-button"></button>
-                        <div id="results-preview-badge" class="preview-badge">
-                            <span id="results-preview-count">0</span>&nbsp;<span id="results-preview-text">Treffer (geschätzt)</span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- OUTPUT SECTION -->
-            <div class="search-output">
-                <h3 id="generated-string-heading"></h3>
-                <div class="generated-string-wrapper">
-                    <input type="text" id="generated-search-string-display" readonly>
-                    <button id="copy-url-button" class="copy-button"></button>
+                    </form>
                 </div>
-                <div id="generated-string-explanation"></div>
-                
-                <div class="search-group active">
+
+                <!-- NORMAL SEARCH OUTPUT -->
+                <div class="search-output">
+                    <h3 id="generated-string-heading"></h3>
+                    <div class="generated-string-wrapper">
+                        <input type="text" id="generated-search-string-display" readonly>
+                        <button id="copy-url-button" class="btn btn-tertiary copy-button"></button>
+                    </div>
+                    <div id="generated-string-explanation"></div>
+                    
+                    <!-- Results Table Section (Collapsible) for Normal Search -->
+                    <div class="search-group" id="results-table-section-normal">
+                        <h2 class="accordion-header">
+                            <span id="heading-results-table-normal"></span>
+                            <span class="accordion-arrow"></span>
+                        </h2>
+                        <div class="accordion-content" id="content-results-table-section-normal">
+                            <h3 id="search-results-heading-normal"></h3>
+                            <div class="filter-bar">
+                                <input type="text" id="result-filter-input-normal" placeholder="Filter results by keyword...">
+                            </div>
+                            <div class="results-actions" id="results-actions-container-normal">
+                                <button type="button" id="download-results-button-normal" class="btn btn-secondary"></button>
+                                <button type="button" id="analyze-network-button-normal" class="btn btn-primary"></button>
+                            </div>
+                            <ul id="simulated-search-results-normal"></ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div><!-- end normal-search-area -->
+
+            <!-- ===== NETZWERK SUCHE AREA ===== -->
+            <div class="search-mode-area" data-mode="network" id="network-search-area" style="display: none;">
+                <div class="search-mode-info">
+                    <p id="network-search-description"></p>
+                </div>
+
+                <div class="search-form-container">
+                    <form id="network-search-form">
+                        <div class="search-group active">
+                            <h3 class="accordion-header">
+                                <span id="heading-network-query"></span>
+                                <span class="accordion-arrow"></span>
+                            </h3>
+                            <div class="accordion-content">
+                                <div class="form-group span-full" style="margin-bottom: 1rem;">
+                                    <label for="network-target-wiki-lang" id="label-network-target-wiki-lang">
+                                        <span class="info-icon" data-info-id="info-target-lang-text">?</span>
+                                    </label>
+                                    <select id="network-target-wiki-lang"></select>
+                                </div>
+                                <div class="form-group span-full">
+                                    <label for="network-search-query" id="label-network-search-query"></label>
+                                    <input type="text" id="network-search-query">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="main-action-buttons">
+                            <button type="submit" id="network-analyze-button" class="btn btn-primary"></button>
+                            <button type="button" id="network-clear-button" class="btn btn-secondary"></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- NETWORK SEARCH RESULTS -->
+                <div class="search-group active" id="network-results-container">
                     <h3 class="accordion-header">
                         <span id="heading-results-network"></span>
                         <span class="accordion-arrow"></span>
                     </h3>
-                    <div class="accordion-content">
-                                
-                        <!-- Network Graph Section (Collapsible) -->
-<div class="search-group" id="network-graph-section">
-    <div class="accordion-header">
-        <h2 id="network-graph-heading"></h2>
-        <span class="icon"></span>
-    </div>
-    <div class="accordion-content">
-        <div id="network-analysis-container" class="network-analysis-container">
-            <canvas id="network-canvas"></canvas>
-        </div>
-        <div id="network-explanation" class="network-explanation"></div>
-    </div>
-</div>
+                    <div class="accordion-content" id="content-network-results-container">
+                        <!-- Network Graph -->
+                        <div class="search-group" id="network-graph-section">
+                            <div class="accordion-header">
+                                <h2 id="network-graph-heading"></h2>
+                                <span class="icon"></span>
+                            </div>
+                            <div class="accordion-content" id="content-network-graph-section">
+                                <div id="network-analysis-container" class="network-analysis-container">
+                                    <canvas id="network-canvas"></canvas>
+                                </div>
+                                <div id="network-explanation" class="network-explanation"></div>
+                            </div>
+                        </div>
 
-                        <!-- Results Table Section (Collapsible) -->
+                        <!-- Results Table -->
                         <div class="search-group" id="results-table-section">
                             <h2 class="accordion-header">
                                 <span id="heading-results-table"></span>
                                 <span class="accordion-arrow"></span>
                             </h2>
-                            <div class="accordion-content">
+                            <div class="accordion-content" id="content-results-table-section-network">
                                 <h3 id="search-results-heading"></h3>
                                 <div class="filter-bar">
                                     <input type="text" id="result-filter-input" placeholder="Filter results by keyword...">
                                 </div>
                                 <div class="results-actions" id="results-actions-container">
-                                    <button type="button" id="download-results-button" class="btn-action"></button>
-                                    <button type="button" id="analyze-network-button" class="btn-action btn-accent"></button>
+                                    <button type="button" id="download-results-button" class="btn btn-secondary"></button>
+                                    <button type="button" id="analyze-network-button" class="btn btn-primary"></button>
                                 </div>
                                 <ul id="simulated-search-results"></ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div><!-- end network-search-area -->
 
-            <!-- JOURNAL SECTION (RESTORED & ALIGNED) -->
+            <!-- JOURNAL SECTION (SHARED) -->
             <div class="journal-container">
                 <h3 id="journal-heading"></h3>
                 <div class="journal-controls">
@@ -334,10 +408,10 @@
                         <input type="checkbox" id="journal-select-all-checkbox"> <span id="journal-select-all"></span>
                     </label>
                     <div class="spacer"></div>
-                    <button id="export-json-button" class="btn-export">JSON</button>
-                    <button id="export-csv-button" class="btn-export">CSV</button>
-                    <button id="delete-selected-btn" class="btn-export btn-danger">🗑️</button>
-                    <button id="clear-journal-btn" class="btn-export btn-danger-bold">CLR</button>
+                    <button id="export-json-button" class="btn btn-tertiary">JSON</button>
+                    <button id="export-csv-button" class="btn btn-tertiary">CSV</button>
+                    <button id="delete-selected-btn" class="btn btn-secondary btn-danger">🗑️</button>
+                    <button id="clear-journal-btn" class="btn btn-danger-primary">CLR</button>
                 </div>
                 <ul id="journal-list"></ul>
             </div>
@@ -348,8 +422,8 @@
         <div class="cookie-content">
             <p id="cookie-text"></p>
             <div class="cookie-actions">
-                <button id="cookie-accept" class="btn-action btn-accent">OK</button>
-                <button id="cookie-decline" class="btn-action">NO</button>
+                <button id="cookie-accept" class="btn btn-primary">OK</button>
+                <button id="cookie-decline" class="btn btn-secondary">NO</button>
             </div>
         </div>
     </div>
@@ -368,6 +442,8 @@
                     <li><a id="link-report-issue" href="https://github.com/MarkO75SU/wiki-gui/issues"></a></li>
                 </ul>
             </nav>
+            <p id="footer-disclaimer-main"></p>
+            <p id="footer-disclaimer-info"></p>
             <p id="footer-disclaimer"></p>
             <p id="footer-text"></p>
         </div>

@@ -1,5 +1,5 @@
 // src/js/modules/ui.js
-import { getTranslation, getLanguage } from './state.js';
+import { getTranslation, getLanguage, getSearchMode } from './state.js';
 import { generateSearchString } from './search.js';
 import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries } from './api.js';
 import { presetCategories } from './presets.js';
@@ -89,6 +89,16 @@ export function applyTranslations() {
     if (ogTitle) ogTitle.content = getTranslation('page-title');
     const ogDescription = document.querySelector('meta[property="og:description"]');
     if (ogDescription) ogDescription.content = getTranslation('seo-description');
+
+    // Populate new footer disclaimers
+    const footerDisclaimerMain = document.getElementById('footer-disclaimer-main');
+    if (footerDisclaimerMain) {
+        footerDisclaimerMain.textContent = getTranslation('main-heading-disclaimer');
+    }
+    const footerDisclaimerInfo = document.getElementById('footer-disclaimer-info');
+    if (footerDisclaimerInfo) {
+        footerDisclaimerInfo.textContent = getTranslation('search-info-text');
+    }
 
     document.querySelectorAll('[id]').forEach(element => {
         const key = element.id;
@@ -209,7 +219,18 @@ export function applyTranslations() {
     const presetCategorySelect = document.getElementById('preset-category-select');
     const presetSelect = document.getElementById('preset-select');
     if (presetCategorySelect && presetSelect) {
+        const currentCategory = presetCategorySelect.value;
+        const currentPreset = presetSelect.value;
+        
         populatePresetCategories(presetCategorySelect, presetSelect);
+        
+        if (currentCategory) {
+            presetCategorySelect.value = currentCategory;
+            populatePresets(presetCategorySelect, presetSelect);
+            if (currentPreset) {
+                presetSelect.value = currentPreset;
+            }
+        }
     }
 
     const categorySelect = document.getElementById('category-select');
@@ -255,31 +276,78 @@ export function applyTranslations() {
 }
 
 export function clearForm() {
-    const form = document.getElementById('search-form');
-    if (form) {
-        form.reset();
+    // Clear normal search form
+    const normalSearchForm = document.getElementById('search-form');
+    if (normalSearchForm) {
+        normalSearchForm.reset();
         document.querySelectorAll('#filetype-options input').forEach(cb => cb.checked = false);
     }
-    const resultsActions = document.getElementById('results-actions-container');
-    if (resultsActions) resultsActions.style.display = 'none';
+    // Clear network search form
+    const networkSearchForm = document.getElementById('network-search-form');
+    if (networkSearchForm) {
+        networkSearchForm.reset();
+    }
+
+    // Clear results for normal search
+    const resultsActionsNormal = document.getElementById('results-actions-container-normal');
+    if (resultsActionsNormal) resultsActionsNormal.style.display = 'none';
+    const resultsContainerNormal = document.getElementById('simulated-search-results-normal');
+    if (resultsContainerNormal) resultsContainerNormal.innerHTML = '';
+    const filterInputNormal = document.getElementById('result-filter-input-normal');
+    if (filterInputNormal) filterInputNormal.value = '';
+
+    // Clear results for network search (original IDs)
+    const resultsActionsNetwork = document.getElementById('results-actions-container'); 
+    if (resultsActionsNetwork) resultsActionsNetwork.style.display = 'none';
+    const resultsContainerNetwork = document.getElementById('simulated-search-results'); 
+    if (resultsContainerNetwork) resultsContainerNetwork.innerHTML = '';
+    const filterInputNetwork = document.getElementById('result-filter-input'); 
+    if (filterInputNetwork) filterInputNetwork.value = '';
     
-    const resultsContainer = document.getElementById('simulated-search-results');
-    if (resultsContainer) resultsContainer.innerHTML = '';
-
-    const filterInput = document.getElementById('result-filter-input');
-    if (filterInput) filterInput.value = '';
-
-    generateSearchString(); // Call generateSearchString directly
+    // Clear saved form state from sessionStorage
+    sessionStorage.removeItem('wikiGuiFormState');
+    
+    generateSearchString();
 }
 
 export async function handleSearchFormSubmit(event) {
     event.preventDefault();
-    const { apiQuery, wikiSearchUrlParams, shareParams } = generateSearchString();
-    const lang = document.getElementById('target-wiki-lang').value;
-    const resultsContainer = document.getElementById('simulated-search-results');
-    const searchResultsHeading = document.getElementById('search-results-heading');
-    
-    if (!apiQuery) return;
+    const currentMode = getSearchMode();
+
+    let langElement;
+    let apiQuery;
+    let wikiSearchUrlParams;
+    let shareParams;
+
+    // Determine which form to use for generating the search string
+    if (currentMode === 'normal') {
+        langElement = document.getElementById('target-wiki-lang');
+        ({ apiQuery, wikiSearchUrlParams, shareParams } = generateSearchString()); // generateSearchString reads from normal form inputs
+    } else if (currentMode === 'network') {
+        langElement = document.getElementById('network-target-wiki-lang');
+        // For network mode, generateSearchString needs to read from the network form's specific inputs
+        // This might require modifying generateSearchString to accept a scope or specific elements,
+        // or ensure it reads from the currently active form. Assuming it reads relevant inputs from network form.
+        ({ apiQuery, wikiSearchUrlParams, shareParams } = generateSearchString()); 
+    } else {
+        console.error("Unknown search mode:", currentMode);
+        return;
+    }
+
+    const lang = langElement?.value;
+
+    if (!apiQuery || !lang) return;
+
+    // Select the correct result display elements based on the current mode
+    const resultsContainer = document.getElementById(currentMode === 'normal' ? 'simulated-search-results-normal' : 'simulated-search-results');
+    const searchResultsHeadingDisplay = document.getElementById(currentMode === 'normal' ? 'search-results-heading-normal' : 'search-results-heading');
+    const resultsActions = document.getElementById(currentMode === 'normal' ? 'results-actions-container-normal' : 'results-actions-container');
+    const resultsTableSection = document.getElementById(currentMode === 'normal' ? 'results-table-section-normal' : 'results-table-section');
+
+    if (!resultsContainer || !searchResultsHeadingDisplay || !resultsActions || !resultsTableSection) {
+        console.error("Missing result display elements for mode:", currentMode);
+        return;
+    }
 
     // Skeleton Loading State
     resultsContainer.innerHTML = Array(3).fill(0).map(() => `
@@ -294,31 +362,26 @@ export async function handleSearchFormSubmit(event) {
     `).join('');
     
     const apiResponse = await performWikipediaSearch(apiQuery, lang, 500);
-    allSearchResults = apiResponse?.query?.search || [];
+    allSearchResults = apiResponse?.query?.search || []; // This variable is global
     const topResults = allSearchResults.slice(0, 10);
     const totalHits = apiResponse?.query?.searchinfo?.totalhits || 0;
 
-    const resultsActions = document.getElementById('results-actions-container');
-
-    if (searchResultsHeading) {
-        searchResultsHeading.textContent = getTranslation('search-results-heading', '', { totalResults: totalHits });
+    if (searchResultsHeadingDisplay) {
+        searchResultsHeadingDisplay.textContent = getTranslation('search-results-heading', '', { totalResults: totalHits });
     }
 
     resultsContainer.innerHTML = '';
 
     if (allSearchResults.length === 0) {
         resultsContainer.innerHTML = `<li>${getTranslation('no-results-found')}</li>`;
-        if (resultsActions) resultsActions.style.display = 'none';
+        resultsActions.style.display = 'none';
         return;
     }
 
-    if (resultsActions) resultsActions.style.display = 'block';
+    resultsActions.style.display = 'block';
 
     // Auto-expand the results table section when results are displayed
-    const resultsTableSection = document.getElementById('results-table-section');
-    if (resultsTableSection) {
-        resultsTableSection.classList.add('active');
-    }
+    resultsTableSection.classList.add('active');
 
     // Fetch images and summaries for top 10 results at once
     const titles = topResults.map(r => r.title);
@@ -387,17 +450,51 @@ export function downloadResults() {
 
 export function addAccordionFunctionality() {
     document.querySelectorAll('.accordion-header').forEach(header => {
+        const group = header.closest('.search-group');
+        if (!group) return; // Ensure there's a parent group
+
+        const content = header.nextElementSibling; // Assuming content is the direct sibling
+        if (!content || !content.id) {
+            console.warn("Accordion header does not have a valid content element with an ID.", header);
+            return;
+        }
+
+        // Setup ARIA attributes
+        header.setAttribute('role', 'button');
+        header.setAttribute('tabindex', '0');
+        header.setAttribute('aria-controls', content.id);
+
+        // Initial state
+        const isActive = group.classList.contains('active');
+        header.setAttribute('aria-expanded', isActive);
+
+        // Click event listener
         header.addEventListener('click', () => {
-            const group = header.closest('.search-group');
-            if (group) {
+            group.classList.toggle('active');
+            const newIsActive = group.classList.contains('active');
+            header.setAttribute('aria-expanded', newIsActive);
+        });
+
+        // Keydown event listener for Enter key
+        header.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault(); // Prevent default scroll for spacebar
                 group.classList.toggle('active');
+                const newIsActive = group.classList.contains('active');
+                header.setAttribute('aria-expanded', newIsActive);
             }
         });
     });
-    // Open the first accordion by default
+
+    // Open the first accordion by default (if it's an accordion)
     const firstGroup = document.getElementById('group-main-query');
-    if(firstGroup) {
+    if(firstGroup && firstGroup.querySelector('.accordion-header')) { // Check if it's actually an accordion
         firstGroup.classList.add('active');
+        // Manually set aria-expanded for the first accordion header
+        const firstHeader = firstGroup.querySelector('.accordion-header');
+        if(firstHeader) {
+            firstHeader.setAttribute('aria-expanded', 'true');
+        }
     }
 }
 
@@ -463,26 +560,43 @@ export function populateCategoryOptions(selectElement) {
 }
 
 export function setupResultFilter() {
-    const filterInput = document.getElementById('result-filter-input');
-    const resultsList = document.getElementById('simulated-search-results');
-
-    if (!filterInput || !resultsList) return;
-
-    filterInput.addEventListener('input', () => {
-        const filterText = filterInput.value.toLowerCase();
-        const listItems = resultsList.children;
-
-        for (let i = 0; i < listItems.length; i++) {
-            const item = listItems[i];
-            const textContent = item.textContent ? item.textContent.toLowerCase() : '';
-
-            if (textContent.includes(filterText)) {
-                item.style.display = ''; // Show the item
-            } else {
-                item.style.display = 'none'; // Hide the item
+    // Setup for normal search results
+    const filterInputNormal = document.getElementById('result-filter-input-normal');
+    const resultsListNormal = document.getElementById('simulated-search-results-normal');
+    if (filterInputNormal && resultsListNormal) {
+        filterInputNormal.addEventListener('input', () => {
+            const filterText = filterInputNormal.value.toLowerCase();
+            const listItems = resultsListNormal.children;
+            for (let i = 0; i < listItems.length; i++) {
+                const item = listItems[i];
+                const textContent = item.textContent ? item.textContent.toLowerCase() : '';
+                if (textContent.includes(filterText)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
             }
-        }
-    });
+        });
+    }
+
+    // Setup for network search results (original IDs)
+    const filterInputNetwork = document.getElementById('result-filter-input');
+    const resultsListNetwork = document.getElementById('simulated-search-results');
+    if (filterInputNetwork && resultsListNetwork) {
+        filterInputNetwork.addEventListener('input', () => {
+            const filterText = filterInputNetwork.value.toLowerCase();
+            const listItems = resultsListNetwork.children;
+            for (let i = 0; i < listItems.length; i++) {
+                const item = listItems[i];
+                const textContent = item.textContent ? item.textContent.toLowerCase() : '';
+                if (textContent.includes(filterText)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        });
+    }
 }
 
 // Parameter explanation modal and setup
