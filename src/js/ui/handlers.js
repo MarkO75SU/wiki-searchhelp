@@ -1,7 +1,7 @@
 // src/js/ui/handlers.js
-import { getTranslation, getLanguage, getSearchMode } from '../core/state.js';
+import { getTranslation, getLanguage, getSearchMode, setLanguage, setTranslations } from '../core/state.js';
 import { generateSearchString } from '../core/search.js';
-import { performWikipediaSearch, fetchBatchedMetadata } from '../services/wiki_service.js';
+import { performWikipediaSearch, fetchBatchedMetadata, fetchWikiData, fetchJson } from '../services/wiki_service.js';
 import { addJournalEntry } from '../core/journal.js';
 import { showToast } from './toast.js';
 import { renderResultsList, renderMap, renderHealthUI } from './renderer.js';
@@ -9,10 +9,18 @@ import { calculateHealthScore, identifyDriftOutliers } from '../core/analysis.js
 import { generateEmbeddings, cosineSimilarity } from '../services/ai_service.js';
 import { analyzeGlobalRelevance } from '../core/interwiki.js';
 import { storage } from '../core/storage.js';
+import { presetCategories } from '../config/presets.js';
 
 let allSearchResults = [];
 
 export function getAllSearchResults() { return allSearchResults; }
+
+const wikipediaSearchHelpUrls = {
+    'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
+    'en': 'https://en.wikipedia.org/wiki/Help:Searching',
+    'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
+    'es': 'https://es.wikipedia.org/wiki/Ayuda:Búsqueda'
+};
 
 export function clearForm() {
     const form = document.getElementById('search-form');
@@ -53,36 +61,131 @@ export async function handleSearchFormSubmit(event) {
     }
 }
 
+export function applyTranslations() {
+    const lang = getLanguage();
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll('[id]').forEach(element => {
+        const key = element.id;
+        const translation = getTranslation(key);
+        if (translation && translation !== key) {
+            if (element.hasAttribute('placeholder')) {
+                element.placeholder = translation;
+            } else {
+                let textNode = Array.from(element.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+                if (textNode) textNode.textContent = translation;
+                else if (element.children.length === 0) element.textContent = translation;
+            }
+        }
+    });
+
+    const officialDocLink = document.getElementById('official-doc-link');
+    if (officialDocLink) {
+        officialDocLink.href = wikipediaSearchHelpUrls[lang] || wikipediaSearchHelpUrls['en'];
+    }
+}
+
+export function addAccordionFunctionality() {
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const group = header.closest('.search-group');
+            if (group) group.classList.toggle('active');
+        });
+    });
+}
+
+export function populatePresetCategories(categorySelectElement) {
+    if (!categorySelectElement) return;
+    categorySelectElement.innerHTML = `<option value="">${getTranslation('placeholder-preset-category')}</option>`;
+    for (const key in presetCategories) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = presetCategories[key][`name_${getLanguage()}`] || presetCategories[key].name_en;
+        categorySelectElement.appendChild(option);
+    }
+}
+
+export function populatePresets(categorySelectElement, presetSelectElement) {
+    if (!categorySelectElement || !presetSelectElement) return;
+    presetSelectElement.innerHTML = `<option value="">${getTranslation('placeholder-select-preset')}</option>`;
+    const selectedCategoryKey = categorySelectElement.value;
+    if (selectedCategoryKey && presetCategories[selectedCategoryKey]) {
+        const categoryPresets = presetCategories[selectedCategoryKey].presets;
+        for (const key in categoryPresets) {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = getTranslation(categoryPresets[key].display_name_key);
+            presetSelectElement.appendChild(option);
+        }
+    }
+}
+
+export function applyPreset(preset) {
+    for (const key in preset) {
+        const element = document.getElementById(key);
+        if (element) {
+            if (element.type === 'checkbox') element.checked = preset[key];
+            else element.value = preset[key];
+        }
+    }
+    generateSearchString();
+}
+
+export function setupResultFilter() {
+    const filterInput = document.getElementById('result-filter-input-normal');
+    if (!filterInput) return;
+    filterInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allSearchResults.filter(r => r.title.toLowerCase().includes(term));
+        renderResultsList(filtered.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', filtered.length);
+    });
+}
+
 export async function performHealthAnalysis(results, containerId) {
     if (!results.length) return;
-    const stats = calculateHealthScore(results, {}, {}); // Simplified for now
+    showToast('Analyzing quality...');
+    const stats = calculateHealthScore(results, {}, {}); // Placeholder: actual metrics should be passed
     renderHealthUI(containerId, stats);
     storage.logResult({ query: 'Health Scan', healthScore: stats.score, resultsCount: results.length });
 }
 
 export async function performDriftAnalysis(results) {
     if (results.length < 3) return;
+    showToast('Analyzing semantic drift...');
     const titles = results.map(r => r.title);
     const vectors = await generateEmbeddings(titles);
     const driftData = identifyDriftOutliers(results, vectors, null, cosineSimilarity);
-    
-    // Update results with drift data and re-render
     allSearchResults = driftData.analyzed;
     renderResultsList(allSearchResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', 0);
 }
 
 export async function performInterwikiCheck(results) {
-    showToast('Checking Interwiki Relevance...');
+    if (!results.length) return;
+    showToast('Checking global relevance...');
+    const titles = results.map(r => r.title);
+    const relevance = await analyzeGlobalRelevance(titles, getLanguage());
+    console.log('Global Relevance Data:', relevance);
 }
 
-export function addAccordionFunctionality() { /* ... */ }
-export function populatePresetCategories() { /* ... */ }
-export function populatePresets() { /* ... */ }
-export function applyPreset() { /* ... */ }
-export function setupResultFilter() { /* ... */ }
-export function handleTripFormSubmit() { /* ... */ }
-export function setupSortByRelevance() { /* ... */ }
-export function exportCitations() { /* ... */ }
-export function triggerTopicExplorer() { /* ... */ }
-export function performGeoValidation() { /* ... */ }
-export function applyTranslations() { /* ... */ }
+export function setupSortByRelevance() {}
+export function exportCitations() {}
+export async function triggerTopicExplorer() {
+    showToast('Searching for a random topic...');
+    try {
+        const lang = getLanguage();
+        const response = await fetchWikiData(lang, { action: 'query', list: 'random', rnnamespace: 0, rnlimit: 1 });
+        const randomArticle = response?.query?.random?.[0];
+        if (randomArticle) {
+            const queryInput = document.getElementById('search-query');
+            if (queryInput) {
+                queryInput.value = randomArticle.title;
+                const form = document.getElementById('search-form');
+                if (form) form.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
+        }
+    } catch (e) {
+        showToast('Random topic fetch failed', 'error');
+    }
+}
+export function performGeoValidation() {}
+export function handleTripFormSubmit() {}

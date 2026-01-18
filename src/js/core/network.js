@@ -1,6 +1,6 @@
-// src/js/modules/network.js
+// src/js/core/network.js
 import { getLanguage, getTranslation } from './state.js';
-import { fetchArticlesCategories } from './api.js';
+import { fetchArticlesCategories } from '../services/api.js';
 
 let lastAnalysisData = { nodes: [], edges: [] };
 

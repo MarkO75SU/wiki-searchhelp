@@ -3,8 +3,8 @@
  * DOM Rendering and Visualizations (Lazy Loading enabled)
  */
 
-import { getTranslation, getLanguage } from '../modules/state.js';
-import { loadLeaflet } from '../modules/utils.js';
+import { getTranslation, getLanguage } from '../core/state.js';
+import { loadLeaflet } from '../core/utils.js';
 import { HEALTH_CONFIG, DRIFT_CONFIG, INTERWIKI_CONFIG } from '../config/constants.js';
 
 /**

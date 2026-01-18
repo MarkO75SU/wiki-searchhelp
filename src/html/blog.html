@@ -93,10 +93,10 @@
     </footer>
 
     <script type="module">
-        import { getLanguage, setLanguage, setTranslations, getTranslation } from '../js/modules/state.js';
-        import { applyTranslations } from '../js/modules/ui.js'; // Corrected import
-        import { loadHeader } from '../js/modules/headerLoader.js'; // Added headerLoader import
-        import { initializeCookieBanner } from '../js/modules/cookie.js';
+        import { getLanguage, setLanguage, setTranslations, getTranslation } from '../js/core/state.js';
+        import { applyTranslations } from '../js/ui/handlers.js';
+        import { loadHeader } from '../js/ui/headerLoader.js';
+        import { initializeCookieBanner } from '../js/ui/cookie.js';
         
         async function initBlog() {
             const lang = getLanguage() || 'de';

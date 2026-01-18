@@ -1,4 +1,4 @@
-// src/js/modules/history.js
+// src/js/core/history.js
 import { getTranslation } from './state.js';
 
 export function updateHistory(queryText, fullUrl) {

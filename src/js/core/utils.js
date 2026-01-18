@@ -1,4 +1,4 @@
-// src/js/modules/utils.js
+// src/js/core/utils.js
 
 /**
  * A promisified version of navigator.geolocation.getCurrentPosition.

@@ -1,6 +1,6 @@
-// src/js/modules/api.js
-import { showToast } from './toast.js';
-import { getTranslation } from './state.js';
+// src/js/services/api.js
+import { showToast } from '../ui/toast.js';
+import { getTranslation } from '../core/state.js';
 
 /**
  * Parses the generated search query to separate recognized parameters from the main search term.

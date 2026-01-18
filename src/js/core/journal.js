@@ -1,6 +1,6 @@
-// src/js/modules/journal.js
+// src/js/core/journal.js
 import { getTranslation, getLanguage } from './state.js';
-import { showToast } from './toast.js';
+import { showToast } from '../ui/toast.js';
 import { generateSearchString } from './search.js';
 
 const STORAGE_KEY = 'wikiGuiJournal';

@@ -1,4 +1,4 @@
-// src/js/modules/cookie.js
+// src/js/ui/cookie.js
 import { showToast } from './toast.js';
 import { getTranslation } from './state.js';
 

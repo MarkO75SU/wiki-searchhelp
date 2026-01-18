@@ -1,4 +1,4 @@
-import { getTestHistory, supabase } from './modules/database.js';
+import { getTestHistory, supabase } from './services/database.js';
 
 async function initAdmin() {
     // 1. Session Check (Expert Only)

@@ -1,13 +1,11 @@
 /**
  * src/js/core/analysis.js
- * Pure Business Logic for Quality Analysis
+ * Advanced Business Logic for Quality & Conflict Detection
  */
 
 import { DRIFT_CONFIG, HEALTH_CONFIG, INTERWIKI_CONFIG } from '../config/constants.js';
+import { fetchWikidataEntity } from '../services/wiki_service.js';
 
-/**
- * Calculates category health based on references and images.
- */
 export function calculateHealthScore(results, metrics, refCounts) {
     let totalRefs = 0;
     let articlesWithImages = 0;
@@ -21,7 +19,6 @@ export function calculateHealthScore(results, metrics, refCounts) {
 
     const avgRefs = totalRefs / results.length;
     const imageRate = (articlesWithImages / results.length) * 100;
-    
     const refScore = Math.min((avgRefs / HEALTH_CONFIG.REF_TARGET) * 100, 100);
     const score = Math.round((refScore * HEALTH_CONFIG.WEIGHT_REFS) + (imageRate * HEALTH_CONFIG.WEIGHT_IMAGES));
 
@@ -29,12 +26,28 @@ export function calculateHealthScore(results, metrics, refCounts) {
 }
 
 /**
- * Identifies semantic outliers in a set of vectors.
- * Note: Helpers like cosineSimilarity are imported in the service layer.
+ * Wikidata Conflict Detection:
+ * Compares current category entity with counterparts in EN/FR
  */
+export async function detectInterwikiConflicts(title, lang) {
+    const entity = await fetchWikidataEntity(title, lang);
+    if (!entity) return null;
+
+    const sitelinks = entity.sitelinks || {};
+    const enTitle = sitelinks.enwiki?.title;
+    const frTitle = sitelinks.frwiki?.title;
+
+    return {
+        qid: entity.id,
+        availableLanguages: Object.keys(sitelinks).length,
+        missingMajor: !enTitle || !frTitle,
+        enTitle,
+        frTitle
+    };
+}
+
 export function identifyDriftOutliers(results, vectors, centroid, similarityFn) {
     let totalSimilarity = 0;
-
     const analyzed = results.map((res, i) => {
         const similarity = similarityFn(vectors[i], centroid);
         totalSimilarity += similarity;

@@ -13,98 +13,39 @@
 </head>
 <body>
     <div id="header-placeholder"></div>
-    <header id="header">
-        <div class="container">
-            <div class="logo"><span id="app-title">WikiGUI</span></div>
-            <button class="menu-toggle" id="menu-toggle">☰</button>
-            <nav id="nav" class="nav-wrapper">
-                <ul class="nav-list" id="nav-list">
-                    <li><a id="nav-home"></a></li>
-                    <li><a id="nav-help"></a></li>
-                    <li><a id="nav-about"></a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <main class="container">
-        <section class="search-interface">
-            <h1 id="main-heading"></h1>
-            <a id="official-doc-link" target="_blank"></a>
-            <div style="margin-top: 1rem;">
-                <button type="button" id="surprise-me-button" class="btn btn-secondary"></button>
+    
+    <div class="enterprise-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">WikiGUI</div>
+            <nav id="workflow-nav" class="flow-nav"></nav>
+            <div class="user-info">
+                <div id="user-status-badge" class="status-badge" style="display: none;"></div>
+                <button id="login-btn" class="btn btn-secondary">Login</button>
+                <button id="profile-btn" class="btn btn-tertiary" style="display: none;">Profil</button>
             </div>
+        </aside>
 
-            <!-- SEARCH MODE TABS -->
-            <div class="search-mode-tabs">
-                <button type="button" class="btn btn-tab active" data-mode="normal" id="tab-normal-search">
-                    <span id="tab-label-normal"></span>
-                </button>
-                <button type="button" class="btn btn-tab" data-mode="network" id="tab-network-search">
-                    <span id="tab-label-network"></span>
-                </button>
-                <button type="button" class="btn btn-tab" data-mode="trip" id="tab-trip-planner">
-                    <span id="tab-label-trip"></span>
-                </button>
-            </div>
-
-            <!-- ===== NORMALE SUCHE AREA ===== -->
-            <div class="search-mode-area" data-mode="normal" id="normal-search-area">
-                <div class="search-mode-info">
-                    <p id="normal-search-description"></p>
+        <main class="content-area">
+            <!-- PHASE 1: SEARCH -->
+            <section id="phase-search" class="workflow-phase">
+                <div class="search-hero">
+                    <h1 id="main-heading">Expert Wikipedia Search</h1>
+                    <form id="search-form" class="main-search-bar">
+                        <div class="search-input-group">
+                            <input type="text" id="search-query" placeholder="Thema suchen...">
+                            <select id="target-wiki-lang">
+                                <option value="de">🇩🇪 Deutsch</option>
+                                <option value="en">🇬🇧 English</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Qualitäts-Scan starten</button>
+                    </form>
+                    <div class="quick-actions">
+                        <button id="surprise-me-button" class="btn btn-tertiary">🎲 Überrasch mich</button>
+                    </div>
                 </div>
-
-                <div class="search-form-container">
-                    <form id="search-form">
-                        <div class="form-group span-full" style="margin-bottom: 1.5rem;">
-                            <label for="target-wiki-lang" id="label-target-wiki-lang">
-                                <span class="info-icon" data-info-id="info-target-lang-text">?</span>
-                            </label>
-                            <select id="target-wiki-lang"></select>
-                        </div>
-
-                        <!-- STEP 01: MAIN QUERY -->
-                        <div class="search-group active" id="group-main-query">
-                            <h3 class="accordion-header">
-                                <span id="heading-main-query"></span>
-                                <span class="accordion-arrow"></span>
-                            </h3>
-                            <div class="accordion-content" id="content-group-main-query">
-
-                                <div class="form-grid">
-                                    <div class="form-group span-full">
-                                        <label for="search-query" id="label-search-query">
-                                            <span class="info-icon" data-info-id="info-main-query">?</span>
-                                        </label>
-                                        <input type="text" id="search-query">
-                                    </div>
-                                    <div class="form-group span-full">
-                                        <label for="search-query-adv" id="label-search-query-adv">
-                                            <span class="info-icon" data-info-id="info-all-words-text">?</span>
-                                        </label>
-                                        <input type="text" id="search-query-adv">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exact-phrase" id="label-exact-phrase">
-                                            <span class="info-icon" data-info-id="info-exact-phrase-text">?</span>
-                                        </label>
-                                        <input type="text" id="exact-phrase">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="without-words" id="label-without-words">
-                                            <span class="info-icon" data-info-id="info-without-words-text">?</span>
-                                        </label>
-                                        <input type="text" id="without-words">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="any-words" id="label-any-words">
-                                            <span class="info-icon" data-info-id="info-any-words-text">?</span>
-                                        </label>
-                                        <input type="text" id="any-words">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </section>
 
                         <!-- STEP 02: SCOPE & LOCATION -->
                         <div class="search-group" id="group-scope-location">

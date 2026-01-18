@@ -1,6 +1,6 @@
-// src/js/modules/autocomplete.js
-import { getLanguage } from './state.js';
-import { fetchWikipediaOpenSearch } from './api.js';
+// src/js/ui/autocomplete.js
+import { getLanguage } from '../core/state.js';
+import { fetchWikipediaOpenSearch } from '../services/api.js';
 
 let debounceTimer;
 

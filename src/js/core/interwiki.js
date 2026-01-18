@@ -1,12 +1,12 @@
 /**
- * src/js/modules/interwiki.js
+ * src/js/core/interwiki.js
  * 
  * Module for Interwiki Conflict Detector & Global Relevance Analysis.
  * Checks if articles exist in other major languages to assess their global significance
  * and identify structural gaps (e.g. category exists in EN but not DE).
  */
 
-import { fetchWikiData } from './api.js';
+import { fetchWikiData } from '../services/api.js';
 
 /**
  * Key languages to check for Global Relevance Score.

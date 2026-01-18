@@ -1,4 +1,4 @@
-// src/js/modules/toast.js
+// src/js/ui/toast.js
 
 export function showToast(message, duration = 3000) {
     let container = document.querySelector('.toast-container');

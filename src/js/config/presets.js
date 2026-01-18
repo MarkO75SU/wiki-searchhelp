@@ -1,4 +1,4 @@
-// src/js/modules/presets.js
+// src/js/config/presets.js
 
 export const presetCategories = {
     'space-exploration': {
