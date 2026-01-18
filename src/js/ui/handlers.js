@@ -16,13 +16,6 @@ let allSearchResults = [];
 
 export function getAllSearchResults() { return allSearchResults; }
 
-const wikipediaSearchHelpUrls = {
-    'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
-    'en': 'https://en.wikipedia.org/wiki/Help:Searching',
-    'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
-    'es': 'https://es.wikipedia.org/wiki/Ayuda:Búsqueda'
-};
-
 /**
  * Handles all clicks on result list items (Similar, Maintenance, etc.)
  */
@@ -127,11 +120,6 @@ export function applyTranslations() {
             }
         }
     });
-
-    const officialDocLink = document.getElementById('official-doc-link');
-    if (officialDocLink) {
-        officialDocLink.href = wikipediaSearchHelpUrls[lang] || wikipediaSearchHelpUrls['en'];
-    }
 }
 
 export function addAccordionFunctionality() {
@@ -193,7 +181,7 @@ export function setupResultFilter() {
 export async function performHealthAnalysis(results, containerId) {
     if (!results.length) return;
     showToast('Analyzing quality...');
-    const stats = calculateHealthScore(results, {}, {}); // Placeholder: actual metrics should be passed
+    const stats = calculateHealthScore(results, {}, {}); 
     renderHealthUI(containerId, stats);
     storage.logResult({ query: 'Health Scan', healthScore: stats.score, resultsCount: results.length });
 }
@@ -213,7 +201,6 @@ export async function performInterwikiCheck(results) {
     showToast('Checking global relevance...');
     const titles = results.map(r => r.title);
     const relevance = await analyzeGlobalRelevance(titles, getLanguage());
-    console.log('Global Relevance Data:', relevance);
 }
 
 export function setupSortByRelevance() {}
@@ -238,7 +225,6 @@ export async function triggerTopicExplorer() {
 }
 export function performGeoValidation() {}
 export function handleTripFormSubmit() {}
+export function downloadResults() {}
 
 export { renderResultsList, renderMap, renderHealthUI };
-export const applyPresetToForm = applyPreset;
-export function downloadResults() {}

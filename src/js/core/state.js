@@ -57,7 +57,7 @@ export function setTranslations(lang, data) { state.translations[lang] = data; }
 export function getTranslation(key, defaultValue = '', replacements = {}) {
     let str = (state.translations[state.currentLang] && state.translations[state.currentLang][key]) || defaultValue || key;
     for (const p in replacements) {
-        str = str.replace(new RegExp(`{\s*${p}\s*}`, 'g'), replacements[p]);
+        str = str.replace(new RegExp(`{\\s*${p}\\s*}`, 'g'), replacements[p]);
     }
     return str;
 }
