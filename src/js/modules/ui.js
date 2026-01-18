@@ -608,7 +608,7 @@ export function populateLanguageOptions(selectElement) {
         option.value = lang.code;
         const label = getTranslation(`lang-${lang.code}-option`);
         // Remove existing flags from translation if present to avoid duplicates
-        const cleanLabel = label.replace(/[^\ws()]/g, '').trim(); 
+        const cleanLabel = label.replace(/[^\w\s\(\)]/g, '').trim(); 
         option.textContent = `${lang.flag} ${cleanLabel}`;
         selectElement.appendChild(option);
     });
@@ -1206,7 +1206,7 @@ export async function performHealthAnalysis(results, containerId) {
     const container = document.getElementById(containerId);
     if (!container || results.length === 0) return;
 
-    container.innerHTML = `<p><em>Analysiere Qualität für ${results.length} Artikel (Deep Scan <ref>)...</em></p>`;
+    container.innerHTML = `<p><em>Analysiere Qualität für ${results.length} Artikel (Deep Scan &lt;ref&gt;)...</em></p>`;
     
     const titles = results.map(r => r.title);
     
@@ -1295,7 +1295,7 @@ export async function performGeoValidation(results) {
             console.log(`Wiki: ${res.title} -> OSM: ${osmName}`);
             // Check if title words match OSM name
             const wikiWords = res.title.toLowerCase().split(/\s+/);
-            const osmWords = osmName.toLowerCase().split(/[\s,]+/);
+            const osmWords = osmName.toLowerCase().split(/[,\s]+/);
             const match = wikiWords.some(w => osmWords.includes(w)) || osmWords.some(w => wikiWords.includes(w));
             
             if (!match) {
@@ -1307,7 +1307,7 @@ export async function performGeoValidation(results) {
 }
 
 export async function performInterwikiCheck(results) {
-    if (results.length === 0) return;
+    if (results.length === 0) return; 
     
     showToast(`Sprach-Abgleich für ${results.length} Artikel wird gestartet...`);
     
@@ -1373,7 +1373,7 @@ export async function performDriftAnalysis(results) {
 
     // 4. Visual Feedback
     const container = document.getElementById('simulated-search-results-normal'); 
-    if (!container) return;
+    if (!container) return; 
     
     const listItems = container.querySelectorAll('li.result-item');
     enrichedResults.forEach((res, index) => {

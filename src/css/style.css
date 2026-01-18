@@ -580,7 +580,7 @@ textarea.full-width {
     
     .header-container { height: 64px; }
     .nav-list {
-        display: none; position: absolute; top: 64px; inset-x: 0;
+        display: none; position: absolute; top: 64px; left: 0; right: 0;
         background: #000; flex-direction: column; padding: 2rem;
     }    .nav-list.active { display: flex; }
     .menu-toggle { display: flex; }

@@ -59,7 +59,7 @@ function parseAdvancedSearchParams(query) {
 /**
  * Generic helper for Wikipedia API fetches with error handling.
  */
-async function fetchWikiData(lang, params) {
+export async function fetchWikiData(lang, params) {
     const endpoint = `https://${lang}.wikipedia.org/w/api.php`;
     const queryParams = new URLSearchParams({
         format: 'json',
