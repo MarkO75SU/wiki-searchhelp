@@ -15,6 +15,24 @@ export async function fetchWikiData(lang, params) {
 }
 
 /**
+ * Fetches JSON data from a given URL.
+ * @param {string} url - The URL to fetch JSON from.
+ * @returns {Promise<object|null>} The JSON data, or null on error.
+ */
+export async function fetchJson(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(`Error fetching JSON from ${url}:`, error);
+        return null;
+    }
+}
+
+/**
  * Fetches Wikitext for Deep-Scan Citation Radar
  */
 export async function fetchArticleWikitext(title, lang) {
