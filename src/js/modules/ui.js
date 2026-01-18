@@ -1,7 +1,7 @@
 // src/js/modules/ui.js
 import { getTranslation, getLanguage, getSearchMode } from './state.js';
 import { generateSearchString } from './search.js';
-import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries } from './api.js';
+import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries, fetchArticleModificationDates } from './api.js';
 import { presetCategories } from './presets.js';
 import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';
@@ -383,42 +383,67 @@ export async function handleSearchFormSubmit(event) {
     // Auto-expand the results table section when results are displayed
     resultsTableSection.classList.add('active');
 
-    // Fetch images and summaries for top 10 results at once
-    const titles = topResults.map(r => r.title);
-    const [infoResponse, summariesPages] = await Promise.all([
+    // Fetch images, summaries, modification dates, coordinates, and categories for results
+    const titles = allSearchResults.map(r => r.title); // Use allSearchResults titles for modification dates
+    const [infoResponse, summariesPages, modificationDatesResponse, coordinatesResponse, categoriesResponse] = await Promise.all([
         fetchArticlesInfo(titles, lang),
-        fetchArticlesSummaries(titles, lang)
+        fetchArticlesSummaries(titles, lang),
+        fetchArticleModificationDates(titles, lang),
+        fetchArticleCoordinates(titles, lang),
+        fetchArticlesCategories(titles, lang) // Fetch categories
     ]);
     
     const pagesInfo = infoResponse?.query?.pages || {};
+    const modificationDates = modificationDatesResponse || {};
+    const coordinates = coordinatesResponse || {};
+    const categoriesData = categoriesResponse || {};
 
-    for (const result of topResults) {
+    // Integrate modification dates, coordinates, and categories into allSearchResults
+    allSearchResults = allSearchResults.map(result => {
+        // Find categories for this specific title
+        const pageId = Object.keys(categoriesData).find(id => categoriesData[id].title === result.title);
+        const cats = categoriesData[pageId]?.categories || null;
+
         // Find summary
         const summaryPageId = Object.keys(summariesPages).find(id => summariesPages[id].title === result.title);
         const summary = summariesPages[summaryPageId]?.extract || getTranslation('no-summary-available', 'Keine Zusammenfassung verfügbar.');
         
         // Find thumbnail
-        const pageId = Object.keys(pagesInfo).find(id => pagesInfo[id].title === result.title);
-        const thumbUrl = pagesInfo[pageId]?.thumbnail?.source;
+        const infoPageId = Object.keys(pagesInfo).find(id => pagesInfo[id].title === result.title);
+        const thumbUrl = pagesInfo[infoPageId]?.thumbnail?.source || null;
 
-        const listItem = document.createElement('li');
-        listItem.className = 'result-item';
-        listItem.innerHTML = `
-            ${thumbUrl ? `<img src="${thumbUrl}" class="result-thumbnail" alt="${result.title}">` : '<div class="result-thumbnail" style="display:flex; align-items:center; justify-content:center; background:var(--slate-100); color:var(--slate-400); font-size:2rem;">📄</div>'}
-            <div class="result-content">
-                <a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">
-                    <strong>${result.title}</strong>
-                </a>
-                <p>${summary}</p>
-            </div>
-        `;
-        resultsContainer.appendChild(listItem);
-    }
+        return {
+            ...result,
+            lastmod: modificationDates[result.title] || null,
+            coords: coordinates[result.title] || null,
+            categories: cats,
+            summary: summary,
+            thumbUrl: thumbUrl
+        };
+    });
+
+    // Render results using the new function
+    renderResultsList(
+        allSearchResults.slice(0, 10), 
+        currentMode === 'normal' ? 'simulated-search-results-normal' : 'simulated-search-results',
+        currentMode === 'normal' ? 'results-actions-container-normal' : 'results-actions-container',
+        currentMode === 'normal' ? 'search-results-heading-normal' : 'search-results-heading',
+        totalHits
+    );
 
     // Save to journal AFTER rendering to ensure clean flow
     const targetUrl = `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`;
     addJournalEntry(apiQuery, targetUrl, shareParams); 
     showToast(getTranslation('toast-search-complete') || 'Suche abgeschlossen.');
+
+    // Render Timeline
+    renderTimeline(allSearchResults, 'timeline-chart');
+
+    // Render Map
+    renderMap(allSearchResults, 'search-results-map');
+
+    // Render Heatmap
+    renderCategoryHeatmap(allSearchResults, 'category-heatmap');
 }
 
 export function downloadResults() {
@@ -442,6 +467,67 @@ export function downloadResults() {
     const a = document.createElement('a');
     a.href = url;
     a.download = `wikipedia-results-${new Date().toISOString().slice(0,10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+export function drillDownSearch(title, categories) {
+    clearForm();
+    const queryInput = document.getElementById('search-query');
+    const incategoryInput = document.getElementById('incategory-value');
+
+    if (queryInput) queryInput.value = title;
+    if (incategoryInput && categories) {
+        // Use up to 3 categories, pipe-separated
+        const catTitles = categories.slice(0, 3).map(c => c.title.replace(/^Category:/i, ''));
+        incategoryInput.value = catTitles.join('|');
+    }
+
+    // Trigger the search
+    const form = document.getElementById('search-form');
+    if (form) {
+        form.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+}
+
+export function exportCitations(format) {
+    if (allSearchResults.length === 0) return;
+
+    const lang = document.getElementById('target-wiki-lang')?.value || getLanguage();
+    let content = '';
+    const filename = `wikipedia-citations-${new Date().toISOString().slice(0,10)}.${format === 'bibtex' ? 'bib' : 'ris'}`;
+
+    allSearchResults.forEach((result, index) => {
+        const title = result.title;
+        const url = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+        const year = new Date().getFullYear(); // Simplified for now
+
+        if (format === 'bibtex') {
+            content += `@misc{wiki:${title.replace(/\s+/g, '_').toLowerCase()}_${index},\n`;
+            content += `  author = {Wikipedia contributors},\n`;
+            content += `  title = {${title} --- {W}ikipedia{,} The Free Encyclopedia},\n`;
+            content += `  year = {${year}},\n`;
+            content += `  url = {${url}},\n`;
+            content += `  note = {[Online; accessed ${new Date().toISOString().slice(0,10)}]}\n`;
+            content += `}\n\n`;
+        } else if (format === 'ris') {
+            content += `TY  - ELEC\n`;
+            content += `TI  - ${title}\n`;
+            content += `AU  - Wikipedia contributors\n`;
+            content += `PY  - ${year}\n`;
+            content += `UR  - ${url}\n`;
+            content += `DB  - Wikipedia\n`;
+            content += `ER  - \n\n`;
+        }
+    });
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -560,42 +646,31 @@ export function populateCategoryOptions(selectElement) {
 }
 
 export function setupResultFilter() {
-    // Setup for normal search results
+    const handleFilterInput = (event) => {
+        const filterText = event.target.value.toLowerCase();
+        const filteredResults = allSearchResults.filter(result => 
+            result.title.toLowerCase().includes(filterText) || 
+            (result.summary && result.summary.toLowerCase().includes(filterText))
+        );
+
+        const currentMode = getSearchMode();
+        renderResultsList(
+            filteredResults.slice(0, 10), 
+            currentMode === 'normal' ? 'simulated-search-results-normal' : 'simulated-search-results',
+            currentMode === 'normal' ? 'results-actions-container-normal' : 'results-actions-container',
+            currentMode === 'normal' ? 'search-results-heading-normal' : 'search-results-heading',
+            filteredResults.length
+        );
+    };
+
     const filterInputNormal = document.getElementById('result-filter-input-normal');
-    const resultsListNormal = document.getElementById('simulated-search-results-normal');
-    if (filterInputNormal && resultsListNormal) {
-        filterInputNormal.addEventListener('input', () => {
-            const filterText = filterInputNormal.value.toLowerCase();
-            const listItems = resultsListNormal.children;
-            for (let i = 0; i < listItems.length; i++) {
-                const item = listItems[i];
-                const textContent = item.textContent ? item.textContent.toLowerCase() : '';
-                if (textContent.includes(filterText)) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            }
-        });
+    if (filterInputNormal) {
+        filterInputNormal.addEventListener('input', handleFilterInput);
     }
 
-    // Setup for network search results (original IDs)
     const filterInputNetwork = document.getElementById('result-filter-input');
-    const resultsListNetwork = document.getElementById('simulated-search-results');
-    if (filterInputNetwork && resultsListNetwork) {
-        filterInputNetwork.addEventListener('input', () => {
-            const filterText = filterInputNetwork.value.toLowerCase();
-            const listItems = resultsListNetwork.children;
-            for (let i = 0; i < listItems.length; i++) {
-                const item = listItems[i];
-                const textContent = item.textContent ? item.textContent.toLowerCase() : '';
-                if (textContent.includes(filterText)) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            }
-        });
+    if (filterInputNetwork) {
+        filterInputNetwork.addEventListener('input', handleFilterInput);
     }
 }
 
@@ -692,4 +767,321 @@ export function setupParameterExplanation() {
         html += '</div>';
         return html;
     }
+}
+
+export function renderTimeline(results, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Clear previous timeline
+    container.innerHTML = '';
+
+    // Filter out results without a modification date
+    const resultsWithDates = results.filter(r => r.lastmod);
+
+    if (resultsWithDates.length === 0) {
+        container.innerHTML = `<p>${getTranslation('timeline-no-data') || 'No date information available for these results.'}</p>`;
+        return;
+    }
+
+    // Sort results by modification date (newest first)
+    resultsWithDates.sort((a, b) => new Date(b.lastmod) - new Date(a.lastmod));
+
+    const timelineUl = document.createElement('ul');
+    timelineUl.className = 'timeline-list';
+
+    // Group results by year
+    const years = {};
+    resultsWithDates.forEach(result => {
+        const date = new Date(result.lastmod);
+        const year = date.getFullYear();
+        if (!years[year]) {
+            years[year] = [];
+        }
+        years[year].push(result);
+    });
+
+    // Create timeline elements
+    for (const year in years) {
+        const yearLi = document.createElement('li');
+        yearLi.className = 'timeline-year';
+        yearLi.innerHTML = `<h4>${year}</h4>`;
+
+        const yearUl = document.createElement('ul');
+        yearUl.className = 'timeline-events';
+
+        years[year].forEach(result => {
+            const eventLi = document.createElement('li');
+            eventLi.className = 'timeline-event';
+            const date = new Date(result.lastmod);
+            eventLi.innerHTML = `
+                <span class="timeline-date">${date.toLocaleDateString()}</span>
+                <a href="https://${getLanguage()}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">${result.title}</a>
+            `;
+            yearUl.appendChild(eventLi);
+        });
+        yearLi.appendChild(yearUl);
+        timelineUl.appendChild(yearLi);
+    }
+
+    container.appendChild(timelineUl);
+}
+
+let searchMap = null; // Track Leaflet map instance
+
+export function renderMap(results, mapContainerId) {
+    const container = document.getElementById(mapContainerId);
+    if (!container) return;
+
+    // Filter out results without coordinates
+    const resultsWithCoords = results.filter(r => r.coords);
+
+    if (resultsWithCoords.length === 0) {
+        container.innerHTML = `<p style="padding: 1rem;">${getTranslation('map-no-data') || 'No geographical information available for these results.'}</p>`;
+        return;
+    }
+
+    // Reset container if it contains a message
+    if (container.querySelector('p')) {
+        container.innerHTML = '';
+    }
+
+    // Initialize map if it doesn't exist
+    if (!searchMap) {
+        searchMap = L.map(mapContainerId).setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(searchMap);
+    } else {
+        // Clear existing markers
+        searchMap.eachLayer(layer => {
+            if (layer instanceof L.Marker) {
+                searchMap.removeLayer(layer);
+            }
+        });
+    }
+
+    const markers = [];
+    resultsWithCoords.forEach(result => {
+        const marker = L.marker([result.coords.lat, result.coords.lon])
+            .bindPopup(`
+                <strong>${result.title}</strong><br>
+                <a href="https://${getLanguage()}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">View on Wikipedia</a>
+            `);
+        marker.addTo(searchMap);
+        markers.push(marker);
+    });
+
+    if (markers.length > 0) {
+        const group = new L.featureGroup(markers);
+        searchMap.fitBounds(group.getBounds().pad(0.1));
+    }
+}
+
+export async function handleTripFormSubmit(event) {
+    event.preventDefault();
+    const locationInput = document.getElementById('trip-location-input');
+    const location = locationInput?.value.trim();
+    if (!location) return;
+
+    const lang = getLanguage();
+    const resultsContainer = document.getElementById('trip-results-container');
+    const tripInfoList = document.getElementById('trip-info-list');
+    const tripHeading = document.getElementById('trip-results-heading');
+
+    if (!resultsContainer || !tripInfoList) return;
+
+    resultsContainer.style.display = 'block';
+    tripInfoList.innerHTML = '<div class="skeleton-text skeleton"></div>';
+    if (tripHeading) tripHeading.textContent = getTranslation('trip-results-heading', '', { location });
+
+    // Perform search for tourist-relevant topics
+    const searchQuery = `${location} tourism attractions history landmarks`;
+    const apiResponse = await performWikipediaSearch(searchQuery, lang, 15);
+    const results = apiResponse?.query?.search || [];
+
+    if (results.length === 0) {
+        tripInfoList.innerHTML = `<p>${getTranslation('no-results-found')}</p>`;
+        return;
+    }
+
+    // Fetch details
+    const titles = results.map(r => r.title);
+    const [infoResponse, summariesPages, modificationDatesResponse, coordinatesResponse] = await Promise.all([
+        fetchArticlesInfo(titles, lang),
+        fetchArticlesSummaries(titles, lang),
+        fetchArticleModificationDates(titles, lang),
+        fetchArticleCoordinates(titles, lang)
+    ]);
+
+    const pagesInfo = infoResponse?.query?.pages || {};
+    const modificationDates = modificationDatesResponse || {};
+    const coordinates = coordinatesResponse || {};
+
+    const enrichedResults = results.map(result => ({
+        ...result,
+        lastmod: modificationDates[result.title] || null,
+        coords: coordinates[result.title] || null,
+        summary: summariesPages[Object.keys(summariesPages).find(id => summariesPages[id].title === result.title)]?.extract || '',
+        thumbUrl: pagesInfo[Object.keys(pagesInfo).find(id => pagesInfo[id].title === result.title)]?.thumbnail?.source
+    }));
+
+    // Render Info List
+    tripInfoList.innerHTML = enrichedResults.map(res => `
+        <div class="result-item">
+            ${res.thumbUrl ? `<img src="${res.thumbUrl}" class="result-thumbnail" alt="${res.title}">` : '<div class="result-thumbnail" style="display:flex; align-items:center; justify-content:center; background:var(--bg-element); font-size:2rem;">📍</div>'}
+            <div class="result-content">
+                <a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(res.title)}" target="_blank">
+                    <strong>${res.title}</strong>
+                </a>
+                <p>${res.summary}</p>
+            </div>
+        </div>
+    `).join('');
+
+    // Render Map
+    renderMap(enrichedResults, 'trip-map');
+}
+
+export function renderCategoryHeatmap(results, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const categoryCounts = {};
+    results.forEach(result => {
+        if (result.categories) {
+            result.categories.forEach(cat => {
+                const title = cat.title.replace(/^Category:/, ''); // Remove prefix
+                categoryCounts[title] = (categoryCounts[title] || 0) + 1;
+            });
+        }
+    });
+
+    const entries = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]);
+
+    if (entries.length === 0) {
+        container.innerHTML = `<p>${getTranslation('heatmap-no-data') || 'No category data available for these results.'}</p>`;
+        return;
+    }
+
+    const maxCount = entries[0][1];
+    const cloudDiv = document.createElement('div');
+    cloudDiv.className = 'category-cloud';
+
+    entries.slice(0, 30).forEach(([name, count]) => {
+        const span = document.createElement('span');
+        span.className = 'category-chip';
+        const weight = count / maxCount;
+        span.style.fontSize = `${0.8 + weight * 1.2}rem`;
+        span.style.opacity = 0.5 + weight * 0.5;
+        span.textContent = `${name} (${count})`;
+        cloudDiv.appendChild(span);
+    });
+
+    container.appendChild(cloudDiv);
+}
+
+export function renderResultsList(results, containerId, actionsId, headingId, totalHits) {
+    const resultsContainer = document.getElementById(containerId);
+    const resultsActions = document.getElementById(actionsId);
+    const searchResultsHeadingDisplay = document.getElementById(headingId);
+
+    if (!resultsContainer) return;
+
+    if (searchResultsHeadingDisplay) {
+        searchResultsHeadingDisplay.textContent = getTranslation('search-results-heading', '', { totalResults: totalHits });
+    }
+
+    resultsContainer.innerHTML = '';
+
+    if (results.length === 0) {
+        resultsContainer.innerHTML = `<li>${getTranslation('no-results-found')}</li>`;
+        if (resultsActions) resultsActions.style.display = 'none';
+        return;
+    }
+
+    if (resultsActions) resultsActions.style.display = 'block';
+
+    results.forEach(result => {
+        const listItem = document.createElement('li');
+        listItem.className = 'result-item';
+        const lang = getLanguage();
+        
+        // Find thumbnail URL from results if available (enriched already in handleSearchFormSubmit)
+        const thumbUrl = result.thumbUrl || null; 
+
+        listItem.innerHTML = `
+            ${thumbUrl ? `<img src="${thumbUrl}" class="result-thumbnail" alt="${result.title}">` : '<div class="result-thumbnail" style="display:flex; align-items:center; justify-content:center; background:var(--bg-element); font-size:2rem;">📄</div>'}
+            <div class="result-content">
+                <a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">
+                    <strong>${result.title}</strong>
+                </a>
+                <p>${result.summary || ''}</p>
+                ${result.relevanceScore ? `<small style="display:block; margin-top:0.5rem; color:var(--primary);">Relevance: ${result.relevanceScore} (${result.relevanceConnections} connections)</small>` : ''}
+                <div style="margin-top: 0.75rem;">
+                    <button class="btn btn-tertiary drill-down-btn" data-title="${result.title}" data-categories='${btoa(JSON.stringify(result.categories || []))}'>
+                        🔍 ${getTranslation('btn-find-similar') || 'Find Similar'}
+                    </button>
+                </div>
+            </div>
+        `;
+        resultsContainer.appendChild(listItem);
+    });
+
+    // Attach event listeners to drill-down buttons
+    resultsContainer.querySelectorAll('.drill-down-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const title = btn.dataset.title;
+            const categories = JSON.parse(atob(btn.dataset.categories));
+            drillDownSearch(title, categories);
+        });
+    });
+}
+
+export function setupSortByRelevance(buttonId) {
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+        const hasScores = allSearchResults.some(r => r.relevanceScore);
+        if (!hasScores) {
+            showToast(getTranslation('alert-analyze-first') || 'Please run Network Analysis first to calculate relevance scores.');
+            return;
+        }
+
+        allSearchResults.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+        
+        const currentMode = getSearchMode();
+        if (currentMode === 'normal') {
+            renderResultsList(
+                allSearchResults.slice(0, 10), 
+                'simulated-search-results-normal', 
+                'results-actions-container-normal', 
+                'search-results-heading-normal', 
+                allSearchResults.length
+            );
+        }
+    });
+}
+
+export function triggerTopicExplorer() {
+    // Collect all presets into a flat array
+    const allPresets = [];
+    for (const catKey in presetCategories) {
+        const cat = presetCategories[catKey];
+        for (const presetKey in cat.presets) {
+            allPresets.push(cat.presets[presetKey]);
+        }
+    }
+
+    if (allPresets.length === 0) return;
+
+    // Pick a random one
+    const randomPreset = allPresets[Math.floor(Math.random() * allPresets.length)];
+    
+    // Apply it
+    applyPreset(randomPreset);
+    showToast(getTranslation('toast-surprise-me') || 'Surprise! A random topic has been selected.');
 }

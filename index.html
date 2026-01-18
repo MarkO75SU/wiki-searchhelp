@@ -9,6 +9,7 @@
     <title id="page-title">WikiGUI</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="src/css/style.css?v=1.13">
 </head>
 <body>
@@ -31,6 +32,9 @@
         <section class="search-interface">
             <h1 id="main-heading"></h1>
             <a id="official-doc-link" target="_blank"></a>
+            <div style="margin-top: 1rem;">
+                <button type="button" id="surprise-me-button" class="btn btn-secondary"></button>
+            </div>
 
             <div class="presets-section">
                 <div class="presets-header">
@@ -57,6 +61,9 @@
                 </button>
                 <button type="button" class="btn btn-tab" data-mode="network" id="tab-network-search">
                     <span id="tab-label-network"></span>
+                </button>
+                <button type="button" class="btn btn-tab" data-mode="trip" id="tab-trip-planner">
+                    <span id="tab-label-trip"></span>
                 </button>
             </div>
 
@@ -315,8 +322,47 @@
                             <div class="results-actions" id="results-actions-container-normal">
                                 <button type="button" id="download-results-button-normal" class="btn btn-secondary"></button>
                                 <button type="button" id="analyze-network-button-normal" class="btn btn-primary"></button>
+                                <button type="button" id="sort-relevance-button-normal" class="btn btn-secondary"></button>
+                                <button type="button" id="export-bibtex-button-normal" class="btn btn-tertiary">BibTeX</button>
+                                <button type="button" id="export-ris-button-normal" class="btn btn-tertiary">RIS</button>
                             </div>
                             <ul id="simulated-search-results-normal"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Section (Collapsible) -->
+                    <div class="search-group" id="timeline-section-normal">
+                        <h2 class="accordion-header">
+                            <span id="heading-timeline-normal"></span>
+                            <span class="accordion-arrow"></span>
+                        </h2>
+                        <div class="accordion-content" id="content-timeline-normal">
+                            <div id="timeline-chart"></div>
+                            <p id="timeline-explanation"></p>
+                        </div>
+                    </div>
+
+                    <!-- Map Section (Collapsible) -->
+                    <div class="search-group" id="map-section-normal">
+                        <h2 class="accordion-header">
+                            <span id="heading-map-normal"></span>
+                            <span class="accordion-arrow"></span>
+                        </h2>
+                        <div class="accordion-content" id="content-map-normal">
+                            <div id="search-results-map" style="height: 400px; width: 100%; border-radius: var(--radius);"></div>
+                            <p id="map-explanation"></p>
+                        </div>
+                    </div>
+
+                    <!-- Category Heatmap Section (Collapsible) -->
+                    <div class="search-group" id="heatmap-section-normal">
+                        <h2 class="accordion-header">
+                            <span id="heading-heatmap-normal"></span>
+                            <span class="accordion-arrow"></span>
+                        </h2>
+                        <div class="accordion-content" id="content-heatmap-normal">
+                            <div id="category-heatmap" class="heatmap-container"></div>
+                            <p id="heatmap-explanation"></p>
                         </div>
                     </div>
 
@@ -346,6 +392,13 @@
                                 <div class="form-group span-full">
                                     <label for="network-search-query" id="label-network-search-query"></label>
                                     <input type="text" id="network-search-query">
+                                </div>
+                                <div class="form-group span-full" style="margin-top: 1rem;">
+                                    <label for="network-depth-select" id="label-network-depth"></label>
+                                    <select id="network-depth-select">
+                                        <option value="50" id="option-depth-quick"></option>
+                                        <option value="500" id="option-depth-deep"></option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -392,6 +445,9 @@
                                 <div class="results-actions" id="results-actions-container">
                                     <button type="button" id="download-results-button" class="btn btn-secondary"></button>
                                     <button type="button" id="analyze-network-button" class="btn btn-primary"></button>
+                                    <button type="button" id="sort-relevance-button" class="btn btn-secondary"></button>
+                                    <button type="button" id="export-bibtex-button" class="btn btn-tertiary">BibTeX</button>
+                                    <button type="button" id="export-ris-button" class="btn btn-tertiary">RIS</button>
                                 </div>
                                 <ul id="simulated-search-results"></ul>
                             </div>
@@ -399,6 +455,44 @@
                     </div>
                 </div>
             </div><!-- end network-search-area -->
+
+            <!-- ===== TRIP PLANNER AREA ===== -->
+            <div class="search-mode-area" data-mode="trip" id="trip-search-area" style="display: none;">
+                <div class="search-mode-info">
+                    <p id="trip-search-description"></p>
+                </div>
+
+                <div class="search-form-container">
+                    <form id="trip-search-form">
+                        <div class="search-group">
+                            <h3 class="group-heading">
+                                <span id="heading-trip-location"></span>
+                            </h3>
+                            <div class="form-grid">
+                                <div class="form-group span-full">
+                                    <label for="trip-location-input" id="label-trip-location"></label>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="trip-location-input">
+                                        <button type="button" id="get-trip-location-btn" class="btn btn-tertiary" style="padding: 0 1rem;">📍</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="main-action-buttons">
+                            <button type="submit" id="trip-plan-button" class="btn btn-primary"></button>
+                            <button type="button" id="trip-clear-button" class="btn btn-secondary"></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TRIP PLANNER RESULTS -->
+                <div class="search-output" id="trip-results-container" style="display: none;">
+                    <h3 id="trip-results-heading"></h3>
+                    <div id="trip-map" style="height: 400px; width: 100%; border-radius: var(--radius); margin-bottom: 1.5rem;"></div>
+                    <div id="trip-info-list" class="trip-info-grid"></div>
+                </div>
+            </div><!-- end trip-search-area -->
 
             <!-- JOURNAL SECTION (SHARED) -->
             <div class="journal-container">
@@ -408,6 +502,8 @@
                         <input type="checkbox" id="journal-select-all-checkbox"> <span id="journal-select-all"></span>
                     </label>
                     <div class="spacer"></div>
+                    <button id="import-journal-button" class="btn btn-tertiary">IMPORT</button>
+                    <input type="file" id="journal-file-input" style="display: none;" accept=".json">
                     <button id="export-json-button" class="btn btn-tertiary">JSON</button>
                     <button id="export-csv-button" class="btn btn-tertiary">CSV</button>
                     <button id="delete-selected-btn" class="btn btn-secondary btn-danger">🗑️</button>
@@ -449,6 +545,7 @@
         </div>
     </footer>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="src/js/main.js" type="module"></script>
 </body>
 </html>

@@ -242,3 +242,60 @@ export async function fetchWikipediaOpenSearch(query, lang = 'de', limit = 10) {
         return null;
     }
 }
+
+/**
+ * Fetches the last modification timestamp for given article titles.
+ * @param {string[]} titles - An array of article titles.
+ * @param {string} lang - The Wikipedia language edition.
+ * @returns {Promise<object|null>} An object mapping titles to their last modification timestamps, or null on error.
+ */
+export async function fetchArticleModificationDates(titles, lang = 'de') {
+    if (titles.length === 0) return {};
+    const data = await fetchWikiData(lang, {
+        action: 'query',
+        prop: 'revisions',
+        rvprop: 'timestamp',
+        titles: titles.join('|')
+    });
+
+    if (!data || !data.query || !data.query.pages) return null;
+
+    const modificationDates = {};
+    for (const pageId in data.query.pages) {
+        const page = data.query.pages[pageId];
+        if (page.revisions && page.revisions.length > 0) {
+            modificationDates[page.title] = page.revisions[0].timestamp;
+        }
+    }
+    return modificationDates;
+}
+
+/**
+ * Fetches geographical coordinates for given article titles.
+ * @param {string[]} titles - An array of article titles.
+ * @param {string} lang - The Wikipedia language edition.
+ * @returns {Promise<object|null>} An object mapping titles to their coordinates ({lat, lon}), or null on error.
+ */
+export async function fetchArticleCoordinates(titles, lang = 'de') {
+    if (titles.length === 0) return {};
+    const data = await fetchWikiData(lang, {
+        action: 'query',
+        prop: 'coordinates',
+        titles: titles.join('|'),
+        colimit: 50 // Limit the number of coordinates per request
+    });
+
+    if (!data || !data.query || !data.query.pages) return null;
+
+    const coordinates = {};
+    for (const pageId in data.query.pages) {
+        const page = data.query.pages[pageId];
+        if (page.coordinates && page.coordinates.length > 0) {
+            coordinates[page.title] = {
+                lat: page.coordinates[0].lat,
+                lon: page.coordinates[0].lon
+            };
+        }
+    }
+    return coordinates;
+}

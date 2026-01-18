@@ -1,9 +1,9 @@
 // src/js/main.js
 import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMode, getSearchMode } from './modules/state.js';
-import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter } from './modules/ui.js';
+import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { presetCategories } from './modules/presets.js';
-import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal } from './modules/journal.js';
+import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal } from './modules/journal.js';
 import { setupCategoryAutocomplete } from './modules/autocomplete.js';
 import { performNetworkAnalysis, exportNetworkAsJSON } from './modules/network.js';
 import { showToast } from './modules/toast.js';
@@ -70,6 +70,20 @@ async function initializeApp() {
     document.getElementById('delete-selected-btn')?.addEventListener('click', deleteSelectedEntries);
     document.getElementById('export-json-button')?.addEventListener('click', () => exportJournal('json'));
     document.getElementById('export-csv-button')?.addEventListener('click', () => exportJournal('csv'));
+
+    // Journal Sync (Import)
+    const importBtn = document.getElementById('import-journal-button');
+    const fileInput = document.getElementById('journal-file-input');
+    importBtn?.addEventListener('click', () => fileInput?.click());
+    fileInput?.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            importJournal(file);
+        }
+    });
+
+    // Topic Explorer
+    document.getElementById('surprise-me-button')?.addEventListener('click', triggerTopicExplorer);
 
     // Fill form from URL params (Shareable URL)
     const urlParams = new URLSearchParams(window.location.search);
@@ -150,6 +164,29 @@ async function initializeApp() {
         }
     });
 
+    // Trip Planner Logic
+    const tripForm = document.getElementById('trip-search-form');
+    if (tripForm) {
+        tripForm.addEventListener('submit', handleTripFormSubmit);
+    }
+    const getTripLocationBtn = document.getElementById('get-trip-location-btn');
+    const tripLocationInput = document.getElementById('trip-location-input');
+    getTripLocationBtn?.addEventListener('click', async () => {
+        try {
+            const pos = await getCurrentPosition();
+            if (tripLocationInput) {
+                tripLocationInput.value = `${pos.coords.latitude.toFixed(4)},${pos.coords.longitude.toFixed(4)}`;
+            }
+        } catch (err) {
+            alert('Standort konnte nicht ermittelt werden.');
+            console.error(err);
+        }
+    });
+    document.getElementById('trip-clear-button')?.addEventListener('click', () => {
+        if (tripForm) tripForm.reset();
+        document.getElementById('trip-results-container').style.display = 'none';
+    });
+
     const downloadResultsBtn = document.getElementById('download-results-button'); // Network tab's download
     if (downloadResultsBtn) {
         downloadResultsBtn.addEventListener('click', downloadResults);
@@ -159,16 +196,51 @@ async function initializeApp() {
         downloadResultsBtnNormal.addEventListener('click', downloadResults);
     }
 
+    // Citation Export Listeners
+    document.getElementById('export-bibtex-button-normal')?.addEventListener('click', () => exportCitations('bibtex'));
+    document.getElementById('export-ris-button-normal')?.addEventListener('click', () => exportCitations('ris'));
+    document.getElementById('export-bibtex-button')?.addEventListener('click', () => exportCitations('bibtex'));
+    document.getElementById('export-ris-button')?.addEventListener('click', () => exportCitations('ris'));
+
     const analyzeNetworkBtn = document.getElementById('analyze-network-button'); // Network tab's analyze
-    analyzeNetworkBtn?.addEventListener('click', () => {
+    analyzeNetworkBtn?.addEventListener('click', async () => {
         const results = getAllSearchResults();
-        performNetworkAnalysis(results);
+        const nodes = await performNetworkAnalysis(results);
+        if (nodes) {
+            // Enrich global results with scores
+            const allResults = getAllSearchResults();
+            allResults.forEach(r => {
+                const node = nodes.find(n => n.title === r.title);
+                if (node) {
+                    r.relevanceScore = node.strength;
+                    r.relevanceConnections = node.connections;
+                }
+            });
+            // Re-render
+            renderResultsList(allResults.slice(0, 10), 'simulated-search-results', 'results-actions-container', 'search-results-heading', allResults.length);
+        }
     });
     const analyzeNetworkBtnNormal = document.getElementById('analyze-network-button-normal'); // Normal tab's analyze
-    analyzeNetworkBtnNormal?.addEventListener('click', () => {
+    analyzeNetworkBtnNormal?.addEventListener('click', async () => {
         const results = getAllSearchResults();
-        performNetworkAnalysis(results);
+        const nodes = await performNetworkAnalysis(results);
+        if (nodes) {
+            // Enrich global results with scores
+            const allResults = getAllSearchResults();
+            allResults.forEach(r => {
+                const node = nodes.find(n => n.title === r.title);
+                if (node) {
+                    r.relevanceScore = node.strength;
+                    r.relevanceConnections = node.connections;
+                }
+            });
+            // Re-render
+            renderResultsList(allResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', allResults.length);
+        }
     });
+
+    setupSortByRelevance('sort-relevance-button-normal');
+    setupSortByRelevance('sort-relevance-button');
 
     const exportNetworkBtn = document.getElementById('export-network-button');
     exportNetworkBtn?.addEventListener('click', exportNetworkAsJSON);
@@ -337,6 +409,7 @@ function setupSearchModeTabs() {
     const tabButtons = document.querySelectorAll('.btn-tab'); // Updated selector
     const normalSearchArea = document.getElementById('normal-search-area');
     const networkSearchArea = document.getElementById('network-search-area');
+    const tripSearchArea = document.getElementById('trip-search-area');
     const searchInterface = document.querySelector('.search-interface');
 
     const initialMode = getSearchMode();
@@ -345,13 +418,9 @@ function setupSearchModeTabs() {
     }
 
     // Show correct area on init
-    if (initialMode === 'normal') {
-        normalSearchArea.style.display = 'block';
-        networkSearchArea.style.display = 'none';
-    } else {
-        normalSearchArea.style.display = 'none';
-        networkSearchArea.style.display = 'block';
-    }
+    normalSearchArea.style.display = initialMode === 'normal' ? 'block' : 'none';
+    networkSearchArea.style.display = initialMode === 'network' ? 'block' : 'none';
+    tripSearchArea.style.display = initialMode === 'trip' ? 'block' : 'none';
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -364,18 +433,14 @@ function setupSearchModeTabs() {
 
             // Update area visibility
             if (searchInterface) {
-                searchInterface.classList.remove('search-mode-normal', 'search-mode-network');
+                searchInterface.classList.remove('search-mode-normal', 'search-mode-network', 'search-mode-trip');
                 searchInterface.classList.add(`search-mode-${mode}`);
             }
 
             // Show correct area
-            if (mode === 'normal') {
-                normalSearchArea.style.display = 'block';
-                networkSearchArea.style.display = 'none';
-            } else {
-                normalSearchArea.style.display = 'none';
-                networkSearchArea.style.display = 'block';
-            }
+            normalSearchArea.style.display = mode === 'normal' ? 'block' : 'none';
+            networkSearchArea.style.display = mode === 'network' ? 'block' : 'none';
+            tripSearchArea.style.display = mode === 'trip' ? 'block' : 'none';
 
             // No clearForm() or generateSearchString() here, state is persisted
         });

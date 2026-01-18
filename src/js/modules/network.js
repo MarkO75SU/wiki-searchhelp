@@ -37,7 +37,10 @@ export async function performNetworkAnalysis(allArticles) {
     
     if (!container || !canvas || !allArticles.length) return;
 
-    const articles = allArticles.slice(0, 250);
+    const depthSelect = document.getElementById('network-depth-select');
+    const articleLimit = depthSelect ? parseInt(depthSelect.value) : 50;
+
+    const articles = allArticles.slice(0, articleLimit);
     container.style.display = 'block';
     
     // Auto-expand the network graph section when analysis is triggered
@@ -79,8 +82,11 @@ export async function performNetworkAnalysis(allArticles) {
 
         updateNetworkExplanation(nodes, edges, visualNodes);
 
+        return nodes; // Return nodes for use in smart sorting
+
     } catch (err) {
         console.error('Network analysis error:', err);
+        return null;
     }
 }
 
@@ -106,18 +112,24 @@ function calculateEdges(nodes) {
         
         for (let j = i + 1; j < n; j++) {
             const nodeJ = nodes[j];
-            const shared = nodeI.categories.filter(cat => nodeJ.categories.includes(cat));
+            const sharedCats = nodeI.categories.filter(cat => nodeJ.categories.includes(cat));
             const wordsJ = nodeJ.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
             const sharedWords = wordsI.filter(w => wordsJ.includes(w));
 
-            const strength = shared.length + (sharedWords.length * 2);
+            const strength = sharedCats.length + (sharedWords.length * 2);
 
             if (strength > 0) {
                 nodeI.totalStrength += strength;
                 nodeJ.totalStrength += strength;
                 nodeI.connectionCount++;
                 nodeJ.connectionCount++;
-                edges.push({ from: nodeI, to: nodeJ, strength });
+                edges.push({ 
+                    from: nodeI, 
+                    to: nodeJ, 
+                    strength,
+                    sharedCategories: sharedCats.map(c => c.replace(/^Kategorie:/i, '').replace(/^Category:/i, '')),
+                    sharedKeywords: sharedWords
+                });
             }
         }
     }
@@ -191,6 +203,13 @@ function drawNetwork(canvas, visualNodes, allEdges) {
     });
 }
 
+function showEdgeDetails(edge) {
+    const categories = edge.sharedCategories.length > 0 ? edge.sharedCategories.join(', ') : 'None';
+    const keywords = edge.sharedKeywords.length > 0 ? edge.sharedKeywords.join(', ') : 'None';
+    
+    alert(`Connection Details between:\n"${edge.from.title}" and "${edge.to.title}"\n\nShared Categories: ${categories}\nShared Keywords: ${keywords}`);
+}
+
 function updateNetworkExplanation(nodes, edges, visualNodes) {
     const explanationEl = document.getElementById('network-explanation');
     if (!explanationEl) return;
@@ -223,10 +242,11 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
     const central = getTranslation('network-explanation-central', '', { title: strongestNode?.title || 'N/A' });
     const categories = getTranslation('network-explanation-categories', '', { categories: topCats.join(', ') || 'N/A' });
 
-    // Build Table
+    // Build Article Table
     let tableHtml = `
         <div style="margin-top: 2rem; overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--slate-300);">
+            <h4 style="margin-bottom: 1rem;">${isDe ? 'Top Artikel' : 'Top Articles'}</h4>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--slate-300); margin-bottom: 2rem;">
                 <thead>
                     <tr style="border-bottom: 1px solid var(--slate-700);">
                         <th style="text-align: left; padding: 0.5rem;">${isDe ? 'Artikel' : 'Article'}</th>
@@ -238,11 +258,39 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
                     ${nodes
                         .filter(n => n.connectionCount > 0 && n.totalStrength > 0)
                         .sort((a,b) => b.totalStrength - a.totalStrength)
+                        .slice(0, 15)
                         .map(n => `
-                        <tr style="border-bottom: 1px solid var(--slate-800); ${visualNodes.includes(n) ? 'background: var(--bg-element);' : ''}">
+                        <tr style="border-bottom: 1px solid var(--slate-800); ${visualNodes.includes(n) ? 'background: rgba(37, 99, 235, 0.1);' : ''}">
                             <td style="padding: 0.5rem;"><a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(n.title)}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">${n.title}</a></td>
                             <td style="text-align: right; padding: 0.5rem;">${n.connectionCount}</td>
                             <td style="text-align: right; padding: 0.5rem;">${n.totalStrength}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+
+            <h4 style="margin-bottom: 1rem;">${isDe ? 'Stärkste Verbindungen' : 'Strongest Connections'}</h4>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--slate-300);">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--slate-700);">
+                        <th style="text-align: left; padding: 0.5rem;">${isDe ? 'Von' : 'From'}</th>
+                        <th style="text-align: left; padding: 0.5rem;">${isDe ? 'Nach' : 'To'}</th>
+                        <th style="text-align: right; padding: 0.5rem;">${isDe ? 'Stärke' : 'Strength'}</th>
+                        <th style="text-align: center; padding: 0.5rem;">Info</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${edges
+                        .sort((a, b) => b.strength - a.strength)
+                        .slice(0, 10)
+                        .map((e, index) => `
+                        <tr style="border-bottom: 1px solid var(--slate-800);">
+                            <td style="padding: 0.5rem;">${e.from.title}</td>
+                            <td style="padding: 0.5rem;">${e.to.title}</td>
+                            <td style="text-align: right; padding: 0.5rem;">${e.strength}</td>
+                            <td style="text-align: center; padding: 0.5rem;">
+                                <button class="btn btn-tertiary edge-info-btn" data-index="${index}" style="padding: 2px 8px; min-height: 24px;">i</button>
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -257,4 +305,13 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
         <p style="margin-left: 2rem; margin-top: 0.25rem;">${categories}</p>
         ${tableHtml}
     `;
+
+    // Attach event listeners to edge info buttons
+    const sortedEdges = [...edges].sort((a, b) => b.strength - a.strength).slice(0, 10);
+    explanationEl.querySelectorAll('.edge-info-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.index);
+            showEdgeDetails(sortedEdges[index]);
+        });
+    });
 }
