@@ -12,7 +12,28 @@ import { initializeCookieBanner } from './modules/cookie.js';
 import { fetchJson } from './modules/api.js';
 import { getCurrentPosition } from './modules/utils.js';
 
+import { supabase } from './modules/database.js';
+
 const SAVE_STATE_KEY = 'wikiGuiFormState';
+
+async function updateUserStatusBadge() {
+    const badge = document.getElementById('user-status-badge');
+    if (!badge) return;
+
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && session.user) {
+            badge.textContent = `User: ${session.user.email.split('@')[0]}`;
+            badge.style.display = 'inline-flex';
+            badge.title = `Logged in as ${session.user.email}`;
+        } else {
+            badge.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Error updating user status badge:', err);
+        badge.style.display = 'none';
+    }
+}
 
 function saveFormState() {
     const form = document.getElementById('search-form');
