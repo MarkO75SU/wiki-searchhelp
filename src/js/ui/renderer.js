@@ -32,7 +32,7 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
         const limitedSummary = sentences.slice(0, 4).join(' ');
         const wikiUrl = `https://${getLanguage()}.wikipedia.org/wiki/${encodeURIComponent(result.title)}`;
 
-        const hasCoords = result.coords ? '<span class="meta-badge">📍 Knowledge-Map</span>' : '';
+        const hasCoords = result.coords ? '<span class="meta-badge">📍 siehe Knowledge-Map</span>' : '';
         const driftBadge = result.isOutlier ? `<span class="meta-badge drift" style="color: var(--accent-red)">⚠️ Drift</span>` : '';
         
         card.innerHTML = `

@@ -10,14 +10,14 @@
 
 ## 2. Analyse- & Visualisierungs-Layer (Status: Implementiert)
 * **Timeline View:** Visualisierung der Artikel-Aktualität. [x]
-* **Interactive Knowledge Map:** Leaflet/OSM Integration (Lazy Loaded). [x]
+* **Interactive Knowledge Map:** Detaillierte Orientierung mit adaptiven Labels & Maßstab. [x]
 * **Category Heatmap:** Treemap der Artikelverteilung. [x]
 * **Akademischer Export:** BibTeX, RIS und CSV Unterstützung. [x]
 
 ## 3. Redaktions-Suite & AI-Intelligence (Status: Implementiert)
-* **Health-Score Engine:** Bewertung via Belegquote & Metadaten. [x]
+* **Health-Score Engine:** Transparente Bewertung inkl. Erklärungs-Modulen. [x]
 * **Beleg-Radar:** Deep-Scan-Analyse der `<ref>`-Dichte. [x]
-* **Semantic Drift Analysis:** KI-Vektoranalyse (Gemini text-embedding-004). [x]
+* **Semantic Drift Analysis:** KI-Vektoranalyse mit Echtzeit-Feedback. [x]
 * **Interwiki-Detector:** Globaler Abgleich & Relevanz-Score. [x]
 * **Wikidata Conflict Detector:** Vergleich von Kategorien-Hierarchien. [x]
 
@@ -29,7 +29,7 @@
 
 ## 5. Zukunfts-Phasen & Deployment (Status: Finalisiert)
 1. **Phase 1-4:** Vollständig abgeschlossen. [x]
-2. **Phase 5 (UX & Stability):** Enterprise Design Overhaul, MIME-Type Fixes & Service Consolidation abgeschlossen. [x]
+2. **Phase 2.0 (UX & Stability):** Enterprise Design Overhaul, MIME-Type Fixes, Content-Limiting & Map Orientation abgeschlossen. [x]
 
 ---
 **System-Umgebung:** Lokal: `npx serve` | Live: HTTPS/GitHub Pages | Backend: Supabase (Deno Edge)

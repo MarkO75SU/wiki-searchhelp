@@ -35,17 +35,21 @@
 - **Dynamic Phase Transitions:** Automated the jump to Phase 3 (Editor) when selecting maintenance tools.
 - **Mobile First:** Optimized sidebar and grid responsiveness for tablet and mobile devices.
 
+### 🗺️ Map & Content Optimization (Late Sprint)
+- **Geographic Orientation:** Map now dynamically displays labels for cities, regions, and countries depending on the zoom level (Voyager Labels).
+- **Adaptive Article Labels:** Permanent article titles appear on the map at high zoom levels (>9) for instant identification.
+- **Summary Control:** Implemented regex-based sentence detection to limit article previews to exactly 4 sentences.
+- **Direct Navigation:** Added "Read more on Wikipedia" links to result cards and "Open Article" links to map popups.
+- **Analytical Clarity:** Added educational descriptions to Health-Score and Semantic Drift cards to help users interpret the data.
+
 ### 🛠️ System Stabilization & Deployment Fixes
-- **MIME-Type Fix:** Resolved "text/html" blocking errors on GitHub Pages by correcting over 30 cross-module import paths.
-- **Service Consolidation:** Eliminated redundant `api.js`. All Wikipedia, Wikidata, and resource fetching logic is now centralized in `src/js/services/wiki_service.js`.
-- **State Integrity:** Restored missing `getSearchMode` and `setSearchMode` exports in `core/state.js`.
-- **PWA Activation:** Enabled Service Worker registration in `main.js` for full offline support.
+- **MIME-Type Fix:** Resolved "text/html" blocking errors on GitHub Pages by correcting cross-module import paths.
+- **Service Consolidation:** Eliminated redundant `api.js`. Centralized all fetching logic in `src/js/services/wiki_service.js`.
 - **Flow Engine Fix:** Corrected `FlowManager` initialization and sidebar highlighting logic.
-- **Config Management:** Included `config.js` in version control (public anon keys) while maintaining `.env` security.
 
 ### 📝 Roadmap Achievements
-- **Completed:** Wikidata Conflict Detector, Verified Editor Hub, EventStream Monitoring, and Admin Dashboard Charts.
-- **Code Health:** 100% modular, zero reported syntax errors in production environment.
+- **Completed:** All core features, design overhaul, and production-ready stabilization.
+- **Code Health:** 100% modular, highly responsive, and robust error handling implemented.
 
 ---
 **Next Session Priority:**
