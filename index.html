@@ -7,9 +7,9 @@
     <title>WikiGUI Suite 2026</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="src/css/style.css?v=1.15">
+    <link rel="stylesheet" href="src/css/style.css?v=1.16">
 </head>
-<body>
+<body class="tier-free"> <!-- Tier class updated dynamically by JS -->
     <div class="enterprise-layout">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
@@ -42,75 +42,42 @@
                         </div>
                         <div class="quick-actions" style="margin-top: 1rem; text-align: left;">
                             <button type="button" id="surprise-me-button" class="btn btn-tertiary" style="height: 32px; font-size: 0.75rem;">🎲 Überrasch mich</button>
+                            <button type="button" id="toggle-advanced-btn" class="btn btn-tertiary" style="height: 32px; font-size: 0.75rem;">⚙️ Erweiterte Parameter</button>
                         </div>
 
-                        <!-- ADVANCED PARAMETERS GRID -->
-                        <div class="advanced-settings-grid">
-                            <!-- Group: Concept -->
-                            <div class="settings-card">
-                                <h3>Such-Konzept</h3>
-                                <div class="form-group">
-                                    <label>Exakte Phrase</label>
-                                    <input type="text" id="exact-phrase" placeholder="\"phrase\"">
-                                </div>
-                                <div class="form-group">
-                                    <label>Ausschließen</label>
-                                    <input type="text" id="without-words" placeholder="-wort">
-                                </div>
-                                <div class="form-row">
-                                    <label><input type="checkbox" id="option-intitle"> Nur im Titel</label>
-                                    <label><input type="checkbox" id="option-fuzzy"> Unscharf (~)</label>
-                                </div>
-                            </div>
-
-                            <!-- Group: Scope -->
-                            <div class="settings-card">
-                                <h3>Bereich & Filter</h3>
-                                <div class="form-group">
-                                    <label>In Kategorie</label>
-                                    <input type="text" id="incategory-value" placeholder="Kategorie...">
-                                </div>
-                                <div class="form-group">
-                                    <label>Tiefe Kategorie</label>
-                                    <input type="text" id="deepcat-value" placeholder="Deepcat...">
-                                </div>
-                                <div class="form-group">
-                                    <label>Hat Vorlage</label>
-                                    <input type="text" id="hastemplate-value" placeholder="Infobox...">
-                                </div>
-                            </div>
-
-                            <!-- Group: Technical & Time -->
-                            <div class="settings-card">
-                                <h3>Technik & Zeit</h3>
-                                <div class="form-group">
-                                    <label>Im Quelltext (insource)</label>
-                                    <input type="text" id="insource-value" placeholder="/regex/">
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Ab Datum</label>
-                                        <input type="date" id="dateafter-value">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Bis Datum</label>
-                                        <input type="date" id="datebefore-value">
+                        <!-- ADVANCED PARAMETERS (Initially Hidden) -->
+                        <div id="advanced-settings-area" style="display: none; margin-top: 2rem;">
+                            <div class="advanced-settings-grid">
+                                <div class="settings-card">
+                                    <h3>Such-Konzept</h3>
+                                    <div class="form-group"><label>Exakte Phrase</label><input type="text" id="exact-phrase" placeholder="\"phrase\""></div>
+                                    <div class="form-group"><label>Ausschließen</label><input type="text" id="without-words" placeholder="-wort"></div>
+                                    <div class="form-row">
+                                        <label><input type="checkbox" id="option-intitle"> Nur Titel</label>
+                                        <label><input type="checkbox" id="option-fuzzy"> Unscharf</label>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Group: Location -->
-                            <div class="settings-card">
-                                <h3>Geografisch</h3>
-                                <div class="form-group">
-                                    <label>Radius (km)</label>
-                                    <input type="number" id="geo-radius" value="5">
+                                <div class="settings-card">
+                                    <h3>Bereich & Filter</h3>
+                                    <div class="form-group"><label>Kategorie</label><input type="text" id="incategory-value"></div>
+                                    <div class="form-group"><label>Tiefe</label><input type="text" id="deepcat-value"></div>
+                                    <div class="form-group"><label>Vorlage</label><input type="text" id="hastemplate-value"></div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Koordinaten</label>
-                                    <div class="input-with-action">
-                                        <input type="text" id="geo-coord" placeholder="lat,lon">
-                                        <button type="button" id="get-location-btn" class="btn-icon">📍</button>
+                                <div class="settings-card">
+                                    <h3>Technik & Zeit</h3>
+                                    <div class="form-group"><label>Quelltext</label><input type="text" id="insource-value" placeholder="/regex/"></div>
+                                    <div class="form-row">
+                                        <div class="form-group"><label>Ab</label><input type="date" id="dateafter-value"></div>
+                                        <div class="form-group"><label>Bis</label><input type="date" id="datebefore-value"></div>
+                                    </div>
+                                </div>
+                                <div class="settings-card">
+                                    <h3>Geografisch</h3>
+                                    <div class="form-group"><label>Radius (km)</label><input type="number" id="geo-radius" value="5"></div>
+                                    <div class="form-group"><label>Koordinaten</label>
+                                        <div class="input-with-action">
+                                            <input type="text" id="geo-coord"><button type="button" id="get-location-btn" class="btn-icon">📍</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -122,41 +89,43 @@
             <!-- PHASE 2: ANALYSIS -->
             <section id="phase-analysis" class="workflow-phase" style="display: none;">
                 <div class="analysis-grid">
-                    <div class="card" id="health-card">
-                        <div class="card-header">
-                            <h3>Health Score</h3>
-                            <span class="info-icon" title="Die strukturelle Integrität: Bewertet Belegquote, Bilderdichte und formale Korrektheit. Ein Score > 70 steht für hohe Verlässlichkeit.">i</span>
-                        </div>
-                        <p class="card-info">Gesamtwertung der Artikelqualität basierend auf Belegen und Medienanteil.</p>
+                    <!-- Advanced Tier Feature -->
+                    <div class="card tier-gate advanced" id="health-card">
+                        <div class="card-header"><h3>Health Score</h3><span class="info-icon">i</span></div>
+                        <p class="card-info">Strukturelle Integrität & Belegqualität.</p>
                         <div id="health-score-container-normal"></div>
                     </div>
-                    <div class="card" id="drift-card">
-                        <div class="card-header">
-                            <h3>Semantic Drift</h3>
-                            <span class="info-icon" title="KI-Vektoranalyse: Prüft, ob der Hauptteil thematisch von der Einleitung abweicht. Hoher Drift deutet auf Inkonsistenz hin.">i</span>
-                        </div>
-                        <p class="card-info">Erkennt inhaltliche Abweichungen zwischen Einleitung und Hauptteil.</p>
-                        <button id="analyze-drift-button-normal" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">🔍 KI-Drift prüfen</button>
+                    <!-- Advanced Tier Feature -->
+                    <div class="card tier-gate advanced" id="drift-card">
+                        <div class="card-header"><h3>Semantic Drift</h3><span class="info-icon">i</span></div>
+                        <p class="card-info">KI-Analyse der inhaltlichen Abweichung.</p>
+                        <button id="analyze-drift-button-normal" class="btn btn-secondary btn-sm" style="width: 100%;">🔍 KI-Check</button>
                     </div>
-                    <div class="card" id="map-card">
-                        <div class="card-header">
-                            <h3>Knowledge Map</h3>
+                    <!-- Advanced Tier Feature: RETURN OF THE NETWORK GRAPH -->
+                    <div class="card tier-gate advanced" id="network-card">
+                        <div class="card-header"><h3>Netzwerkgraph</h3><span class="info-icon">i</span></div>
+                        <p class="card-info">Beziehungen und Abhängigkeiten.</p>
+                        <div class="canvas-wrapper" style="height: 150px; background: var(--bg-input); border-radius: 4px; overflow: hidden;">
+                            <canvas id="network-canvas" style="width: 100%; height: 100%; cursor: crosshair;"></canvas>
                         </div>
-                        <p class="card-info">Geografische Verteilung der identifizierten Artikel im Raum.</p>
-                        <div id="search-results-map" class="mini-map" style="height: 150px; margin-top: 1rem;"></div>
+                        <div id="network-analysis-container" style="display: none;"></div> <!-- Hidden logistics container -->
+                        <button id="analyze-network-button-normal" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 1rem;">🌐 Graph generieren</button>
+                    </div>
+                    <!-- Free Tier Feature -->
+                    <div class="card" id="map-card">
+                        <div class="card-header"><h3>Knowledge Map</h3></div>
+                        <p class="card-info">Geografische Verteilung der Artikel.</p>
+                        <div id="search-results-map" class="mini-map" style="height: 150px;"></div>
                     </div>
                 </div>
                 
                 <div class="results-container">
                     <h2 id="search-results-heading-normal">Ergebnisse</h2>
-                    <div id="results-preview-badge" class="status-badge" style="margin-bottom: 1rem; display: none;">
-                        <span id="results-preview-count">0</span> Treffer
-                    </div>
                     <ul id="simulated-search-results-normal" class="results-list"></ul>
                 </div>
 
                 <div class="phase-actions">
-                    <button id="open-editor-btn" class="btn btn-primary" disabled>Expert-Editor öffnen</button>
+                    <button id="open-editor-btn" class="btn btn-primary tier-gate expert" disabled>Expert-Editor öffnen</button>
                 </div>
             </section>
 
@@ -164,14 +133,10 @@
             <section id="phase-editor" class="workflow-phase" style="display: none;">
                 <div class="editor-layout">
                     <div class="editor-sidebar">
-                        <h3>Maintenance Tools</h3>
+                        <h3>Wartungstools</h3>
                         <div id="maintenance-modal-inline"></div>
                     </div>
-                    <div class="editor-main">
-                        <div id="article-preview" class="preview-box">
-                            <p>Wähle einen Artikel zur Bearbeitung aus Phase 2.</p>
-                        </div>
-                    </div>
+                    <div class="editor-main"><div id="article-preview" class="preview-box"></div></div>
                 </div>
             </section>
         </main>
@@ -180,10 +145,7 @@
     <!-- MODALS -->
     <div id="login-modal" class="modal" aria-hidden="true">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Login</h3>
-                <button class="close-modal" id="login-modal-close">&times;</button>
-            </div>
+            <div class="modal-header"><h3>Login</h3><button class="close-modal" id="login-modal-close">&times;</button></div>
             <div class="modal-body">
                 <form id="login-form">
                     <input type="email" id="login-email" placeholder="E-Mail" required>
@@ -193,21 +155,6 @@
             </div>
         </div>
     </div>
-
-    <footer id="footer">
-        <div class="container">
-            <nav id="footer-nav">
-                <ul id="footer-links" style="display: flex; gap: 2rem; justify-content: center; list-style: none;">
-                    <li><a href="src/html/blog.html">Blog</a></li>
-                    <li><a href="src/html/privacy_de.html">Datenschutz</a></li>
-                    <li><a href="src/html/faq.html">FAQ</a></li>
-                    <li><a href="src/html/hilfe.html">Hilfe</a></li>
-                    <li><a href="src/html/impressum.html">Impressum</a></li>
-                </ul>
-            </nav>
-            <p id="footer-text" style="margin-top: 2rem; opacity: 0.5;">&copy; 2026 WikiGUI Suite. Alle Rechte vorbehalten.</p>
-        </div>
-    </footer>
 
     <script src="src/js/main.js" type="module"></script>
 </body>

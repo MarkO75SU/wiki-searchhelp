@@ -386,5 +386,14 @@
     "error-api-fetch": "Daten konnten von der Wikipedia-API nicht abgerufen werden.",
     "error-resource-fetch": "Ressource konnte nicht abgerufen werden.",
     "error-json-fetch": "JSON-Daten konnten nicht abgerufen werden.",
-    "error-opensearch-fetch": "Suchvorschläge konnten nicht abgerufen werden."
+    "error-opensearch-fetch": "Suchvorschläge konnten nicht abgerufen werden.",
+    "health-card-title": "Health Score",
+    "health-card-desc": "Gesamtwertung der Artikelqualität basierend auf Belegen und Medienanteil.",
+    "health-card-tooltip": "Die strukturelle Integrität: Bewertet Belegquote, Bilderdichte und formale Korrektheit. Ein Score > 70 steht für hohe Verlässlichkeit.",
+    "drift-card-title": "Semantic Drift",
+    "drift-card-desc": "Erkennt inhaltliche Abweichungen zwischen Einleitung und Hauptteil.",
+    "drift-card-tooltip": "KI-Vektoranalyse: Prüft, ob der Hauptteil thematisch von der Einleitung abweicht. Hoher Drift deutet auf Inkonsistenz hin.",
+    "map-card-title": "Knowledge Map",
+    "map-card-desc": "Geografische Verteilung der identifizierten Artikel im Raum.",
+    "read-more-wiki": "Weiterlesen auf Wikipedia"
 }

@@ -378,5 +378,14 @@
     "error-api-fetch": "Could not fetch data from Wikipedia API.",
     "error-resource-fetch": "Could not fetch resource.",
     "error-json-fetch": "Could not fetch JSON data.",
-    "error-opensearch-fetch": "Could not fetch search suggestions."
+    "error-opensearch-fetch": "Could not fetch search suggestions.",
+    "health-card-title": "Health Score",
+    "health-card-desc": "Overall article quality rating based on citations and media density.",
+    "health-card-tooltip": "Structural integrity: Evaluates reference ratio, image density, and formal correctness. A score > 70 indicates high reliability.",
+    "drift-card-title": "Semantic Drift",
+    "drift-card-desc": "Detects content deviations between the introduction and the main body.",
+    "drift-card-tooltip": "AI Vector Analysis: Checks if the main section deviates thematically from the intro. High drift indicates inconsistency.",
+    "map-card-title": "Knowledge Map",
+    "map-card-desc": "Geographical distribution of the identified articles in space.",
+    "read-more-wiki": "Read more on Wikipedia"
 }
