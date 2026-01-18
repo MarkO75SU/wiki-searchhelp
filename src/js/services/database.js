@@ -1,4 +1,4 @@
-// src/js/modules/database.js
+// src/js/services/database.js
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 import { CONFIG } from './config.js';
 

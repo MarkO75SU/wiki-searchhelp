@@ -1,18 +1,17 @@
 // src/js/main.js
-import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMode, getSearchMode } from './modules/state.js';
-import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer, performHealthAnalysis, performGeoValidation, performInterwikiCheck, performDriftAnalysis } from './modules/ui.js';
-import { generateSearchString } from './modules/search.js';
-import { presetCategories } from './modules/presets.js';
-import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal, syncJournalToGist } from './modules/journal.js';
-import { setupCategoryAutocomplete } from './modules/autocomplete.js';
-import { performNetworkAnalysis, exportNetworkAsJSON } from './modules/network.js';
-import { showToast } from './modules/toast.js';
-import { loadHeader } from './modules/headerLoader.js'; // Added headerLoader import
-import { initializeCookieBanner } from './modules/cookie.js';
-import { fetchJson } from './modules/api.js';
-import { getCurrentPosition } from './modules/utils.js';
-
-import { supabase } from './modules/database.js';
+import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMode, getSearchMode } from './core/state.js';
+import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer, performHealthAnalysis, performGeoValidation, performInterwikiCheck, performDriftAnalysis } from './ui/handlers.js';
+import { generateSearchString } from './core/search.js';
+import { presetCategories } from './config/presets.js';
+import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal, syncJournalToGist } from './core/journal.js';
+import { setupCategoryAutocomplete } from './ui/autocomplete.js';
+import { performNetworkAnalysis, exportNetworkAsJSON } from './core/network.js';
+import { showToast } from './ui/toast.js';
+import { loadHeader } from './ui/headerLoader.js';
+import { initializeCookieBanner } from './ui/cookie.js';
+import { fetchJson } from './services/wiki_service.js';
+import { getCurrentPosition } from './core/utils.js';
+import { supabase } from './services/database.js';
 
 const SAVE_STATE_KEY = 'wikiGuiFormState';
 
@@ -41,7 +40,7 @@ function saveFormState() {
 
     const state = {};
     form.querySelectorAll('input, select, textarea').forEach(element => {
-        if (element.id) { // Only save elements with an ID
+        if (element.id) {
             if (element.type === 'checkbox') {
                 state[element.id] = element.checked;
             } else {
@@ -73,28 +72,21 @@ function loadFormState() {
 }
 
 async function initializeApp() {
-    await loadHeader('header-placeholder', 'src/html/header.html'); // AWAIT the header load
+    await loadHeader('header-placeholder', 'src/html/header.html');
     initializeCookieBanner();
     const initialLang = getLanguage();
     document.documentElement.lang = initialLang;
 
     updateUserStatusBadge();
-
     addAccordionFunctionality();
     renderJournal();
-
-    // Load saved form state from sessionStorage
     loadFormState();
-
-    // Setup Search Mode Tabs
     setupSearchModeTabs();
 
-    // Journal Actions
     document.getElementById('delete-selected-btn')?.addEventListener('click', deleteSelectedEntries);
     document.getElementById('export-json-button')?.addEventListener('click', () => exportJournal('json'));
     document.getElementById('export-csv-button')?.addEventListener('click', () => exportJournal('csv'));
 
-    // Journal Sync (Import)
     const importBtn = document.getElementById('import-journal-button');
     const fileInput = document.getElementById('journal-file-input');
     importBtn?.addEventListener('click', () => fileInput?.click());
@@ -105,11 +97,8 @@ async function initializeApp() {
         }
     });
     document.getElementById('export-gist-button')?.addEventListener('click', syncJournalToGist);
-
-    // Topic Explorer
     document.getElementById('surprise-me-button')?.addEventListener('click', triggerTopicExplorer);
 
-    // Fill form from URL params (Shareable URL)
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.forEach((value, key) => {
         const element = document.getElementById(key);
@@ -122,10 +111,8 @@ async function initializeApp() {
         }
     });
 
-    // Setup Autocomplete
     setupCategoryAutocomplete(document.getElementById('incategory-value'));
 
-    // Mobile Menu Toggle - Re-attach after header is loaded
     const menuToggle = document.getElementById('menu-toggle');
     const navList = document.getElementById('nav-list');
     if (menuToggle && navList) {
@@ -135,15 +122,13 @@ async function initializeApp() {
         });
     }
 
-    // Language buttons - Re-attach after header is loaded
     document.querySelectorAll('.lang-button').forEach(button => {
         button.addEventListener('click', async (event) => {
             const lang = event.target.dataset.lang;
             if (!lang) return;
             setLanguage(lang);
-            clearForm(); // Clear all fields on language switch
+            clearForm();
             
-            // Explicitly set the target wiki language to match the UI language
             const targetWikiLangSelect = document.getElementById('target-wiki-lang');
             if (targetWikiLangSelect) {
                 targetWikiLangSelect.value = lang;
@@ -154,14 +139,13 @@ async function initializeApp() {
                 if (!data) return;
                 setTranslations(lang, data);
                 applyTranslations();
-                generateSearchString(); // Update generated string for new language context
+                generateSearchString();
             } catch (error) {
                 console.error(`Could not fetch translations for ${lang}:`, error);
             }
         });
     });
 
-    // Date Validation
     const dateAfter = document.getElementById('dateafter-value');
     const dateBefore = document.getElementById('datebefore-value');
     const validateDates = () => {
@@ -173,7 +157,6 @@ async function initializeApp() {
     dateAfter?.addEventListener('change', validateDates);
     dateBefore?.addEventListener('change', validateDates);
 
-    // Geo Location Logic
     const getLocationBtn = document.getElementById('get-location-btn');
     const geoCoordInput = document.getElementById('geo-coord');
     getLocationBtn?.addEventListener('click', async () => {
@@ -187,7 +170,6 @@ async function initializeApp() {
         }
     });
 
-    // Trip Planner Logic
     const tripForm = document.getElementById('trip-search-form');
     if (tripForm) {
         tripForm.addEventListener('submit', handleTripFormSubmit);
@@ -210,27 +192,25 @@ async function initializeApp() {
         document.getElementById('trip-results-container').style.display = 'none';
     });
 
-    const downloadResultsBtn = document.getElementById('download-results-button'); // Network tab's download
+    const downloadResultsBtn = document.getElementById('download-results-button');
     if (downloadResultsBtn) {
         downloadResultsBtn.addEventListener('click', downloadResults);
     }
-    const downloadResultsBtnNormal = document.getElementById('download-results-button-normal'); // Normal tab's download
+    const downloadResultsBtnNormal = document.getElementById('download-results-button-normal');
     if (downloadResultsBtnNormal) {
         downloadResultsBtnNormal.addEventListener('click', downloadResults);
     }
 
-    // Citation Export Listeners
     document.getElementById('export-bibtex-button-normal')?.addEventListener('click', () => exportCitations('bibtex'));
     document.getElementById('export-ris-button-normal')?.addEventListener('click', () => exportCitations('ris'));
     document.getElementById('export-bibtex-button')?.addEventListener('click', () => exportCitations('bibtex'));
     document.getElementById('export-ris-button')?.addEventListener('click', () => exportCitations('ris'));
 
-    const analyzeNetworkBtn = document.getElementById('analyze-network-button'); // Network tab's analyze
+    const analyzeNetworkBtn = document.getElementById('analyze-network-button');
     analyzeNetworkBtn?.addEventListener('click', async () => {
         const results = getAllSearchResults();
         const nodes = await performNetworkAnalysis(results);
         if (nodes) {
-            // Enrich global results with scores
             const allResults = getAllSearchResults();
             allResults.forEach(r => {
                 const node = nodes.find(n => n.title === r.title);
@@ -239,16 +219,14 @@ async function initializeApp() {
                     r.relevanceConnections = node.connections;
                 }
             });
-            // Re-render
             renderResultsList(allResults.slice(0, 10), 'simulated-search-results', 'results-actions-container', 'search-results-heading', allResults.length);
         }
     });
-    const analyzeNetworkBtnNormal = document.getElementById('analyze-network-button-normal'); // Normal tab's analyze
+    const analyzeNetworkBtnNormal = document.getElementById('analyze-network-button-normal');
     analyzeNetworkBtnNormal?.addEventListener('click', async () => {
         const results = getAllSearchResults();
         const nodes = await performNetworkAnalysis(results);
         if (nodes) {
-            // Enrich global results with scores
             const allResults = getAllSearchResults();
             allResults.forEach(r => {
                 const node = nodes.find(n => n.title === r.title);
@@ -257,7 +235,6 @@ async function initializeApp() {
                     r.relevanceConnections = node.connections;
                 }
             });
-            // Re-render
             renderResultsList(allResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', allResults.length);
         }
     });
@@ -265,7 +242,6 @@ async function initializeApp() {
     setupSortByRelevance('sort-relevance-button-normal');
     setupSortByRelevance('sort-relevance-button');
 
-    // Health & Geo Validation
     document.getElementById('analyze-health-button-normal')?.addEventListener('click', () => {
         performHealthAnalysis(getAllSearchResults(), 'health-score-container-normal');
     });
@@ -291,44 +267,6 @@ async function initializeApp() {
     const exportNetworkBtn = document.getElementById('export-network-button');
     exportNetworkBtn?.addEventListener('click', exportNetworkAsJSON);
 
-    // New Preset Logic Setup
-    const presetCategorySelect = document.getElementById('preset-category-select');
-    const presetSelect = document.getElementById('preset-select');
-    const applyPresetButton = document.getElementById('apply-preset-button');
-
-    if (presetCategorySelect && presetSelect && applyPresetButton) {
-        // Initial population and event listeners for presets
-        presetCategorySelect.addEventListener('change', () => {
-            populatePresets(presetCategorySelect, presetSelect);
-            if (presetSelect.options.length > 1) {
-                presetSelect.selectedIndex = 1;
-                applyPresetButton.disabled = false;
-            } else {
-                applyPresetButton.disabled = true;
-            }
-            generateSearchString(); // Update query after category change and default preset selection
-        });
-
-        presetSelect.addEventListener('change', () => {
-            if (presetSelect.value) {
-                applyPresetButton.disabled = false;
-            } else {
-                applyPresetButton.disabled = true;
-            }
-            generateSearchString(); // Update query after preset selection
-        });
-
-        applyPresetButton.addEventListener('click', () => {
-            const selectedCategory = presetCategorySelect.value;
-            const selectedPreset = presetSelect.value;
-            const presetToApply = presetCategories[selectedCategory]?.presets[selectedPreset];
-            if (selectedCategory && selectedPreset && presetToApply) {
-                applyPresetToForm(presetToApply);
-            }
-        });
-    }
-
-    // Event listeners for main form elements
     const searchForm = document.getElementById('search-form');
     if (searchForm) { searchForm.addEventListener('submit', handleSearchFormSubmit); }
     
@@ -378,37 +316,20 @@ async function initializeApp() {
         });
     }
 
-    // Initial language fetch and UI update
     try {
         const data = await fetchJson(`translations/${initialLang}.json?v=${Date.now()}`);
         if (!data) throw new Error('No translation data loaded');
         setTranslations(initialLang, data);
-        applyTranslations(); // Apply initial translations to all elements
-        setupResultFilter(); // Initialize result filter functionality
-
-        // Populate presets for the first time
-        if (presetCategorySelect && presetSelect) {
-            // Select the first category by default if available
-            if (presetCategorySelect.options.length > 1) {
-                presetCategorySelect.selectedIndex = 1; // Select the first actual category
-                populatePresets(presetCategorySelect, presetSelect); // Populate presets for the selected category
-            }
-            // Select the first preset by default if available and enable button
-            if (presetSelect.options.length > 1) {
-                presetSelect.selectedIndex = 1; // Select the first actual preset
-                applyPresetButton.disabled = false;
-            }
-        }
-        generateSearchString(); // Generate string after everything else is set up
-
+        applyTranslations();
+        setupResultFilter();
+        generateSearchString();
     } catch (error) {
         console.error(`Could not fetch initial translations for ${initialLang}:`, error);
     }
-
 }
 
 function setupSearchModeTabs() {
-    const tabButtons = document.querySelectorAll('.btn-tab'); // Updated selector
+    const tabButtons = document.querySelectorAll('.btn-tab');
     const normalSearchArea = document.getElementById('normal-search-area');
     const networkSearchArea = document.getElementById('network-search-area');
     const tripSearchArea = document.getElementById('trip-search-area');
@@ -419,7 +340,6 @@ function setupSearchModeTabs() {
         searchInterface.classList.add(`search-mode-${initialMode}`);
     }
 
-    // Show correct area on init
     normalSearchArea.style.display = initialMode === 'normal' ? 'block' : 'none';
     networkSearchArea.style.display = initialMode === 'network' ? 'block' : 'none';
     tripSearchArea.style.display = initialMode === 'trip' ? 'block' : 'none';
@@ -428,23 +348,15 @@ function setupSearchModeTabs() {
         button.addEventListener('click', () => {
             const mode = button.dataset.mode;
             setSearchMode(mode);
-
-            // Update active tab
             tabButtons.forEach(b => b.classList.remove('active'));
             button.classList.add('active');
-
-            // Update area visibility
             if (searchInterface) {
                 searchInterface.classList.remove('search-mode-normal', 'search-mode-network', 'search-mode-trip');
                 searchInterface.classList.add(`search-mode-${mode}`);
             }
-
-            // Show correct area
             normalSearchArea.style.display = mode === 'normal' ? 'block' : 'none';
             networkSearchArea.style.display = mode === 'network' ? 'block' : 'none';
             tripSearchArea.style.display = mode === 'trip' ? 'block' : 'none';
-
-            // No clearForm() or generateSearchString() here, state is persisted
         });
     });
 }
