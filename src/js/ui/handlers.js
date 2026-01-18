@@ -189,3 +189,7 @@ export async function triggerTopicExplorer() {
 }
 export function performGeoValidation() {}
 export function handleTripFormSubmit() {}
+
+export { renderResultsList, renderMap, renderHealthUI };
+export const applyPresetToForm = applyPreset;
+export function downloadResults() {}
