@@ -123,16 +123,27 @@
             <section id="phase-analysis" class="workflow-phase" style="display: none;">
                 <div class="analysis-grid">
                     <div class="card" id="health-card">
-                        <h3>Health Score</h3>
+                        <div class="card-header">
+                            <h3>Health Score</h3>
+                            <span class="info-icon" title="Die strukturelle Integrität: Bewertet Belegquote, Bilderdichte und formale Korrektheit. Ein Score > 70 steht für hohe Verlässlichkeit.">i</span>
+                        </div>
+                        <p class="card-info">Gesamtwertung der Artikelqualität basierend auf Belegen und Medienanteil.</p>
                         <div id="health-score-container-normal"></div>
                     </div>
                     <div class="card" id="drift-card">
-                        <h3>Semantic Drift</h3>
-                        <button id="analyze-drift-button-normal" class="btn btn-secondary">🔍 KI-Drift prüfen</button>
+                        <div class="card-header">
+                            <h3>Semantic Drift</h3>
+                            <span class="info-icon" title="KI-Vektoranalyse: Prüft, ob der Hauptteil thematisch von der Einleitung abweicht. Hoher Drift deutet auf Inkonsistenz hin.">i</span>
+                        </div>
+                        <p class="card-info">Erkennt inhaltliche Abweichungen zwischen Einleitung und Hauptteil.</p>
+                        <button id="analyze-drift-button-normal" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">🔍 KI-Drift prüfen</button>
                     </div>
                     <div class="card" id="map-card">
-                        <h3>Knowledge Map</h3>
-                        <div id="search-results-map" class="mini-map" style="height: 200px;"></div>
+                        <div class="card-header">
+                            <h3>Knowledge Map</h3>
+                        </div>
+                        <p class="card-info">Geografische Verteilung der identifizierten Artikel im Raum.</p>
+                        <div id="search-results-map" class="mini-map" style="height: 150px; margin-top: 1rem;"></div>
                     </div>
                 </div>
                 

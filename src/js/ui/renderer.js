@@ -9,6 +9,7 @@ import { HEALTH_CONFIG, DRIFT_CONFIG } from '../config/constants.js';
 
 /**
  * Renders the main search results list into an Enterprise Card format.
+ * Summaries are limited to 4 sentences followed by a Wikipedia link.
  */
 export function renderResultsList(results, containerId, actionsId, headingId, totalHits, handlers) {
     const container = document.getElementById(containerId);
@@ -28,7 +29,13 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
         const card = document.createElement('div');
         card.className = 'result-item';
         
-        const hasCoords = result.coords ? '<span class="meta-badge">📍 Geo</span>' : '';
+        // Sentence Limit Logic (Max 4 sentences)
+        const summary = result.summary || 'Keine Kurzbeschreibung verfügbar.';
+        const sentences = summary.match(/[^\.!\?]+[\.!\?]+/g) || [summary];
+        const limitedSummary = sentences.slice(0, 4).join(' ');
+        const wikiUrl = `https://${getLanguage()}.wikipedia.org/wiki/${encodeURIComponent(result.title)}`;
+
+        const hasCoords = result.coords ? '<span class="meta-badge">📍 Knowledge-Map</span>' : '';
         const driftBadge = result.isOutlier ? `<span class="meta-badge drift" style="color: var(--accent-red)">⚠️ Drift</span>` : '';
         
         card.innerHTML = `
@@ -37,7 +44,7 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
             </div>
             <div class="result-content">
                 <div class="result-header">
-                    <a href="https://${getLanguage()}.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank" class="result-title">
+                    <a href="${wikiUrl}" target="_blank" class="result-title">
                         ${result.title}
                     </a>
                     <div class="result-badges">
@@ -45,7 +52,10 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
                         ${driftBadge}
                     </div>
                 </div>
-                <p class="result-snippet">${result.summary || 'Keine Kurzbeschreibung verfügbar.'}</p>
+                <p class="result-snippet">
+                    ${limitedSummary}
+                    <a href="${wikiUrl}" target="_blank" class="wiki-link-inline">Weiterlesen auf Wikipedia &raquo;</a>
+                </p>
                 <div class="result-actions">
                     <button class="btn btn-secondary btn-sm similar-btn" data-title="${result.title}">🔍 Ähnlich</button>
                     <button class="btn btn-primary btn-sm maintenance-btn" data-title="${result.title}">🛠️ Bearbeiten</button>
@@ -55,7 +65,6 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
         container.appendChild(card);
     });
 
-    // Attach interaction handlers if provided
     if (handlers) handlers(container);
 }
 
@@ -69,7 +78,7 @@ export function renderHealthUI(containerId, stats) {
     const color = stats.score > 70 ? 'var(--accent-green)' : (stats.score > 40 ? '#eab308' : 'var(--accent-red)');
 
     container.innerHTML = `
-        <div class="health-display">
+        <div class="health-display" style="margin-top: 1rem;">
             <div class="score-circle" style="border-color: ${color}">
                 <span class="score-value">${stats.score}</span>
                 <span class="score-label">Health</span>
@@ -104,6 +113,14 @@ export async function renderMap(results, mapContainerId) {
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
     const markers = resultsWithCoords.map(res => {
+        const wikiUrl = `https://${getLanguage()}.wikipedia.org/wiki/${encodeURIComponent(res.title)}`;
+        const popupContent = `
+            <div style="color: #fff; font-family: sans-serif;">
+                <strong style="display:block; margin-bottom: 5px;">${res.title}</strong>
+                <a href="${wikiUrl}" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 0.8rem;">Artikel öffnen &raquo;</a>
+            </div>
+        `;
+
         return L.circleMarker([res.coords.lat, res.coords.lon], {
             radius: 6,
             fillColor: "var(--primary)",
@@ -111,7 +128,7 @@ export async function renderMap(results, mapContainerId) {
             weight: 1,
             opacity: 1,
             fillOpacity: 0.8
-        }).bindPopup(`<strong>${res.title}</strong>`).addTo(map);
+        }).bindPopup(popupContent).addTo(map);
     });
 
     if (markers.length) map.fitBounds(L.featureGroup(markers).getBounds().pad(0.2));
