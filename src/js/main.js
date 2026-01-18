@@ -1,6 +1,6 @@
 // src/js/main.js
 import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMode, getSearchMode } from './modules/state.js';
-import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer } from './modules/ui.js';
+import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer, performHealthAnalysis, performGeoValidation, performInterwikiCheck } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { presetCategories } from './modules/presets.js';
 import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal, syncJournalToGist } from './modules/journal.js';
@@ -56,6 +56,8 @@ async function initializeApp() {
     initializeCookieBanner();
     const initialLang = getLanguage();
     document.documentElement.lang = initialLang;
+
+    updateUserStatusBadge();
 
     addAccordionFunctionality();
     renderJournal();
@@ -241,6 +243,26 @@ async function initializeApp() {
 
     setupSortByRelevance('sort-relevance-button-normal');
     setupSortByRelevance('sort-relevance-button');
+
+    // Health & Geo Validation
+    document.getElementById('analyze-health-button-normal')?.addEventListener('click', () => {
+        performHealthAnalysis(getAllSearchResults(), 'health-score-container-normal');
+    });
+    document.getElementById('analyze-health-button')?.addEventListener('click', () => {
+        performHealthAnalysis(getAllSearchResults(), 'health-score-container');
+    });
+    document.getElementById('validate-geo-button-normal')?.addEventListener('click', () => {
+        performGeoValidation(getAllSearchResults());
+    });
+    document.getElementById('validate-geo-button')?.addEventListener('click', () => {
+        performGeoValidation(getAllSearchResults());
+    });
+    document.getElementById('interwiki-check-button-normal')?.addEventListener('click', () => {
+        performInterwikiCheck(getAllSearchResults());
+    });
+    document.getElementById('interwiki-check-button')?.addEventListener('click', () => {
+        performInterwikiCheck(getAllSearchResults());
+    });
 
     const exportNetworkBtn = document.getElementById('export-network-button');
     exportNetworkBtn?.addEventListener('click', exportNetworkAsJSON);

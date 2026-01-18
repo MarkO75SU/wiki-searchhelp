@@ -9,7 +9,6 @@
     <title id="page-title">WikiGUI</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="src/css/style.css?v=1.13">
 </head>
 <body>
@@ -311,11 +310,15 @@
                             <div class="results-actions" id="results-actions-container-normal">
                                 <button type="button" id="download-results-button-normal" class="btn btn-secondary"></button>
                                 <button type="button" id="analyze-network-button-normal" class="btn btn-primary"></button>
+                                <button type="button" id="analyze-health-button-normal" class="btn btn-secondary"></button>
+                                <button type="button" id="validate-geo-button-normal" class="btn btn-secondary"></button>
+                                <button type="button" id="interwiki-check-button-normal" class="btn btn-secondary"></button>
                                 <button type="button" id="sort-relevance-button-normal" class="btn btn-secondary"></button>
                                 <button type="button" id="export-bibtex-button-normal" class="btn btn-tertiary">BibTeX</button>
                                 <button type="button" id="export-ris-button-normal" class="btn btn-tertiary">RIS</button>
                             </div>
                             <ul id="simulated-search-results-normal"></ul>
+                            <div id="health-score-container-normal" class="health-container"></div>
                         </div>
                     </div>
 
@@ -435,11 +438,15 @@
                                 <div class="results-actions" id="results-actions-container">
                                     <button type="button" id="download-results-button" class="btn btn-secondary"></button>
                                     <button type="button" id="analyze-network-button" class="btn btn-primary"></button>
+                                    <button type="button" id="analyze-health-button" class="btn btn-secondary"></button>
+                                    <button type="button" id="validate-geo-button" class="btn btn-secondary"></button>
+                                    <button type="button" id="interwiki-check-button" class="btn btn-secondary"></button>
                                     <button type="button" id="sort-relevance-button" class="btn btn-secondary"></button>
                                     <button type="button" id="export-bibtex-button" class="btn btn-tertiary">BibTeX</button>
                                     <button type="button" id="export-ris-button" class="btn btn-tertiary">RIS</button>
                                 </div>
                                 <ul id="simulated-search-results"></ul>
+                                <div id="health-score-container" class="health-container"></div>
                             </div>
                         </div>
                     </div>
@@ -515,6 +522,42 @@
         </div>
     </div>
 
+    <div id="maintenance-modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="maintenance-modal-title">Wartungsbaustein setzen</h3>
+                <button type="button" class="close-modal" id="maintenance-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="maintenance-modal-description">Wähle einen Baustein für den Artikel <strong id="maintenance-article-title"></strong>:</p>
+                <form id="maintenance-form">
+                    <div class="form-group">
+                        <label for="maintenance-type">Baustein-Typ:</label>
+                        <select id="maintenance-type" class="full-width">
+                            <option value="sources">{{Belege fehlen}}</option>
+                            <option value="gap">{{Lückenhaft}}</option>
+                            <option value="neutrality">{{Neutralität}}</option>
+                            <option value="delete">{{Löschen}} (Löschantrag)</option>
+                            <option value="custom">Benutzerdefiniert</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenance-reason">Begründung / Details:</label>
+                        <textarea id="maintenance-reason" rows="3" class="full-width" placeholder="Warum ist dieser Baustein notwendig?"></textarea>
+                    </div>
+                    <div class="preview-box">
+                        <strong>Vorschau (Wikitext):</strong>
+                        <code id="maintenance-preview">{{Belege fehlen}}</code>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary" id="maintenance-submit-btn">Zu Wikipedia (Edit)</button>
+                        <button type="button" class="btn btn-secondary" id="maintenance-cancel-btn">Abbrechen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <footer id="footer">
         <div class="container">
             <nav id="footer-nav">
@@ -536,7 +579,6 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="src/js/main.js" type="module"></script>
 </body>
 </html>

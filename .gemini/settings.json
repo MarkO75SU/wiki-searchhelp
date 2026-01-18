@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:/Users/markuso/OneDrive/Documents/learn_code/projekt_wiki-gui"
+      ]
+    }
+  }
+}

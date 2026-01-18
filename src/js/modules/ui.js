@@ -1,10 +1,11 @@
 // src/js/modules/ui.js
 import { getTranslation, getLanguage, getSearchMode } from './state.js';
 import { generateSearchString } from './search.js';
-import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries, fetchArticleModificationDates, fetchArticleCoordinates, fetchArticlesCategories } from './api.js';
+import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries, fetchArticleModificationDates, fetchArticleCoordinates, fetchArticlesCategories, fetchQualityMetrics, validateWithOSM, fetchInterwikiLinks, fetchRefCounts } from './api.js';
 import { presetCategories } from './presets.js';
 import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';
+import { loadLeaflet } from './utils.js';
 
 let allSearchResults = []; // Store full search results for downloading
 
@@ -829,7 +830,7 @@ export function renderTimeline(results, containerId) {
 
 let searchMap = null; // Track Leaflet map instance
 
-export function renderMap(results, mapContainerId) {
+export async function renderMap(results, mapContainerId) {
     const container = document.getElementById(mapContainerId);
     if (!container) return;
 
@@ -839,6 +840,17 @@ export function renderMap(results, mapContainerId) {
     if (resultsWithCoords.length === 0) {
         container.innerHTML = `<p style="padding: 1rem;">${getTranslation('map-no-data') || 'No geographical information available for these results.'}</p>`;
         return;
+    }
+
+    // Lazy Load Leaflet
+    if (!window.L) {
+        container.innerHTML = '<p>Loading Map...</p>';
+        try {
+            await loadLeaflet();
+        } catch (e) {
+            container.innerHTML = `<p>Error loading map: ${e.message}</p>`;
+            return;
+        }
     }
 
     // Reset container if it contains a message
@@ -1020,9 +1032,12 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
                 </a>
                 <p>${result.summary || ''}</p>
                 ${result.relevanceScore ? `<small style="display:block; margin-top:0.5rem; color:var(--primary);">Relevance: ${result.relevanceScore} (${result.relevanceConnections} connections)</small>` : ''}
-                <div style="margin-top: 0.75rem;">
+                <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <button class="btn btn-tertiary drill-down-btn" data-title="${result.title}" data-categories='${btoa(JSON.stringify(result.categories || []))}'>
                         🔍 ${getTranslation('btn-find-similar') || 'Find Similar'}
+                    </button>
+                    <button class="btn btn-tertiary maintenance-btn" data-title="${result.title}">
+                        🛠️ ${getTranslation('btn-maintenance') || 'Wartung'}
                     </button>
                 </div>
             </div>
@@ -1038,6 +1053,90 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
             drillDownSearch(title, categories);
         });
     });
+
+    // Attach event listeners to maintenance buttons
+    resultsContainer.querySelectorAll('.maintenance-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openMaintenanceEdit(btn.dataset.title);
+        });
+    });
+}
+
+export function openMaintenanceEdit(title) {
+    const modal = document.getElementById('maintenance-modal');
+    if (!modal) return; // Should exist in index.html
+
+    // Elements
+    const modalTitle = document.getElementById('maintenance-article-title');
+    const typeSelect = document.getElementById('maintenance-type');
+    const reasonInput = document.getElementById('maintenance-reason');
+    const previewCode = document.getElementById('maintenance-preview');
+    const form = document.getElementById('maintenance-form');
+    const closeBtn = document.getElementById('maintenance-modal-close');
+    const cancelBtn = document.getElementById('maintenance-cancel-btn');
+
+    // Reset Form
+    modalTitle.textContent = title;
+    typeSelect.selectedIndex = 0;
+    reasonInput.value = '';
+    updatePreview();
+
+    // Show Modal
+    modal.setAttribute('aria-hidden', 'false');
+
+    // Live Preview Update
+    function updatePreview() {
+        const type = typeSelect.value;
+        const reason = reasonInput.value.trim();
+        let tag = "";
+
+        switch(type) {
+            case "sources": tag = `{{Belege fehlen${reason ? '|Begründung=' + reason : ''}}}`; break;
+            case "gap": tag = `{{Lückenhaft${reason ? '|Begründung=' + reason : ''}}}`; break;
+            case "neutrality": tag = `{{Neutralität${reason ? '|Begründung=' + reason : ''}}}`; break;
+            case "delete": tag = `{{Löschen|Begründung=${reason || '...'}}}`; break;
+            case "custom": tag = reason ? `{{${reason}}}` : "{{...}}"; break;
+        }
+        previewCode.textContent = tag;
+    }
+
+    typeSelect.onchange = updatePreview;
+    reasonInput.oninput = updatePreview;
+
+    // Handle Submit
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        const tag = previewCode.textContent;
+        const lang = getLanguage();
+        
+        // Generate summary based on type
+        const typeLabels = {
+            sources: "Belege fehlen",
+            gap: "Lückenhaft",
+            neutrality: "Neutralität",
+            delete: "Löschantrag",
+            custom: "Wartungsbaustein"
+        };
+        const summary = `Wartung: ${typeLabels[typeSelect.value] || 'Baustein'} hinzugefügt via WikiGUI`;
+
+        // Direct to visual editor or source editor? Source editor usually safer for prepending.
+        const url = `https://${lang}.wikipedia.org/w/index.php?title=${encodeURIComponent(title)}&action=edit&section=0&summary=${encodeURIComponent(summary)}&prependtext=${encodeURIComponent(tag + '\n')}`;
+        
+        window.open(url, '_blank');
+        closeModal();
+    };
+
+    // Close Logic
+    function closeModal() {
+        modal.setAttribute('aria-hidden', 'true');
+        // Clean up events to prevent duplicates if function called again
+        form.onsubmit = null;
+        typeSelect.onchange = null;
+        reasonInput.oninput = null;
+    }
+
+    closeBtn.onclick = closeModal;
+    cancelBtn.onclick = closeModal;
 }
 
 export function setupSortByRelevance(buttonId) {
@@ -1084,4 +1183,132 @@ export function triggerTopicExplorer() {
     // Apply it
     applyPreset(randomPreset);
     showToast(getTranslation('toast-surprise-me') || 'Surprise! A random topic has been selected.');
+}
+
+export async function performHealthAnalysis(results, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container || results.length === 0) return;
+
+    container.innerHTML = `<p><em>Analysiere Qualität für ${results.length} Artikel (Deep Scan <ref>)...</em></p>`;
+    
+    const titles = results.map(r => r.title);
+    
+    // Parallel fetching of basic metrics and deep ref counts
+    const [metrics, refCounts] = await Promise.all([
+        fetchQualityMetrics(titles, getLanguage()),
+        fetchRefCounts(titles, getLanguage())
+    ]);
+    
+    let totalRefs = 0; // Real <ref> tags
+    let totalExtLinks = 0; // External links (often just 'Weelinks')
+    let articlesWithImages = 0;
+
+    results.forEach(result => {
+        const pageId = Object.keys(metrics).find(id => metrics[id].title === result.title);
+        const data = metrics[pageId];
+        
+        // Count from Deep Scan
+        const count = refCounts[result.title] || 0;
+        totalRefs += count;
+
+        if (data) {
+            totalExtLinks += (data.extlinks ? data.extlinks.length : 0);
+            if (data.pageimage || (data.thumbnail)) articlesWithImages++;
+        }
+    });
+
+    const avgRefs = totalRefs / results.length;
+    const avgExtLinks = totalExtLinks / results.length;
+    const imageRate = (articlesWithImages / results.length) * 100;
+    
+    // New Score Logic:
+    // 1. References are king. 10 Refs = 100% Subscore.
+    const refScore = Math.min((avgRefs / 10) * 100, 100);
+    
+    // 2. Images are important for UX.
+    const imgScore = imageRate; // 0-100
+
+    // Weighted Total Score: 70% Content Verification (Refs), 30% Presentation (Images)
+    const score = Math.round((refScore * 0.7) + (imgScore * 0.3));
+
+    const color = score > 80 ? '#22c55e' : (score > 50 ? '#eab308' : '#ef4444');
+
+    container.innerHTML = `
+        <div style="padding: 1rem; border-left: 4px solid ${color}; background: rgba(255,255,255,0.02); border-radius: var(--radius); margin-top: 1rem;">
+            <h4 style="color: ${color}; margin-bottom: 0.5rem;">Category Health Score: ${score}/100</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                <div>
+                    <strong>Belege (<span style="font-family: monospace;">&lt;ref&gt;</span>):</strong><br>
+                    Ø ${avgRefs.toFixed(1)} pro Artikel
+                </div>
+                <div>
+                    <strong>Bebilderung:</strong><br>
+                    ${imageRate.toFixed(0)}% der Artikel
+                </div>
+                <div style="grid-column: span 2; margin-top: 0.25rem; font-size: 0.75rem; opacity: 0.7;">
+                    (Ø Externe Links gesamt: ${avgExtLinks.toFixed(1)})
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+export async function performGeoValidation(results) {
+    const geoResults = results.filter(r => r.coords);
+    if (geoResults.length === 0) {
+        showToast("Keine Geodaten zum Validieren gefunden.");
+        return;
+    }
+
+    showToast(`Validierung von ${geoResults.length} Standorten via OSM/Photon...`);
+
+    for (const res of geoResults) {
+        const osmName = await validateWithOSM(res.coords.lat, res.coords.lon);
+        if (osmName) {
+            console.log(`Wiki: ${res.title} -> OSM: ${osmName}`);
+            // Check if title words match OSM name
+            const wikiWords = res.title.toLowerCase().split(/\s+/);
+            const osmWords = osmName.toLowerCase().split(/[\s,]+/);
+            const match = wikiWords.some(w => osmWords.includes(w)) || osmWords.some(w => wikiWords.includes(w));
+            
+            if (!match) {
+                showToast(`Warnung: Standort-Abweichung bei "${res.title}"? OSM sagt: ${osmName}`, "warning");
+            }
+        }
+    }
+    showToast("Geo-Validierung abgeschlossen.");
+}
+
+export async function performInterwikiCheck(results) {
+    if (results.length === 0) return;
+    
+    showToast(`Sprach-Abgleich für ${results.length} Artikel wird gestartet...`);
+    
+    const titles = results.map(r => r.title);
+    const data = await fetchInterwikiLinks(titles, getLanguage());
+    
+    let missingInEn = 0;
+    let totalFound = 0;
+
+    results.forEach(result => {
+        const pageId = Object.keys(data).find(id => data[id].title === result.title);
+        const entry = data[pageId];
+        
+        if (entry) {
+            totalFound++;
+            const hasEn = entry.langlinks && entry.langlinks.some(ll => ll.lang === 'en');
+            if (!hasEn) {
+                missingInEn++;
+                console.log(`Missing in EN: ${result.title}`);
+            }
+        }
+    });
+
+    const rate = ((totalFound - missingInEn) / totalFound) * 100;
+    
+    alert(`Interwiki-Check Ergebnis:\n\n` +
+          `Geprüfte Artikel: ${totalFound}\n` +
+          `Davon in EN vorhanden: ${totalFound - missingInEn}\n` +
+          `Fehlend in EN: ${missingInEn}\n\n` +
+          `Globalisierungs-Index: ${rate.toFixed(1)}%`);
 }

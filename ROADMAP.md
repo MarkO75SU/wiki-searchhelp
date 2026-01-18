@@ -22,7 +22,7 @@ Diese Basisfunktionen bilden das Rückgrat der App und sind für maximale Perfor
 Die "Killer-Features", die das Tool zum Marktführer für Wiki-Redakteure machen.
 
 * **Health-Score Engine:** Proaktive Bewertung von Kategorien basierend auf Belegquote, Metadaten-Vollständigkeit und Konsistenz.
-* **Beleg-Radar:** Deep-Scan-Analyse der `<ref>`-Dichte zur Identifikation von Wartungsstau.
+* **Beleg-Radar:** Deep-Scan-Analyse der `<ref>`-Dichte zur Identifikation von Wartungsstau. [x]
 * **Semantic Drift Analysis:** KI-Vektoranalyse zur automatischen Markierung von Artikeln, die thematisch nicht in eine Kategorie passen.
 * **Interwiki-Conflict-Detector:** Globaler Abgleich von Kategorien-Hierarchien (DE/EN/FR/Wikidata), um strukturelle Lücken oder Fehlübersetzungen aufzudecken.
 
@@ -31,7 +31,7 @@ Die "Killer-Features", die das Tool zum Marktführer für Wiki-Redakteure machen
 ## 4. Governance-Engine (System-Integration)
 Die Brücke zur offiziellen Wikipedia-Verwaltung.
 
-* **Semi-Bot-Interface:** Push-API zum direkten Setzen von Wartungsbausteinen (`{{Löschen}}`, `{{Überarbeiten}}`) und Verschiebeanträgen.
+* **Semi-Bot-Interface:** Push-API zum direkten Setzen von Wartungsbausteinen (`{{Löschen}}`, `{{Überarbeiten}}`) und Verschiebeanträgen. [x] (UI Implemented)
 * **Verified Editor Hub:** Automatisierter Experten-Status-Sync via Edge Functions (Wikipedia-Editcount-Validierung > 5.000 Edits).
 * **Cryptographic Audit Log:** Unveränderbares Protokoll (Timestamped) aller Prüfungen als Qualitätsnachweis für die Community.
 * **EventStream Anbindung:** Echtzeit-Monitoring neu angelegter Kategorien zur sofortigen Qualitätsprüfung.
@@ -41,6 +41,7 @@ Die Brücke zur offiziellen Wikipedia-Verwaltung.
 2.  **Phase 2 (Editor Power):** Health-Score, Beleg-Radar & Supabase-Automatisierung.
 3.  **Phase 3 (AI & Global):** Semantic Drift, Wikidata-Global-Check & Cross-Wiki-Sync.
 4.  **Phase 4 (Total Governance):** Bot-Schnittstelle, Audit-Log & Live-EventStream.
+5.  **Phase 5 (Performance):** Lazy-Loading für Map-Module & Assets. [x]
 
 ---
 **System-Umgebung:** Lokal: `npx serve` | Live: HTTPS/Vercel | Backend: Supabase (Deno Edge)

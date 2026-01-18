@@ -370,3 +370,107 @@ export async function fetchArticleCoordinates(titles, lang = 'de') {
 
     return await _fetch(titles, lang);
 }
+
+/**
+ * Fetches quality metrics (like external links) for article titles.
+ */
+export async function fetchQualityMetrics(titles, lang = 'de') {
+    if (titles.length === 0) return {};
+    
+    const _fetch = async (batchTitles, l) => {
+        const data = await fetchWikiData(l, {
+            action: 'query',
+            prop: 'extlinks|info',
+            titles: batchTitles.join('|'),
+            ellimit: 50 
+        });
+        
+        if (!data || !data.query || !data.query.pages) return {};
+        return data.query.pages;
+    };
+
+    return await fetchBatchedData(titles, lang, _fetch);
+}
+
+/**
+ * Fetches interwiki links (links to the same article in other languages).
+ */
+export async function fetchInterwikiLinks(titles, lang = 'de') {
+    if (titles.length === 0) return {};
+    
+    const _fetch = async (batchTitles, l) => {
+        const data = await fetchWikiData(l, {
+            action: 'query',
+            prop: 'langlinks',
+            titles: batchTitles.join('|'),
+            lllimit: 50
+        });
+        
+        if (!data || !data.query || !data.query.pages) return {};
+        return data.query.pages;
+    };
+
+    return await fetchBatchedData(titles, lang, _fetch);
+}
+
+/**
+ * Validates coordinates using the Photon (Komoot) reverse geocoding API.
+ */
+export async function validateWithOSM(lat, lon) {
+    const url = `https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.features && data.features.length > 0 ? data.features[0].properties.name : "Unbekannter Ort";
+    } catch (e) {
+        console.error("OSM Validierung fehlgeschlagen", e);
+        return null;
+    }
+}
+
+/**
+ * Fetches the wikitext of articles and counts the number of <ref> tags.
+ * This provides a more accurate measure of "citation density" than just counting external links.
+ * @param {string[]} titles - Array of article titles.
+ * @param {string} lang - Language code.
+ * @returns {Promise<object>} Map of title -> refCount
+ */
+export async function fetchRefCounts(titles, lang = 'de') {
+    if (titles.length === 0) return {};
+
+    const _fetch = async (batchTitles, l) => {
+        const data = await fetchWikiData(l, {
+            action: 'query',
+            prop: 'revisions',
+            rvprop: 'content', // Fetch the actual wikitext
+            rvslots: 'main',
+            titles: batchTitles.join('|')
+        });
+
+        if (!data || !data.query || !data.query.pages) return {};
+
+        const batchCounts = {};
+        for (const pageId in data.query.pages) {
+            const page = data.query.pages[pageId];
+            let refCount = 0;
+            
+            // Access the content securely
+            const content = page.revisions?.[0]?.slots?.main?.['*'];
+            
+            if (content) {
+                // Regex to match <ref> tags (case-insensitive)
+                // We count both <ref>...</ref> and <ref name="..." />
+                const matches = content.match(/<ref/gi);
+                refCount = matches ? matches.length : 0;
+            }
+            batchCounts[page.title] = refCount;
+        }
+        return batchCounts;
+    };
+
+    if (titles.length > 50) {
+        return await fetchBatchedData(titles, lang, _fetch);
+    }
+
+    return await _fetch(titles, lang);
+}
