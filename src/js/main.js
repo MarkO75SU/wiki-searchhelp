@@ -115,6 +115,14 @@ async function initializeApp() {
     document.getElementById('export-csv-button')?.addEventListener('click', () => exportJournal('csv'));
     document.getElementById('surprise-me-button')?.addEventListener('click', triggerTopicExplorer);
 
+    document.getElementById('analyze-drift-button-normal')?.addEventListener('click', () => {
+        performDriftAnalysis(getAllSearchResults());
+    });
+
+    document.getElementById('analyze-health-button-normal')?.addEventListener('click', () => {
+        performHealthAnalysis(getAllSearchResults().slice(0, 10), 'health-score-container-normal');
+    });
+
     // Initial Translation Load
     try {
         const data = await fetchJson(`translations/${initialLang}.json?v=${Date.now()}`);
