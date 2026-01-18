@@ -1,7 +1,7 @@
 // src/js/modules/ui.js
 import { getTranslation, getLanguage, getSearchMode } from './state.js';
 import { generateSearchString } from './search.js';
-import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries, fetchArticleModificationDates } from './api.js';
+import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries, fetchArticleModificationDates, fetchArticleCoordinates, fetchArticlesCategories } from './api.js';
 import { presetCategories } from './presets.js';
 import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';

@@ -94,16 +94,61 @@ export async function performWikipediaSearch(query, lang = 'de', limit = 10) {
 }
 
 /**
+ * Helper to batch API requests for large lists of titles.
+ * @param {string[]} titles - All titles to fetch.
+ * @param {string} lang - Language code.
+ * @param {Function} fetchFunction - The function to call for each batch (must accept titles, lang).
+ * @returns {Promise<Object>} Aggregated results from all batches.
+ */
+async function fetchBatchedData(titles, lang, fetchFunction) {
+    const batchSize = 50;
+    let aggregatedResults = {};
+    
+    // For arrays (like from search), we might need to handle array concatenation instead of object merging
+    // But most detail fetches return objects keyed by pageId or title.
+    
+    for (let i = 0; i < titles.length; i += batchSize) {
+        const batch = titles.slice(i, i + batchSize);
+        try {
+            const result = await fetchFunction(batch, lang);
+            if (result) {
+                // If result is query.pages object
+                if (result.query && result.query.pages) {
+                    Object.assign(aggregatedResults, result.query.pages);
+                } 
+                // If result is a direct object map (custom return from some functions)
+                else {
+                    Object.assign(aggregatedResults, result);
+                }
+            }
+        } catch (e) {
+            console.error("Batch fetch error:", e);
+        }
+    }
+    return aggregatedResults;
+}
+
+/**
  * Fetches additional info (like images) for specific titles.
  */
 export async function fetchArticlesInfo(titles, lang = 'de') {
-    return await fetchWikiData(lang, {
-        action: 'query',
-        titles: titles.join('|'),
-        prop: 'pageimages',
-        piprop: 'thumbnail',
-        pithumbsize: 150
-    });
+    // Internal batch fetcher
+    const _fetch = async (batchTitles, l) => {
+        return await fetchWikiData(l, {
+            action: 'query',
+            titles: batchTitles.join('|'),
+            prop: 'pageimages',
+            piprop: 'thumbnail',
+            pithumbsize: 150
+        });
+    };
+
+    if (titles.length > 50) {
+        const pages = await fetchBatchedData(titles, lang, _fetch);
+        return { query: { pages: pages } }; // Reconstruct expected format
+    }
+
+    return await _fetch(titles, lang);
 }
 
 /**
@@ -133,16 +178,24 @@ export async function fetchArticleSummary(title, lang) {
  * Fetches summaries for multiple articles in one batch.
  */
 export async function fetchArticlesSummaries(titles, lang) {
-    const data = await fetchWikiData(lang, {
-        action: 'query',
-        prop: 'extracts',
-        exsentences: 3, // Reduced for batch to keep payload small
-        exintro: true,
-        explaintext: true,
-        titles: titles.join('|'),
-        exlimit: titles.length
-    });
+    const _fetch = async (batchTitles, l) => {
+        return await fetchWikiData(l, {
+            action: 'query',
+            prop: 'extracts',
+            exsentences: 3, 
+            exintro: true,
+            explaintext: true,
+            titles: batchTitles.join('|'),
+            exlimit: batchTitles.length
+        });
+    };
 
+    if (titles.length > 50) {
+        const pages = await fetchBatchedData(titles, lang, _fetch);
+        return pages; // fetchArticlesSummaries returns pages object directly
+    }
+
+    const data = await _fetch(titles, lang);
     if (!data || !data.query || !data.query.pages) return {};
     return data.query.pages;
 }
@@ -251,23 +304,32 @@ export async function fetchWikipediaOpenSearch(query, lang = 'de', limit = 10) {
  */
 export async function fetchArticleModificationDates(titles, lang = 'de') {
     if (titles.length === 0) return {};
-    const data = await fetchWikiData(lang, {
-        action: 'query',
-        prop: 'revisions',
-        rvprop: 'timestamp',
-        titles: titles.join('|')
-    });
 
-    if (!data || !data.query || !data.query.pages) return null;
-
-    const modificationDates = {};
-    for (const pageId in data.query.pages) {
-        const page = data.query.pages[pageId];
-        if (page.revisions && page.revisions.length > 0) {
-            modificationDates[page.title] = page.revisions[0].timestamp;
+    const _fetch = async (batchTitles, l) => {
+        const data = await fetchWikiData(l, {
+            action: 'query',
+            prop: 'revisions',
+            rvprop: 'timestamp',
+            titles: batchTitles.join('|')
+        });
+        
+        if (!data || !data.query || !data.query.pages) return {};
+        
+        const batchDates = {};
+        for (const pageId in data.query.pages) {
+            const page = data.query.pages[pageId];
+            if (page.revisions && page.revisions.length > 0) {
+                batchDates[page.title] = page.revisions[0].timestamp;
+            }
         }
+        return batchDates;
+    };
+
+    if (titles.length > 50) {
+        return await fetchBatchedData(titles, lang, _fetch);
     }
-    return modificationDates;
+
+    return await _fetch(titles, lang);
 }
 
 /**
@@ -278,24 +340,33 @@ export async function fetchArticleModificationDates(titles, lang = 'de') {
  */
 export async function fetchArticleCoordinates(titles, lang = 'de') {
     if (titles.length === 0) return {};
-    const data = await fetchWikiData(lang, {
-        action: 'query',
-        prop: 'coordinates',
-        titles: titles.join('|'),
-        colimit: 50 // Limit the number of coordinates per request
-    });
 
-    if (!data || !data.query || !data.query.pages) return null;
+    const _fetch = async (batchTitles, l) => {
+        const data = await fetchWikiData(l, {
+            action: 'query',
+            prop: 'coordinates',
+            titles: batchTitles.join('|'),
+            colimit: 50 // Limit the number of coordinates per request
+        });
 
-    const coordinates = {};
-    for (const pageId in data.query.pages) {
-        const page = data.query.pages[pageId];
-        if (page.coordinates && page.coordinates.length > 0) {
-            coordinates[page.title] = {
-                lat: page.coordinates[0].lat,
-                lon: page.coordinates[0].lon
-            };
+        if (!data || !data.query || !data.query.pages) return {};
+
+        const batchCoords = {};
+        for (const pageId in data.query.pages) {
+            const page = data.query.pages[pageId];
+            if (page.coordinates && page.coordinates.length > 0) {
+                batchCoords[page.title] = {
+                    lat: page.coordinates[0].lat,
+                    lon: page.coordinates[0].lon
+                };
+            }
         }
+        return batchCoords;
+    };
+
+    if (titles.length > 50) {
+        return await fetchBatchedData(titles, lang, _fetch);
     }
-    return coordinates;
+
+    return await _fetch(titles, lang);
 }
