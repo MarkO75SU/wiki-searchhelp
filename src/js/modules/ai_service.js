@@ -1,39 +1,30 @@
 /**
  * src/js/modules/ai_service.js
  * 
- * Real AI Service using Google Gemini API.
- * Replaces the ai_mock.js for generating semantic embeddings.
+ * Real AI Service using Supabase Edge Functions (proxying Google Gemini).
+ * This keeps the API key secure on the server side.
  */
 
-import { GoogleGenerativeAI } from 'https://esm.run/@google/generative-ai';
-import { CONFIG } from './config.js';
-
-// Initialize the API
-const genAI = new GoogleGenerativeAI(CONFIG.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "embedding-001" });
+import { supabase } from './database.js';
 
 /**
- * Generates embeddings for a list of texts using Google Gemini.
+ * Generates embeddings for a list of texts using Supabase Edge Function.
  * @param {string[]} texts - Array of article titles or summaries.
  * @returns {Promise<Array<number[]>>} List of embedding vectors.
  */
 export async function generateEmbeddings(texts) {
-    if (!CONFIG.GEMINI_API_KEY) {
-        console.error("Gemini API Key is missing!");
-        return [];
-    }
+    if (!texts || texts.length === 0) return [];
 
-    console.log(`[AI_SERVICE] Generating embeddings for ${texts.length} items via Gemini...`);
+    console.log(`[AI_SERVICE] Generating embeddings for ${texts.length} items via Supabase Edge Function...`);
     
     try {
-        // The API supports batch embedding, but we should be careful with limits.
-        const promises = texts.map(async (text) => {
-            const result = await model.embedContent(text);
-            return result.embedding.values;
+        const { data, error } = await supabase.functions.invoke('get-embeddings', {
+            body: { texts }
         });
 
-        const vectors = await Promise.all(promises);
-        return vectors;
+        if (error) throw error;
+
+        return data.embeddings || [];
 
     } catch (error) {
         console.error("[AI_SERVICE] Error generating embeddings:", error);
@@ -44,7 +35,6 @@ export async function generateEmbeddings(texts) {
 
 /**
  * Calculates the Cosine Similarity between two vectors.
- * Essential for the Drift Detector.
  * @param {number[]} vecA 
  * @param {number[]} vecB 
  * @returns {number} Similarity score (-1 to 1)

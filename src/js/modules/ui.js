@@ -17,16 +17,6 @@ export function getAllSearchResults() {
 }
 
 const wikipediaSearchHelpUrls = {
-// ... (rest of the file remains unchanged until renderResultsList)
-// I will target renderResultsList specifically in the next replace call if I can't do it all at once easily or safe.
-// Actually, I can replace the import block first.
-
-
-export function getAllSearchResults() {
-    return allSearchResults;
-}
-
-const wikipediaSearchHelpUrls = {
     'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
     'en': 'https://en.wikipedia.org/wiki/Help:Searching',
     'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
@@ -618,7 +608,7 @@ export function populateLanguageOptions(selectElement) {
         option.value = lang.code;
         const label = getTranslation(`lang-${lang.code}-option`);
         // Remove existing flags from translation if present to avoid duplicates
-        const cleanLabel = label.replace(/[^\w\s\(\)]/g, '').trim(); 
+        const cleanLabel = label.replace(/[^\ws()]/g, '').trim(); 
         option.textContent = `${lang.flag} ${cleanLabel}`;
         selectElement.appendChild(option);
     });
@@ -1278,6 +1268,16 @@ export async function performHealthAnalysis(results, containerId) {
             </div>
         </div>
     `;
+
+    // Save report to database
+    const query = document.getElementById('search-query')?.value || 'N/A';
+    saveTestReport({
+        query: query,
+        driftScore: 0, // Health analysis doesn't calculate drift
+        healthScore: score,
+        globalScore: 0,
+        resultsCount: results.length
+    });
 }
 
 export async function performGeoValidation(results) {
@@ -1333,10 +1333,10 @@ export async function performInterwikiCheck(results) {
 
     const rate = ((totalFound - missingInEn) / totalFound) * 100;
     
-    alert(`Interwiki-Check Ergebnis:\n\n` +
-          `Geprüfte Artikel: ${totalFound}\n` +
-          `Davon in EN vorhanden: ${totalFound - missingInEn}\n` +
-          `Fehlend in EN: ${missingInEn}\n\n` +
+    alert(`Interwiki-Check Ergebnis:\n\n` + 
+          `Geprüfte Artikel: ${totalFound}\n` + 
+          `Davon in EN vorhanden: ${totalFound - missingInEn}\n` + 
+          `Fehlend in EN: ${missingInEn}\n\n` + 
           `Globalisierungs-Index: ${rate.toFixed(1)}%`);
 }
 
@@ -1350,7 +1350,7 @@ export async function performDriftAnalysis(results) {
 
     const titles = results.map(r => r.title);
     
-    // 1. Generate Embeddings (Mock)
+    // 1. Generate Embeddings (Mock or Real)
     const vectors = await generateEmbeddings(titles);
     
     // 2. Calculate Centroid (The "Main Topic" of this list)
@@ -1359,19 +1359,20 @@ export async function performDriftAnalysis(results) {
     // 3. Measure Distance of each article to Centroid
     let outlierCount = 0;
     const outlierThreshold = 0.85; // Similarity below 85% = Drift
+    let totalSimilarity = 0;
 
     const enrichedResults = results.map((res, i) => {
         const similarity = cosineSimilarity(vectors[i], centroid);
+        totalSimilarity += similarity;
         const isOutlier = similarity < outlierThreshold;
         if (isOutlier) outlierCount++;
         return { ...res, semanticScore: similarity, isOutlier };
     });
 
+    const avgSimilarity = totalSimilarity / results.length;
+
     // 4. Visual Feedback
-    // Sort so outliers appear at the top? Or just highlight them.
-    // Let's just update the UI in place for now.
-    
-    const container = document.getElementById('simulated-search-results-normal'); // Assuming normal mode for now
+    const container = document.getElementById('simulated-search-results-normal'); 
     if (!container) return;
     
     const listItems = container.querySelectorAll('li.result-item');
@@ -1382,7 +1383,6 @@ export async function performDriftAnalysis(results) {
                 li.style.borderLeft = "4px solid #ef4444";
                 li.style.backgroundColor = "rgba(239, 68, 68, 0.05)";
                 
-                // Add a warning badge if not exists
                 if (!li.querySelector('.drift-warning')) {
                     const badge = document.createElement('div');
                     badge.className = 'drift-warning';
@@ -1397,6 +1397,16 @@ export async function performDriftAnalysis(results) {
     });
 
     showToast(`Drift-Analyse fertig: ${outlierCount} potenzielle Ausreißer gefunden.`);
+
+    // Save report to database
+    const query = document.getElementById('search-query')?.value || 'N/A';
+    saveTestReport({
+        query: query,
+        driftScore: avgSimilarity,
+        healthScore: 0, // Drift analysis doesn't calculate health
+        globalScore: 0,
+        resultsCount: results.length
+    });
 }
 
 async function handleGlobalRelevanceCheck(title, containerId) {
@@ -1424,12 +1434,12 @@ async function handleGlobalRelevanceCheck(title, containerId) {
         container.innerHTML = `
             <span class="global-badge" style="
                 background: ${color}20; 
-                color: ${color}; 
-                border: 1px solid ${color}; 
-                padding: 2px 6px; 
-                border-radius: 4px; 
-                font-size: 0.7rem; 
-                font-weight: bold; 
+                color: ${color};
+                border: 1px solid ${color};
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 0.7rem;
+                font-weight: bold;
                 cursor: help;"
                 title="Global Score: ${data.score}/100\nSprachen: ${data.totalLanguages}\nEnthält Englisch: ${data.hasEnglish ? 'Ja' : 'Nein'}">
                 Global: ${data.score}
