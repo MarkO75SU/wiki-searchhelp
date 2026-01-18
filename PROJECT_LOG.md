@@ -30,6 +30,7 @@
 #### 🛠️ System Stabilization & Localization
 - **MIME-Type Fix:** Resolved GitHub Pages deployment issues.
 - **Full Localization:** Updated DE and EN translation files to support all new modes and UI elements.
+- **Tier Gating:** Implemented CSS-based visibility control (`.tier-gate`) driven by `body.tier-*` classes.
 
 ---
 **Status:** Sprint 2 finalized. The application is now modular, professional, and feature-complete. 🚀

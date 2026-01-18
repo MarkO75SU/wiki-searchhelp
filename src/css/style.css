@@ -190,6 +190,22 @@ input:focus { outline: none; background: rgba(37, 99, 235, 0.05); }
 .btn-secondary:hover { border-color: var(--primary); color: #fff; }
 .btn-sm { height: 36px; font-size: 0.75rem; }
 
+/* --- Tier Gating System --- */
+.tier-gate { display: none !important; }
+
+/* Free Tier: Basic functionality only */
+body.tier-free .tier-gate.free { display: block !important; }
+body.tier-free .tier-gate.advanced, 
+body.tier-free .tier-gate.expert { display: none !important; }
+
+/* Advanced Tier: Can see network & health */
+body.tier-advanced .tier-gate.free,
+body.tier-advanced .tier-gate.advanced { display: block !important; }
+body.tier-advanced .tier-gate.expert { display: none !important; }
+
+/* Expert Tier: Can see everything */
+body.tier-expert .tier-gate { display: block !important; }
+
 /* --- Responsive --- */
 @media (max-width: 1024px) {
     .sidebar { width: 80px; padding: 2rem 0.5rem; }

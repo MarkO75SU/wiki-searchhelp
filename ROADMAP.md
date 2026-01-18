@@ -28,7 +28,8 @@
 ## 5. Deployment & Stability (Status: Finalisiert)
 1. **Layout Sanitation:** Hero-Suche fokussiert, Pro-Parameter hinter Toggle. [x]
 2. **Portrait Responsiveness:** 100% stabil auf Mobilgeräten. [x]
-3. **Full Localization:** Komplette Unterstützung für DE und EN. [x]
+3. **Tier Gating System:** CSS-basierte Feature-Sperrung aktiv. [x]
+4. **Full Localization:** Komplette Unterstützung für DE und EN. [x]
 
 ---
 **System-Umgebung:** Live: HTTPS/GitHub Pages | Backend: Supabase | Localization: DE/EN
