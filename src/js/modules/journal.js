@@ -122,6 +122,43 @@ export async function importJournal(file) {
     reader.readAsText(file);
 }
 
+export async function syncJournalToGist() {
+    const token = prompt(getTranslation('prompt-github-token') || 'Enter your GitHub Personal Access Token (with gist scope):');
+    if (!token) return;
+
+    const journal = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const gistData = {
+        description: 'WikiGUI Search Journal Export',
+        public: false,
+        files: {
+            'wikigui-journal.json': {
+                content: JSON.stringify(journal, null, 2)
+            }
+        }
+    };
+
+    try {
+        const response = await fetch('https://api.github.com/gists', {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(gistData)
+        });
+
+        if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+
+        const result = await response.json();
+        showToast((getTranslation('toast-gist-success') || 'Journal synced to Gist: ') + result.html_url);
+        window.open(result.html_url, '_blank');
+    } catch (error) {
+        console.error('Gist sync error:', error);
+        showToast(getTranslation('toast-gist-error') || 'Failed to sync to GitHub Gist.');
+    }
+}
+
 export function toggleFavorite(id) {
     let journal = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     const entry = journal.find(e => e.id === id);

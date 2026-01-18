@@ -417,6 +417,7 @@
                         <span class="accordion-arrow"></span>
                     </h3>
                     <div class="accordion-content" id="content-network-results-container">
+                        <progress id="network-progress-bar" value="0" max="100" style="display: none; width: 100%; margin-bottom: 1rem;"></progress>
                         <!-- Network Graph -->
                         <div class="search-group" id="network-graph-section">
                             <div class="accordion-header">
@@ -506,6 +507,7 @@
                     <input type="file" id="journal-file-input" style="display: none;" accept=".json">
                     <button id="export-json-button" class="btn btn-tertiary">JSON</button>
                     <button id="export-csv-button" class="btn btn-tertiary">CSV</button>
+                    <button id="export-gist-button" class="btn btn-tertiary">GIST</button>
                     <button id="delete-selected-btn" class="btn btn-secondary btn-danger">🗑️</button>
                     <button id="clear-journal-btn" class="btn btn-danger-primary">CLR</button>
                 </div>

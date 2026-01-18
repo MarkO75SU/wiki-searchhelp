@@ -3,7 +3,7 @@ import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMod
 import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { presetCategories } from './modules/presets.js';
-import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal } from './modules/journal.js';
+import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal, syncJournalToGist } from './modules/journal.js';
 import { setupCategoryAutocomplete } from './modules/autocomplete.js';
 import { performNetworkAnalysis, exportNetworkAsJSON } from './modules/network.js';
 import { showToast } from './modules/toast.js';
@@ -81,6 +81,7 @@ async function initializeApp() {
             importJournal(file);
         }
     });
+    document.getElementById('export-gist-button')?.addEventListener('click', syncJournalToGist);
 
     // Topic Explorer
     document.getElementById('surprise-me-button')?.addEventListener('click', triggerTopicExplorer);

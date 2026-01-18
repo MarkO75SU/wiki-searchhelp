@@ -52,14 +52,24 @@ export async function performNetworkAnalysis(allArticles) {
     
     if (explanationEl) explanationEl.innerHTML = `<p><em>${getTranslation('network-loading', 'Analyse läuft...') }</em></p>`;
 
+    const progressBar = document.getElementById('network-progress-bar');
+    if (progressBar) {
+        progressBar.style.display = 'block';
+        progressBar.value = 0;
+    }
+
     try {
         const lang = getLanguage();
         const pages = await fetchArticlesCategories(articles.map(a => a.title), lang, (current, total) => {
             if (explanationEl) {
                 explanationEl.innerHTML = `<p><em>${getTranslation('network-loading-progress', 'Lade Daten...', { current, total })}</em></p>`;
             }
+            if (progressBar) {
+                progressBar.value = (current / total) * 100;
+            }
         });
 
+        if (progressBar) progressBar.style.display = 'none';
         if (exportBtn) exportBtn.style.display = 'inline-block';
 
         const nodes = prepareNodes(articles, pages);
