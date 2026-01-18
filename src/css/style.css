@@ -1,10 +1,9 @@
 /**
  * WikiGUI Suite 2026 - Master Enterprise Stylesheet
- * Integrated Design System & Responsive Layout
+ * Optimized for Content Containment and Reliability
  */
 
 :root {
-    /* --- Palette --- */
     --bg-body: #020617;       
     --bg-sidebar: #0f172a;    
     --bg-surface: #1e293b;    
@@ -17,8 +16,7 @@
     --accent-green: #22c55e;
     --accent-red: #ef4444;
     
-    /* --- Geometry --- */
-    --sidebar-w: 260px;
+    --sidebar-w: 280px;
     --control-h: 48px;
     --radius-sm: 4px;
     --radius-md: 8px;
@@ -26,10 +24,11 @@
     --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- Base --- */
+/* --- Base Setup --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
+html, body {
+    height: 100%;
     background-color: var(--bg-body);
     color: var(--text-primary);
     font-family: var(--font-main);
@@ -38,7 +37,21 @@ body {
     overflow-x: hidden;
 }
 
-/* --- Layout --- */
+/* --- Containment Helpers --- */
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-break {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* --- Enterprise Layout --- */
 .enterprise-layout {
     display: flex;
     min-height: 100vh;
@@ -48,7 +61,7 @@ body {
     width: var(--sidebar-w);
     background: var(--bg-sidebar);
     border-right: 1px solid var(--border-color);
-    padding: 2rem 1.5rem;
+    padding: 2rem 1.25rem;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -60,27 +73,25 @@ body {
     margin-left: var(--sidebar-w);
     flex-grow: 1;
     padding: 2rem 3rem;
-    max-width: 1400px;
+    width: calc(100% - var(--sidebar-w));
 }
 
 .logo {
     font-size: 1.5rem;
     font-weight: 800;
     color: var(--primary);
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
     letter-spacing: -0.02em;
 }
 
-/* --- Navigation --- */
+/* --- Flow Navigation --- */
 .flow-nav {
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
 }
 
 .flow-step {
-    padding: 1rem;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.5rem;
     border-radius: var(--radius-md);
     color: var(--text-secondary);
     font-weight: 600;
@@ -97,10 +108,20 @@ body {
     border-color: rgba(37, 99, 235, 0.2);
 }
 
-/* --- Dashboard Components --- */
+.user-info {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow: hidden; /* Contains text in sidebar bottom */
+}
+
+/* --- Dashboard Cards --- */
 .analysis-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
     margin-bottom: 3rem;
 }
@@ -110,33 +131,41 @@ body {
     border-radius: var(--radius-md);
     padding: 1.5rem;
     border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Consistent height in grid */
 }
 
-.card h3, .settings-card h3 {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: var(--primary);
-    margin-bottom: 1.25rem;
-    letter-spacing: 0.05em;
-    font-weight: 800;
-}
-
-/* --- Card Info & Headers --- */
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--primary);
+    letter-spacing: 0.05em;
+    font-weight: 800;
 }
 
 .card-info {
     font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     line-height: 1.4;
+    word-break: break-word;
 }
 
 /* --- Results --- */
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
 .result-item {
     background: var(--bg-surface);
     border-radius: var(--radius-md);
@@ -145,8 +174,8 @@ body {
     grid-template-columns: 80px 1fr;
     gap: 1.5rem;
     border: 1px solid var(--border-color);
-    margin-bottom: 1rem;
     transition: var(--transition);
+    overflow: hidden;
 }
 
 .result-item:hover { border-color: var(--primary); transform: translateX(4px); }
@@ -155,104 +184,99 @@ body {
     width: 80px; height: 80px; background: var(--bg-input);
     border-radius: var(--radius-sm); overflow: hidden;
     display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
 }
 
-.result-title { font-weight: 700; color: #fff; text-decoration: none; border: none; font-size: 1.1rem; }
-.result-title:hover { color: var(--primary); }
+.result-title { 
+    font-weight: 700; color: #fff; text-decoration: none; border: none; font-size: 1.15rem;
+    display: block; margin-bottom: 0.25rem;
+    word-break: break-word;
+}
+
+.result-snippet {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    word-break: break-word;
+}
 
 .meta-badge {
-    font-size: 0.65rem; font-weight: 800; padding: 2px 6px;
+    display: inline-block;
+    font-size: 0.6rem; font-weight: 800; padding: 2px 6px;
     background: rgba(255, 255, 255, 0.05); border-radius: 4px;
     color: var(--text-secondary); text-transform: uppercase;
-}
-
-.wiki-link-inline {
-    display: block;
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--primary);
-    border: none;
-}
-
-.wiki-link-inline:hover {
-    text-decoration: underline;
+    margin-bottom: 0.5rem;
 }
 
 /* --- Editor --- */
-.editor-layout { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; }
+.editor-layout { display: grid; grid-template-columns: 320px 1fr; gap: 2.5rem; }
+
 .wikitext-scroll {
-    background: var(--bg-input); padding: 2rem; border-radius: var(--radius-md);
-    max-height: 75vh; overflow-y: auto; font-family: monospace;
-    font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;
+    background: var(--bg-input); 
+    padding: 1.5rem; 
+    border-radius: var(--radius-md);
+    max-height: 75vh; 
+    overflow-y: auto; 
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem; 
+    color: var(--text-secondary); 
+    line-height: 1.6;
+    border: 1px solid var(--border-color);
 }
 
-/* --- Forms & Buttons --- */
-.main-search-bar { background: var(--bg-surface); padding: 0.5rem; border-radius: var(--radius-md); display: flex; gap: 0.5rem; }
-.search-input-group { display: flex; flex-grow: 1; background: var(--bg-input); border-radius: var(--radius-sm); overflow: hidden; }
-input, select { background: transparent; border: none; padding: 0.75rem 1rem; color: #fff; }
+.wikitext-scroll pre {
+    white-space: pre-wrap;
+    word-break: break-all; /* Strict containment for wikitext */
+}
 
+/* --- Components --- */
 .btn {
     height: var(--control-h); padding: 0 1.5rem; border-radius: var(--radius-sm);
-    font-weight: 700; font-size: 0.85rem; cursor: pointer;
-    display: inline-flex; align-items: center; justify-content: center; transition: var(--transition);
+    font-weight: 700; font-size: 0.8rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; 
+    transition: var(--transition); border: 1px solid transparent;
+    text-transform: uppercase; letter-spacing: 0.05em;
 }
 .btn-primary { background: var(--primary); color: #fff; }
 .btn-secondary { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); }
+.btn-tertiary { background: var(--bg-sidebar); border: 1px solid var(--border-color); color: var(--text-secondary); }
 
-.btn-tertiary {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-}
+.btn:hover { transform: translateY(-1px); border-color: var(--primary); }
 
-/* --- Health --- */
-.health-display { display: flex; align-items: center; gap: 1.5rem; }
+/* --- Forms --- */
+.main-search-bar { background: var(--bg-surface); padding: 0.5rem; border-radius: var(--radius-md); display: flex; gap: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.search-input-group { display: flex; flex-grow: 1; background: var(--bg-input); border-radius: var(--radius-sm); overflow: hidden; }
+input, select { background: transparent; border: none; padding: 0.75rem 1rem; color: #fff; width: 100%; }
+input:focus { outline: none; background: rgba(37, 99, 235, 0.05); }
+
+/* --- Health Score UI --- */
+.health-display { display: flex; align-items: center; gap: 1.5rem; margin-top: auto; }
 .score-circle {
-    width: 64px; height: 64px; border: 4px solid var(--primary);
+    width: 60px; height: 60px; border: 4px solid var(--primary);
     border-radius: 50%; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; font-weight: 800;
+    align-items: center; justify-content: center; flex-shrink: 0;
 }
+.score-value { font-size: 1.1rem; font-weight: 800; }
+.score-label { font-size: 0.5rem; text-transform: uppercase; opacity: 0.6; }
 
-/* --- Leaflet Popup Overrides --- */
-.leaflet-popup-content-wrapper {
-    background: var(--bg-sidebar) !important;
-    color: #fff !important;
-    border-radius: 4px !important;
-}
-.leaflet-popup-tip {
-    background: var(--bg-sidebar) !important;
-}
+/* --- Map --- */
+.mini-map { width: 100%; border-radius: var(--radius-sm); background: var(--bg-input); border: 1px solid var(--border-color); }
 
-/* --- Map Labels & Scale --- */
-.map-article-label {
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid var(--primary);
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-
-.leaflet-control-scale-line {
-    background: rgba(0, 0, 0, 0.5) !important;
-    color: #fff !important;
-    border: 1px solid var(--border-color) !important;
-    border-top: none !important;
-    font-size: 0.65rem !important;
-}
+/* --- Popups --- */
+.leaflet-popup-content-wrapper { background: var(--bg-sidebar) !important; color: #fff !important; border-radius: 4px !important; }
+.leaflet-popup-tip { background: var(--bg-sidebar) !important; }
 
 /* --- Responsive --- */
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
     .sidebar { width: 80px; padding: 2rem 0.5rem; }
-    .sidebar .logo, .user-info { display: none; }
-    .content-area { margin-left: 80px; }
+    .sidebar .logo, .user-info, .flow-step { text-indent: -9999px; overflow: hidden; }
+    .flow-step { display: flex; justify-content: center; text-indent: 0; font-size: 1.2rem; }
+    .content-area { margin-left: 80px; width: calc(100% - 80px); }
 }
 
 @media (max-width: 768px) {
     .analysis-grid, .editor-layout, .advanced-settings-grid { grid-template-columns: 1fr; }
+    .content-area { padding: 1.5rem; }
+    .search-hero h1 { font-size: 2rem; }
 }
