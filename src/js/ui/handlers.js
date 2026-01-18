@@ -16,6 +16,13 @@ let allSearchResults = [];
 
 export function getAllSearchResults() { return allSearchResults; }
 
+const wikipediaSearchHelpUrls = {
+    'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
+    'en': 'https://en.wikipedia.org/wiki/Help:Searching',
+    'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
+    'es': 'https://es.wikipedia.org/wiki/Ayuda:Búsqueda'
+};
+
 /**
  * Handles all clicks on result list items (Similar, Maintenance, etc.)
  */
@@ -64,8 +71,14 @@ function populateMaintenanceForm() {
     `;
 }
 
+export function clearForm() {
+    const form = document.getElementById('search-form');
+    if (form) form.reset();
+    showToast(getTranslation('form-cleared') || 'Form cleared');
+}
+
 export async function handleSearchFormSubmit(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
     const { apiQuery, wikiSearchUrlParams, shareParams } = generateSearchString();
     const lang = document.getElementById('target-wiki-lang')?.value || getLanguage();
 
@@ -173,7 +186,7 @@ export function setupResultFilter() {
     filterInput.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         const filtered = allSearchResults.filter(r => r.title.toLowerCase().includes(term));
-        renderResultsList(filtered.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', filtered.length);
+        renderResultsList(filtered.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', filtered.length, setupResultHandlers);
     });
 }
 
@@ -192,7 +205,7 @@ export async function performDriftAnalysis(results) {
     const vectors = await generateEmbeddings(titles);
     const driftData = identifyDriftOutliers(results, vectors, null, cosineSimilarity);
     allSearchResults = driftData.analyzed;
-    renderResultsList(allSearchResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', 0);
+    renderResultsList(allSearchResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', 0, setupResultHandlers);
 }
 
 export async function performInterwikiCheck(results) {
