@@ -1,6 +1,6 @@
 // src/js/core/search.js
 import { getTranslation, getLanguage } from './state.js';
-import { performWikipediaSearch } from '../services/api.js';
+import { performWikipediaSearch } from '../services/wiki_service.js';
 
 let countDebounceTimer;
 

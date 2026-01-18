@@ -1,4 +1,4 @@
-import { fetchResource } from '../services/api.js';
+import { fetchResource } from '../services/wiki_service.js';
 
 export async function loadHeader(placeholderId, headerHtmlPath) {
     const placeholder = document.getElementById(placeholderId);

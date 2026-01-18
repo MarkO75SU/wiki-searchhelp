@@ -3,12 +3,12 @@
  * Manages the linear 3-phase workflow
  */
 
-import { setPhase, FLOW_PHASES, getTier, USER_TIERS } from './state.js';
+import { setPhase, getPhase, FLOW_PHASES, getTier, USER_TIERS } from './state.js';
 import { showToast } from '../ui/toast.js';
 
 export class FlowManager {
     constructor() {
-        this.phases = [FLOW_PHASES.SEARCH, FLOW_PHASES.ANALYSIS, FLOW_PHASES.EDITOR];
+        this.phases = Object.values(FLOW_PHASES);
         this.initSidebar();
     }
 
@@ -33,14 +33,15 @@ export class FlowManager {
      * Updates the visibility of phase containers and sidebar badges
      */
     updateUI() {
-        const currentPhase = document.querySelector('.phase-active');
-        if (currentPhase) currentPhase.classList.remove('phase-active');
-
-        const activePhase = document.getElementById(setPhase.currentPhase || FLOW_PHASES.SEARCH);
-        // Note: We use the DOM IDs directly corresponding to FLOW_PHASES
+        const activePhase = getPhase();
+        
         this.phases.forEach(p => {
             const el = document.getElementById(p);
-            if (el) el.style.display = (p === activePhase?.id) ? 'block' : 'none';
+            if (el) {
+                el.style.display = (p === activePhase) ? 'block' : 'none';
+                if (p === activePhase) el.classList.add('phase-active');
+                else el.classList.remove('phase-active');
+            }
         });
 
         this.updateSidebar();
@@ -62,7 +63,14 @@ export class FlowManager {
     }
 
     updateSidebar() {
-        // Implementation for highlighting active step
+        const activePhase = getPhase();
+        document.querySelectorAll('.flow-step').forEach(step => {
+            if (step.dataset.phase === activePhase) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
     }
 }
 

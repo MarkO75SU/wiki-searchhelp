@@ -110,3 +110,65 @@ export async function fetchBatchedMetadata(titles, lang, props = 'pageimages|ext
     }
     return results;
 }
+
+/**
+ * Fetches categories for multiple articles in batches.
+ */
+export async function fetchArticlesCategories(titles, lang, onProgress) {
+    const batchSize = 50;
+    const allPages = {};
+
+    for (let i = 0; i < titles.length; i += batchSize) {
+        const batchTitles = titles.slice(i, i + batchSize);
+        if (onProgress) onProgress(i, titles.length);
+        
+        const data = await fetchWikiData(lang, {
+            action: 'query',
+            titles: batchTitles.join('|'),
+            prop: 'categories',
+            cllimit: 50,
+            clshow: '!hidden'
+        });
+
+        if (data && data.query && data.query.pages) {
+            Object.assign(allPages, data.query.pages);
+        }
+    }
+    return allPages;
+}
+
+/**
+ * Fetches search suggestions from Wikipedia's OpenSearch API.
+ */
+export async function fetchWikipediaOpenSearch(query, lang = 'de', limit = 10) {
+    const params = {
+        action: 'opensearch',
+        search: query,
+        limit: limit,
+    };
+    const endpoint = `https://${lang}.wikipedia.org/w/api.php`;
+    const queryParams = new URLSearchParams({ format: 'json', origin: '*', ...params });
+    
+    try {
+        const response = await fetch(`${endpoint}?${queryParams}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error("Wikipedia OpenSearch fetch error:", error);
+        return null;
+    }
+}
+
+/**
+ * Fetches a resource from a given URL and returns it as text.
+ */
+export async function fetchResource(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.text();
+    } catch (error) {
+        console.error(`Error fetching resource from ${url}:`, error);
+        return null;
+    }
+}

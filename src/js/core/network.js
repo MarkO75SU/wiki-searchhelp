@@ -1,6 +1,6 @@
 // src/js/core/network.js
 import { getLanguage, getTranslation } from './state.js';
-import { fetchArticlesCategories } from '../services/api.js';
+import { fetchArticlesCategories } from '../services/wiki_service.js';
 
 let lastAnalysisData = { nodes: [], edges: [] };
 
