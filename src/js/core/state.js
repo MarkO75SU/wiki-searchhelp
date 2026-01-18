@@ -42,6 +42,16 @@ export function setLanguage(lang) {
 
 export function getLanguage() { return state.currentLang; }
 
+// Search Mode Management
+export function setSearchMode(mode) {
+    state.searchMode = mode;
+    localStorage.setItem(STORAGE_KEYS.MODE, mode);
+}
+
+export function getSearchMode() {
+    return state.searchMode || 'normal';
+}
+
 export function setTranslations(lang, data) { state.translations[lang] = data; }
 
 export function getTranslation(key, defaultValue = '', replacements = {}) {
