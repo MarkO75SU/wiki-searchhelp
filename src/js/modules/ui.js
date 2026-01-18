@@ -7,8 +7,19 @@ import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';
 import { loadLeaflet } from './utils.js';
 import { generateEmbeddings, calculateCentroid, cosineSimilarity } from './ai_mock.js';
+import { analyzeGlobalRelevance } from './interwiki.js';
 
 let allSearchResults = []; // Store full search results for downloading
+
+export function getAllSearchResults() {
+    return allSearchResults;
+}
+
+const wikipediaSearchHelpUrls = {
+// ... (rest of the file remains unchanged until renderResultsList)
+// I will target renderResultsList specifically in the next replace call if I can't do it all at once easily or safe.
+// Actually, I can replace the import block first.
+
 
 export function getAllSearchResults() {
     return allSearchResults;
@@ -1040,6 +1051,11 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
                     <button class="btn btn-tertiary maintenance-btn" data-title="${result.title}">
                         🛠️ ${getTranslation('btn-maintenance') || 'Wartung'}
                     </button>
+                    <div id="global-score-${result.pageid || result.title.replace(/\W/g, '')}" class="global-score-container" style="display:inline-flex;">
+                        <button class="btn btn-tertiary global-check-btn" data-title="${result.title}" data-id="global-score-${result.pageid || result.title.replace(/\W/g, '')}" title="Check Global Relevance">
+                            🌐
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -1059,6 +1075,15 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
     resultsContainer.querySelectorAll('.maintenance-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             openMaintenanceEdit(btn.dataset.title);
+        });
+    });
+
+    // Attach event listeners to global check buttons
+    resultsContainer.querySelectorAll('.global-check-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const title = btn.dataset.title;
+            const containerId = btn.dataset.id;
+            handleGlobalRelevanceCheck(title, containerId);
         });
     });
 }
@@ -1371,4 +1396,46 @@ export async function performDriftAnalysis(results) {
     });
 
     showToast(`Drift-Analyse fertig: ${outlierCount} potenzielle Ausreißer gefunden.`);
+}
+
+async function handleGlobalRelevanceCheck(title, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = '<span class="loading-spinner">⏳</span>'; // Simple loading state
+
+    try {
+        const results = await analyzeGlobalRelevance([title], getLanguage());
+        const data = results[title];
+
+        if (!data) {
+            container.innerHTML = '<span title="Daten nicht verfügbar">❌</span>';
+            return;
+        }
+
+        // Color coding for score
+        let color = '#94a3b8'; // Grey
+        if (data.score > 70) color = '#22c55e'; // Green
+        else if (data.score > 40) color = '#eab308'; // Yellow
+        else if (data.score < 20) color = '#ef4444'; // Red
+
+        // Create Badge
+        container.innerHTML = `
+            <span class="global-badge" style="
+                background: ${color}20; 
+                color: ${color}; 
+                border: 1px solid ${color}; 
+                padding: 2px 6px; 
+                border-radius: 4px; 
+                font-size: 0.7rem; 
+                font-weight: bold; 
+                cursor: help;"
+                title="Global Score: ${data.score}/100\nSprachen: ${data.totalLanguages}\nEnthält Englisch: ${data.hasEnglish ? 'Ja' : 'Nein'}">
+                Global: ${data.score}
+            </span>
+        `;
+    } catch (e) {
+        console.error("Global check failed", e);
+        container.innerHTML = '<span title="Fehler bei Prüfung">⚠️</span>';
+    }
 }
