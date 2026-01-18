@@ -9,13 +9,11 @@ import { HEALTH_CONFIG, DRIFT_CONFIG } from '../config/constants.js';
 
 /**
  * Renders the main search results list into an Enterprise Card format.
- * Summaries are limited to 4 sentences followed by a Wikipedia link.
  */
 export function renderResultsList(results, containerId, actionsId, headingId, totalHits, handlers) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // Update Heading
     const heading = document.getElementById(headingId);
     if (heading) heading.textContent = `${totalHits.toLocaleString()} Artikel identifiziert`;
 
@@ -29,7 +27,6 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
         const card = document.createElement('div');
         card.className = 'result-item';
         
-        // Sentence Limit Logic (Max 4 sentences)
         const summary = result.summary || 'Keine Kurzbeschreibung verfügbar.';
         const sentences = summary.match(/[^\.!\?]+[\.!\?]+/g) || [summary];
         const limitedSummary = sentences.slice(0, 4).join(' ');
@@ -93,6 +90,7 @@ export function renderHealthUI(containerId, stats) {
 
 /**
  * Lazy-loads Leaflet and renders the knowledge map.
+ * Optimized for geographical orientation with layered labels.
  */
 export async function renderMap(results, mapContainerId) {
     const container = document.getElementById(mapContainerId);
@@ -110,7 +108,15 @@ export async function renderMap(results, mapContainerId) {
 
     container.innerHTML = '';
     const map = L.map(mapContainerId, { zoomControl: false }).setView([0, 0], 2);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+    
+    // Switch to Voyager with Labels for better geographic context
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    L.control.scale({ position: 'bottomright', imperial: false }).addTo(map);
 
     const markers = resultsWithCoords.map(res => {
         const wikiUrl = `https://${getLanguage()}.wikipedia.org/wiki/${encodeURIComponent(res.title)}`;
@@ -121,15 +127,35 @@ export async function renderMap(results, mapContainerId) {
             </div>
         `;
 
-        return L.circleMarker([res.coords.lat, res.coords.lon], {
+        const marker = L.circleMarker([res.coords.lat, res.coords.lon], {
             radius: 6,
             fillColor: "var(--primary)",
             color: "#fff",
             weight: 1,
             opacity: 1,
             fillOpacity: 0.8
-        }).bindPopup(popupContent).addTo(map);
+        }).bindPopup(popupContent);
+
+        // Add permanent label (Tooltip) - visibility controlled by zoom
+        marker.bindTooltip(res.title, {
+            permanent: true,
+            direction: 'right',
+            className: 'map-article-label',
+            offset: [10, 0],
+            opacity: 0 // Hidden by default
+        });
+
+        return marker.addTo(map);
     });
 
     if (markers.length) map.fitBounds(L.featureGroup(markers).getBounds().pad(0.2));
+
+    // Adaptive Label Visibility
+    map.on('zoomend', () => {
+        const currentZoom = map.getZoom();
+        const labels = document.querySelectorAll('.map-article-label');
+        labels.forEach(el => {
+            el.style.opacity = currentZoom > 9 ? '1' : '0';
+        });
+    });
 }
