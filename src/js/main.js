@@ -131,7 +131,6 @@ async function initializeApp() {
                 if (!data) return;
                 setTranslations(lang, data);
                 applyTranslations();
-                updateAdvancedModeDescription(); // Update description on language change
                 generateSearchString(); // Update generated string for new language context
             } catch (error) {
                 console.error(`Could not fetch translations for ${lang}:`, error);
@@ -246,49 +245,6 @@ async function initializeApp() {
     const exportNetworkBtn = document.getElementById('export-network-button');
     exportNetworkBtn?.addEventListener('click', exportNetworkAsJSON);
 
-    // Advanced mode toggle
-    const advancedToggle = document.getElementById('advanced-mode-toggle');
-    const searchFormContainer = document.querySelector('.search-form-container');
-    const advancedModeDescription = document.getElementById('advanced-mode-description');
-    const modeToggleContainer = document.querySelector('.mode-toggle-container'); // Get modeToggleContainer
-
-    function updateAdvancedModeDescription() {
-        if (!advancedToggle || !advancedModeDescription) return;
-
-        const labelAdvancedMode = document.getElementById('label-advanced-mode');
-        if (labelAdvancedMode) {
-             labelAdvancedMode.textContent = getTranslation('label-advanced-mode');
-        }
-
-        if (advancedToggle.checked) {
-            advancedModeDescription.textContent = getTranslation('advanced-mode-advanced-active');
-        } else {
-            const simpleActive = getTranslation('advanced-mode-simple-active');
-            const hint = getTranslation('advanced-mode-hint');
-            advancedModeDescription.textContent = simpleActive ? `${simpleActive} ${hint}` : hint;
-        }
-    }
-
-    if (advancedToggle && searchFormContainer && advancedModeDescription && modeToggleContainer) { // Add modeToggleContainer to check
-        advancedToggle.addEventListener('change', () => {
-            if (advancedToggle.checked) {
-                searchFormContainer.classList.add('advanced-view');
-                modeToggleContainer.classList.add('advanced-mode-active'); // Add class
-            } else {
-                searchFormContainer.classList.remove('advanced-view');
-                modeToggleContainer.classList.remove('advanced-mode-active'); // Remove class
-            }
-            updateAdvancedModeDescription();
-        });
-        updateAdvancedModeDescription(); // Initial call
-        // Also update the class on initial load based on checkbox state
-        if (advancedToggle.checked) {
-            modeToggleContainer.classList.add('advanced-mode-active');
-        } else {
-            modeToggleContainer.classList.remove('advanced-mode-active');
-        }
-    }
-
     // New Preset Logic Setup
     const presetCategorySelect = document.getElementById('preset-category-select');
     const presetSelect = document.getElementById('preset-select');
@@ -398,7 +354,6 @@ async function initializeApp() {
             }
         }
         generateSearchString(); // Generate string after everything else is set up
-        updateAdvancedModeDescription(); // Initial call for description
 
     } catch (error) {
         console.error(`Could not fetch initial translations for ${initialLang}:`, error);

@@ -11,10 +11,6 @@
     "official-doc-link": "Official Wikipedia Search Documentation",
     "surprise-me-button": "Surprise Me!",
     "toast-surprise-me": "Surprise! A random topic has been selected.",
-    "label-advanced-mode": "Advanced Mode",
-    "advanced-mode-simple-active": "",
-    "advanced-mode-advanced-active": "Advanced Mode active.",
-    "advanced-mode-hint": "Flip the switch for more input fields.",
     
     "tab-label-normal": "Normal Search",
     "tab-label-network": "Network Search",

@@ -1,0 +1,33 @@
+feat: Implement all roadmap items, integrate Trip Planner, and refine UI/UX
+
+This commit finalizes all planned roadmap features, incorporates the new Trip Planner mode, and applies significant UI/UX and architectural refinements.
+
+**Completed Roadmap Items:**
+- **Advanced Data Visualizations:** Timeline View, Interactive Knowledge Map, Category Heatmap.
+- **Result Set Refinement:** Smart Sorting, In-Result Filtering.
+- **Enhanced Network Analysis:** Connection Details, Analysis Depth Control with progress bar.
+- **Usability & Academic Export:** Citation Export (BibTeX/RIS), Search "Drill-down", Journal Sync (Local Import/Export, Gist Export).
+- **"Discovery" Features:** Topic Explorer ("Surprise Me").
+- **Stability & Maintenance:** API centralization, improved error handling, standardized async patterns.
+
+**New Features Implemented:**
+- **Trip Planner Mode:** A dedicated interface for travel-related information retrieval with map integration.
+- **Interactive Knowledge Map:** Integrated Leaflet.js for visualizing geographical data.
+- **Progress Bar:** Visual progress indicator for network analysis depth control.
+- **GitHub Gist Sync:** Added functionality to export Search Journal data to GitHub Gist.
+
+**UI/UX & Architectural Refinements:**
+- **Information Hierarchy & Visual Focus:** Moved disclaimers, refined header.
+- **Typography & Tone:** Reduced excessive uppercase usage for better readability.
+- **Visual Aesthetics & Depth:** Replaced many borders with subtle shadows and background variations.
+- **Semantic Button Hierarchy:** Standardized button styles (`btn-primary`, `btn-secondary`, `btn-tertiary`, etc.) for clarity.
+- **Streamlined Filter Interaction:** Flattened non-essential accordions to always-visible sections.
+- **State Persistence:** Implemented `sessionStorage` for form state.
+* **Accessibility:** Added ARIA attributes and keyboard navigation to accordions.
+
+**Documentation & Structure:**
+- **Roadmap Merging:** Created `roadmap3.md` by joining `ROADMAP.md` and `roadmap2.md`.
+- **Code Structure:** Refactored UI rendering logic into `renderResultsList` and `renderTimeline`.
+- **API Integration:** Added `fetchArticleCoordinates`.
+
+All remaining roadmap items and user-requested features are now implemented.

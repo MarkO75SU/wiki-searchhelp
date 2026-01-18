@@ -5,12 +5,13 @@ import { fetchArticlesCategories } from './api.js';
 let lastAnalysisData = { nodes: [], edges: [] };
 
 const VIZ_CONFIG = {
-    canvasHeight: 800,
-    layoutRadius: 200,
-    centerY: 400,
-    nodeBaseRadius: 8,
-    maxNodeExtraRadius: 20,
-    labelOffset: 12
+    canvasHeight: 600, // Reduced height for better fit
+    nodeBaseRadius: 5,
+    maxNodeExtraRadius: 15,
+    repulsion: 2000,   // Force pushing nodes apart
+    springLength: 100, // Ideal length of connections
+    friction: 0.9,     // Movement dampening
+    gravity: 0.05      // Pull towards center
 };
 
 export function exportNetworkAsJSON() {
@@ -34,24 +35,27 @@ export async function performNetworkAnalysis(allArticles) {
     const exportBtn = document.getElementById('export-network-button');
     const explanationEl = document.getElementById('network-explanation');
     const networkSection = document.getElementById('network-graph-section');
+    const contentContainer = document.getElementById('content-network-graph-section'); // Ensure ID matches
     
     if (!container || !canvas || !allArticles.length) return;
 
+    // Limit nodes for performance and clarity
     const depthSelect = document.getElementById('network-depth-select');
     const articleLimit = depthSelect ? parseInt(depthSelect.value) : 50;
-
     const articles = allArticles.slice(0, articleLimit);
+
     container.style.display = 'block';
     
-    // Auto-expand the network graph section when analysis is triggered
-    if (networkSection) {
+    // Auto-expand
+    if (networkSection && contentContainer) {
         networkSection.classList.add('active');
+        contentContainer.style.display = 'block';
     }
     
     if (exportBtn) exportBtn.style.display = 'none';
     
+    // Progress Bar Logic
     if (explanationEl) explanationEl.innerHTML = `<p><em>${getTranslation('network-loading', 'Analyse läuft...') }</em></p>`;
-
     const progressBar = document.getElementById('network-progress-bar');
     if (progressBar) {
         progressBar.style.display = 'block';
@@ -60,6 +64,7 @@ export async function performNetworkAnalysis(allArticles) {
 
     try {
         const lang = getLanguage();
+        // Fetch categories with progress update
         const pages = await fetchArticlesCategories(articles.map(a => a.title), lang, (current, total) => {
             if (explanationEl) {
                 explanationEl.innerHTML = `<p><em>${getTranslation('network-loading-progress', 'Lade Daten...', { current, total })}</em></p>`;
@@ -75,11 +80,19 @@ export async function performNetworkAnalysis(allArticles) {
         const nodes = prepareNodes(articles, pages);
         const edges = calculateEdges(nodes);
         
-        const visualNodes = nodes
-            .sort((a, b) => b.totalStrength - a.totalStrength)
-            .slice(0, 10);
-            
-        layoutNodes(visualNodes, canvas.getBoundingClientRect().width);
+        // Filter nodes: Keep only those with connections OR top 20 by strength if disconnected
+        // This cleans up "lonely" nodes that make the graph messy
+        let visualNodes = nodes.filter(n => n.connectionCount > 0);
+        if (visualNodes.length < 10) {
+             // Fallback: Add some unconnected ones if graph is too empty
+             const disconnected = nodes.filter(n => n.connectionCount === 0).sort((a,b) => b.totalStrength - a.totalStrength).slice(0, 10);
+             visualNodes = [...visualNodes, ...disconnected];
+        }
+
+        // Run Force Simulation
+        runForceSimulation(visualNodes, edges, canvas.getBoundingClientRect().width, VIZ_CONFIG.canvasHeight);
+        
+        // Draw
         drawNetwork(canvas, visualNodes, edges);
 
         lastAnalysisData = { 
@@ -92,10 +105,11 @@ export async function performNetworkAnalysis(allArticles) {
 
         updateNetworkExplanation(nodes, edges, visualNodes);
 
-        return nodes; // Return nodes for use in smart sorting
+        return nodes; // For smart sorting
 
     } catch (err) {
         console.error('Network analysis error:', err);
+        if (explanationEl) explanationEl.textContent = "Fehler bei der Analyse.";
         return null;
     }
 }
@@ -108,7 +122,11 @@ function prepareNodes(articles, pages) {
             title: article.title,
             categories: categories,
             totalStrength: 0,
-            connectionCount: 0
+            connectionCount: 0,
+            x: Math.random() * 800, // Initial random pos
+            y: Math.random() * 600,
+            vx: 0,
+            vy: 0
         };
     });
 }
@@ -122,7 +140,11 @@ function calculateEdges(nodes) {
         
         for (let j = i + 1; j < n; j++) {
             const nodeJ = nodes[j];
+            
+            // Connection Metric 1: Shared Categories
             const sharedCats = nodeI.categories.filter(cat => nodeJ.categories.includes(cat));
+            
+            // Connection Metric 2: Title Word Overlap (Simple Semantic Check)
             const wordsJ = nodeJ.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
             const sharedWords = wordsI.filter(w => wordsJ.includes(w));
 
@@ -146,15 +168,68 @@ function calculateEdges(nodes) {
     return edges;
 }
 
-function layoutNodes(nodes, width) {
-    nodes.forEach((node, i) => {
-        const angle = (i / nodes.length) * Math.PI * 2;
-        const centerX = width / 2;
-        const centerY = VIZ_CONFIG.centerY;
-        const layoutRadius = VIZ_CONFIG.layoutRadius;
-        node.x = centerX + Math.cos(angle) * layoutRadius;
-        node.y = centerY + Math.sin(angle) * layoutRadius;
-    });
+/**
+ * A simple Force-Directed Graph Layout algorithm.
+ * Runs iterating physics simulation to position nodes.
+ */
+function runForceSimulation(nodes, edges, width, height) {
+    const iterations = 150; // Number of physics steps
+    const center = { x: width / 2, y: height / 2 };
+
+    for (let k = 0; k < iterations; k++) {
+        // 1. Repulsion (Nodes push apart)
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const nodeA = nodes[i];
+                const nodeB = nodes[j];
+                const dx = nodeB.x - nodeA.x;
+                const dy = nodeB.y - nodeA.y;
+                let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                
+                // Force formula
+                const force = VIZ_CONFIG.repulsion / (dist * dist);
+                const fx = (dx / dist) * force;
+                const fy = (dy / dist) * force;
+
+                nodeA.vx -= fx;
+                nodeA.vy -= fy;
+                nodeB.vx += fx;
+                nodeB.vy += fy;
+            }
+        }
+
+        // 2. Attraction (Edges pull together)
+        for (const edge of edges) {
+            // Only calc if both nodes are in the visual set
+            if (!nodes.includes(edge.from) || !nodes.includes(edge.to)) continue;
+
+            const dx = edge.to.x - edge.from.x;
+            const dy = edge.to.y - edge.from.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            
+            // Spring force
+            const force = (dist - VIZ_CONFIG.springLength) * 0.05; // Spring constant
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+
+            edge.from.vx += fx;
+            edge.from.vy += fy;
+            edge.to.vx -= fx;
+            edge.to.vy -= fy;
+        }
+
+        // 3. Gravity (Center pull) & Update Positions
+        for (const node of nodes) {
+            node.vx += (center.x - node.x) * VIZ_CONFIG.gravity;
+            node.vy += (center.y - node.y) * VIZ_CONFIG.gravity;
+
+            node.vx *= VIZ_CONFIG.friction;
+            node.vy *= VIZ_CONFIG.friction;
+
+            node.x += node.vx;
+            node.y += node.vy;
+        }
+    }
 }
 
 function drawNetwork(canvas, visualNodes, allEdges) {
@@ -166,50 +241,50 @@ function drawNetwork(canvas, visualNodes, allEdges) {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Draw Edges
     const visualEdges = allEdges.filter(e => 
         visualNodes.includes(e.from) && visualNodes.includes(e.to)
     );
 
     visualEdges.forEach(edge => {
-        const hue = Math.min(200 + (edge.strength * 10), 260); 
-        const opacity = 0.2 + Math.min(edge.strength * 0.05, 0.4);
-        ctx.strokeStyle = `hsla(${hue}, 70%, 60%, ${opacity})`;
-        ctx.lineWidth = Math.max(1, Math.min(edge.strength, 5));
+        const opacity = Math.min(0.1 + (edge.strength * 0.05), 0.6);
+        ctx.strokeStyle = `rgba(147, 197, 253, ${opacity})`; // Light blue, transparent
+        ctx.lineWidth = Math.min(edge.strength, 3);
         ctx.beginPath();
         ctx.moveTo(edge.from.x, edge.from.y);
         ctx.lineTo(edge.to.x, edge.to.y);
         ctx.stroke();
     });
 
+    // Draw Nodes
     visualNodes.forEach(node => {
         const radius = VIZ_CONFIG.nodeBaseRadius + Math.min(node.totalStrength, VIZ_CONFIG.maxNodeExtraRadius);
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#2563eb';
-        ctx.fillStyle = '#2563eb';
+        
+        // Glow
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'rgba(37, 99, 235, 0.5)';
+        
+        // Node Body
+        ctx.fillStyle = '#2563eb'; // Primary blue
         ctx.beginPath();
         ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
-        
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 12px sans-serif';
-        const dx = node.x - (rect.width / 2);
-        const dy = node.y - VIZ_CONFIG.centerY;
-        const angle = Math.atan2(dy, dx);
-        const labelDist = radius + VIZ_CONFIG.labelOffset;
-        const labelX = node.x + Math.cos(angle) * labelDist;
-        const labelY = node.y + Math.sin(angle) * labelDist;
-        
-        if (Math.abs(Math.cos(angle)) < 0.3) {
-            ctx.textAlign = 'center';
-            ctx.textBaseline = Math.sin(angle) > 0 ? 'top' : 'bottom';
-        } else {
-            ctx.textAlign = Math.cos(angle) > 0 ? 'left' : 'right';
-            ctx.textBaseline = 'middle';
-        }
+        ctx.shadowBlur = 0; // Reset glow for text
 
-        const label = node.title.length > 25 ? node.title.slice(0, 22) + '..' : node.title;
-        ctx.fillText(label, labelX, labelY);
+        // Label Background (The fix for "unlabeled rectangles" perception - clear text area)
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.8)'; // Dark background
+        const label = node.title.length > 20 ? node.title.slice(0, 18) + '..' : node.title;
+        const textWidth = ctx.measureText(label).width;
+        
+        // Text
+        ctx.fillStyle = '#e2e8f0'; // Light text
+        ctx.font = '11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Optional: Draw a pill behind text if it's crowded, but simpler is better:
+        // Draw text below node
+        ctx.fillText(label, node.x, node.y + radius + 12);
     });
 }
 
@@ -248,7 +323,7 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
     const isDe = lang === 'de';
     
     const intro = getTranslation('network-explanation-intro', '', { total: nodes.length, connected: connectedNodes.length, edges: totalConnections });
-    const interpretation = isDe ? "Die Visualisierung zeigt die 10 am stärksten vernetzten Themen." : "The visualization shows the top 10 most connected topics.";
+    const interpretation = isDe ? "Die Visualisierung zeigt Cluster von verwandten Themen." : "The visualization shows clusters of related topics.";
     const central = getTranslation('network-explanation-central', '', { title: strongestNode?.title || 'N/A' });
     const categories = getTranslation('network-explanation-categories', '', { categories: topCats.join(', ') || 'N/A' });
 
@@ -256,9 +331,9 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
     let tableHtml = `
         <div style="margin-top: 2rem; overflow-x: auto;">
             <h4 style="margin-bottom: 1rem;">${isDe ? 'Top Artikel' : 'Top Articles'}</h4>
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--slate-300); margin-bottom: 2rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 2rem;">
                 <thead>
-                    <tr style="border-bottom: 1px solid var(--slate-700);">
+                    <tr style="border-bottom: 1px solid var(--border-color);">
                         <th style="text-align: left; padding: 0.5rem;">${isDe ? 'Artikel' : 'Article'}</th>
                         <th style="text-align: right; padding: 0.5rem;">${isDe ? 'Verknüpfungen' : 'Connections'}</th>
                         <th style="text-align: right; padding: 0.5rem;">${isDe ? 'Relevanz' : 'Strength'}</th>
@@ -270,7 +345,7 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
                         .sort((a,b) => b.totalStrength - a.totalStrength)
                         .slice(0, 15)
                         .map(n => `
-                        <tr style="border-bottom: 1px solid var(--slate-800); ${visualNodes.includes(n) ? 'background: rgba(37, 99, 235, 0.1);' : ''}">
+                        <tr style="border-bottom: 1px solid var(--border-color);">
                             <td style="padding: 0.5rem;"><a href="https://${lang}.wikipedia.org/wiki/${encodeURIComponent(n.title)}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">${n.title}</a></td>
                             <td style="text-align: right; padding: 0.5rem;">${n.connectionCount}</td>
                             <td style="text-align: right; padding: 0.5rem;">${n.totalStrength}</td>
@@ -280,9 +355,9 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
             </table>
 
             <h4 style="margin-bottom: 1rem;">${isDe ? 'Stärkste Verbindungen' : 'Strongest Connections'}</h4>
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--slate-300);">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--text-secondary);">
                 <thead>
-                    <tr style="border-bottom: 1px solid var(--slate-700);">
+                    <tr style="border-bottom: 1px solid var(--border-color);">
                         <th style="text-align: left; padding: 0.5rem;">${isDe ? 'Von' : 'From'}</th>
                         <th style="text-align: left; padding: 0.5rem;">${isDe ? 'Nach' : 'To'}</th>
                         <th style="text-align: right; padding: 0.5rem;">${isDe ? 'Stärke' : 'Strength'}</th>
@@ -294,7 +369,7 @@ function updateNetworkExplanation(nodes, edges, visualNodes) {
                         .sort((a, b) => b.strength - a.strength)
                         .slice(0, 10)
                         .map((e, index) => `
-                        <tr style="border-bottom: 1px solid var(--slate-800);">
+                        <tr style="border-bottom: 1px solid var(--border-color);">
                             <td style="padding: 0.5rem;">${e.from.title}</td>
                             <td style="padding: 0.5rem;">${e.to.title}</td>
                             <td style="text-align: right; padding: 0.5rem;">${e.strength}</td>
