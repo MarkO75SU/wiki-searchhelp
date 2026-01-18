@@ -1,8 +1,7 @@
 // src/js/modules/ui.js
 import { getTranslation, getLanguage, getSearchMode } from './state.js';
 import { generateSearchString } from './search.js';
-import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries, fetchArticleModificationDates, fetchArticleCoordinates, fetchArticlesCategories, fetchQualityMetrics, validateWithOSM, fetchInterwikiLinks, fetchRefCounts } from './api.js';
-import { presetCategories } from './presets.js';
+import { performWikipediaSearch, fetchArticleSummary, fetchArticlesInfo, fetchArticlesSummaries, fetchArticleModificationDates, fetchArticleCoordinates, fetchArticlesCategories, fetchQualityMetrics, validateWithOSM, fetchInterwikiLinks, fetchRefCounts, fetchWikiData } from './api.js';
 import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';
 import { loadLeaflet } from './utils.js';
@@ -27,56 +26,6 @@ const wikipediaSearchHelpUrls = {
     'ru': 'https://ru.wikipedia.org/wiki/Help:Search',
     'pt': 'https://pt.wikipedia.org/wiki/Ajuda:Pesquisa'
 };
-
-export function populatePresets(categorySelectElement, presetSelectElement) {
-    presetSelectElement.innerHTML = `<option value="">${getTranslation('placeholder-select-preset')}</option>`;
-    const selectedCategoryKey = categorySelectElement.value;
-    if (selectedCategoryKey && presetCategories[selectedCategoryKey]) {
-        const categoryPresets = presetCategories[selectedCategoryKey].presets;
-        for (const key in categoryPresets) {
-            const option = document.createElement('option');
-            option.value = key;
-            option.textContent = getTranslation(categoryPresets[key].display_name_key); // Use display_name_key
-            presetSelectElement.appendChild(option);
-        }
-    }
-}
-
-export function populatePresetCategories(categorySelectElement, presetSelectElement) {
-    categorySelectElement.innerHTML = `<option value="">${getTranslation('placeholder-preset-category')}</option>`;
-    for (const key in presetCategories) {
-        const option = document.createElement('option');
-        option.value = key;
-        option.textContent = presetCategories[key][`name_${getLanguage()}`] || presetCategories[key].name_en;
-        categorySelectElement.appendChild(option);
-    }
-}
-
-export function applyPreset(preset) {
-    clearForm(); // Clear all form fields first
-
-    const targetLangSelect = document.getElementById('target-wiki-lang');
-    if(targetLangSelect) {
-        targetLangSelect.value = getLanguage();
-    }
-
-    for (const key in preset) {
-        const element = document.getElementById(key);
-        if (element) {
-            if (element.type === 'checkbox') {
-                element.checked = preset[key];
-            } else {
-                const presetValue = preset[key];
-                let valueToSet = presetValue;
-                if (typeof presetValue === 'string' && presetValue.startsWith('preset-')) {
-                    valueToSet = getTranslation(presetValue, presetValue);
-                }
-                element.value = valueToSet;
-            }
-        }
-    }
-    generateSearchString();
-}
 
 export function applyTranslations() {
     const lang = getLanguage();
@@ -1182,24 +1131,36 @@ export function setupSortByRelevance(buttonId) {
     });
 }
 
-export function triggerTopicExplorer() {
-    // Collect all presets into a flat array
-    const allPresets = [];
-    for (const catKey in presetCategories) {
-        const cat = presetCategories[catKey];
-        for (const presetKey in cat.presets) {
-            allPresets.push(cat.presets[presetKey]);
-        }
-    }
-
-    if (allPresets.length === 0) return;
-
-    // Pick a random one
-    const randomPreset = allPresets[Math.floor(Math.random() * allPresets.length)];
+export async function triggerTopicExplorer() {
+    showToast(getTranslation('toast-surprise-me') || 'Suche nach einem zufälligen Thema...');
     
-    // Apply it
-    applyPreset(randomPreset);
-    showToast(getTranslation('toast-surprise-me') || 'Surprise! A random topic has been selected.');
+    try {
+        const lang = getLanguage();
+        // Fetch a random article from Wikipedia API
+        const response = await fetchWikiData(lang, {
+            action: 'query',
+            list: 'random',
+            rnnamespace: 0,
+            rnlimit: 1
+        });
+
+        const randomArticle = response?.query?.random?.[0];
+        if (randomArticle) {
+            clearForm();
+            const queryInput = document.getElementById('search-query');
+            if (queryInput) {
+                queryInput.value = randomArticle.title;
+                // Trigger the search
+                const form = document.getElementById('search-form');
+                if (form) {
+                    form.dispatchEvent(new Event('submit', { cancelable: true }));
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Zufallssuche fehlgeschlagen", e);
+        showToast("Zufallssuche fehlgeschlagen.", "error");
+    }
 }
 
 export async function performHealthAnalysis(results, containerId) {
