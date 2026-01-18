@@ -12,7 +12,7 @@ import { flow } from '../core/flow_manager.js';
 let allSearchResults = [];
 
 /**
- * Initializes global event handlers for the Enterprise Suite
+ * Restores global event listeners for the cleaned layout
  */
 export function setupGlobalHandlers() {
     // 1. Pro-Parameter Toggle
@@ -22,30 +22,30 @@ export function setupGlobalHandlers() {
         toggleBtn.addEventListener('click', () => {
             const isHidden = advancedArea.style.display === 'none';
             advancedArea.style.display = isHidden ? 'block' : 'none';
-            toggleBtn.textContent = isHidden ? '🔼 Pro-Parameter verbergen' : '⚙️ Erweiterte Pro-Parameter';
+            toggleBtn.textContent = isHidden ? getTranslation('btn-pro-params-close', '🔼 Pro-Parameter verbergen') : getTranslation('btn-pro-params', '⚙️ Erweiterte Pro-Parameter');
         });
     }
 
-    // 2. Search Mode Tabs
+    // 2. Mode Selector Tabs
     const modeTabs = document.querySelectorAll('.mode-tab');
     modeTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             modeTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             setSearchMode(tab.dataset.mode);
-            showToast(`Modus aktiviert: ${tab.textContent}`);
+            showToast(`${getTranslation('toast-mode-active', 'Modus aktiv')}: ${tab.textContent}`);
         });
     });
 
-    // 3. Network Analysis Trigger
+    // 3. Network Graph Trigger (Free Feature)
     const networkBtn = document.getElementById('analyze-network-button-normal');
     if (networkBtn) {
         networkBtn.addEventListener('click', async () => {
             if (allSearchResults.length === 0) {
-                showToast('Bitte führen Sie zuerst einen Scan durch.', 'info');
+                showToast(getTranslation('alert-analyze-first', 'Zuerst eine Suche starten.'), 'info');
                 return;
             }
-            showToast('Netzwerk-Analyse gestartet...');
+            showToast(getTranslation('network-loading', 'Analyse läuft...'));
             await performNetworkAnalysis(allSearchResults);
         });
     }
@@ -60,11 +60,11 @@ export async function handleSearchFormSubmit(event) {
     const lang = document.getElementById('target-wiki-lang')?.value || getLanguage();
 
     if (!query) {
-        showToast('Suchbegriff fehlt!', 'error');
+        showToast(getTranslation('error-empty-query', 'Suchbegriff fehlt!'), 'error');
         return;
     }
 
-    showToast('Scan initialisiert...');
+    showToast(getTranslation('toast-scan-running', 'Scan läuft...'));
     const { apiQuery, wikiSearchUrlParams, shareParams } = generateSearchString();
     
     try {
@@ -79,59 +79,56 @@ export async function handleSearchFormSubmit(event) {
                 return {
                     ...result,
                     thumbUrl: page?.thumbnail?.source || null,
-                    summary: page?.extract || 'Keine Beschreibung vorhanden.',
+                    summary: page?.extract || 'Keine Kurzbeschreibung.',
                     coords: page?.coordinates?.[0] || null
                 };
             });
 
-            // Populate Results & Maps
+            // Update UI & Step to Phase 2
             renderResultsList(allSearchResults.slice(0, 10), 'simulated-search-results-normal', null, 'search-results-heading-normal', apiResponse.query.searchinfo.totalhits, setupResultHandlers);
             renderMap(allSearchResults.slice(0, 50), 'search-results-map');
             
-            // Advance to Analysis Phase
             flow.navigateTo(FLOW_PHASES.ANALYSIS);
-            
-            // Log to journal
             addJournalEntry(apiQuery, `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`, shareParams);
         } else {
-            showToast('Keine Wikipedia-Einträge gefunden.', 'info');
+            showToast(getTranslation('no-results-found', 'Keine Artikel gefunden.'), 'info');
         }
     } catch (err) {
         console.error('Search failure:', err);
-        showToast('Fehler bei der Kommunikation mit Wikipedia.', 'error');
+        showToast(getTranslation('error-api-fetch', 'API Fehler.'), 'error');
     }
 }
 
 /**
- * Attaches handlers to rendered result items
+ * Attaches handlers to result cards
  */
 export function setupResultHandlers(container) {
     container.addEventListener('click', async (e) => {
         const btn = e.target.closest('button');
         if (!btn) return;
-        
         const title = btn.dataset.title;
+        
         if (btn.classList.contains('maintenance-btn')) {
-            showToast(`Vorbereitung: ${title}`);
+            showToast(`${getTranslation('loading-editor', 'Lade Editor')}...`);
             setActiveArticle(title);
             const wikitext = await fetchArticleWikitext(title, getLanguage());
-            
             document.getElementById('article-preview').innerHTML = `
-                <div class="editor-header">
-                    <h2>${title}</h2>
-                    <span class="meta-badge">Enterprise Editor</span>
-                </div>
-                <div class="wikitext-scroll">
-                    <pre>${wikitext.substring(0, 8000)}</pre>
-                </div>
+                <div class="editor-header"><h2>${title}</h2><span class="meta-badge">Enterprise Editor</span></div>
+                <div class="wikitext-scroll"><pre>${wikitext.substring(0, 10000)}</pre></div>
             `;
             flow.navigateTo(FLOW_PHASES.EDITOR);
         }
     });
 }
 
-// Stubs for PWA/Admin compatibility
-export function applyTranslations() {}
+// ... Additional exports for main.js compatibility
+export function applyTranslations() {
+    const el = document.querySelectorAll('[data-i18n]');
+    el.forEach(item => {
+        const key = item.dataset.i18n;
+        item.textContent = getTranslation(key, item.textContent);
+    });
+}
 export function clearForm() { document.getElementById('search-form')?.reset(); }
 export async function triggerTopicExplorer() {
     const lang = getLanguage();
@@ -142,3 +139,4 @@ export async function triggerTopicExplorer() {
         handleSearchFormSubmit();
     }
 }
+export { renderResultsList, renderMap, renderHealthUI };
