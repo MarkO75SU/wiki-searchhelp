@@ -3,78 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.wikipedia.org; connect-src 'self' https://*.wikipedia.org;">
-    <title id="hilfe-page-title">Suchparameter Erklärungen - WikiGUI</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Hilfe Center - WikiGUI Suite</title>
+    <link rel="stylesheet" href="../css/style.css?v=1.14">
     <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
     <style>
-        .help-container {
+        .help-hero {
+            background: var(--bg-sidebar);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: var(--radius-md);
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-color);
+        }
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .help-card {
             background: var(--bg-surface);
             padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-top: 2rem;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
+            transition: var(--transition);
         }
-        .help-section {
-            margin-bottom: 2.5rem;
-        }
-        .help-section h2 {
-            text-align: left;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-        }
-        .help-item {
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            background: var(--bg-element);
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-        }
-        .help-item h3 {
-            color: var(--primary);
-            margin-bottom: 0.75rem;
-            font-size: 1.25rem;
-        }
-        .help-item p {
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-        }
-        .help-item code {
-            display: block;
-            padding: 1rem;
-            background: var(--bg-body);
-            color: var(--accent);
-            border-radius: var(--radius);
-            font-family: monospace;
-            font-size: 0.95rem;
-            overflow-x: auto;
-            border: 1px solid var(--border-color);
-        }
-        .help-item em {
-            font-weight: 700;
-            font-style: normal;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-        #help-search {
-            width: 100%;
-            height: 56px;
-            padding: 0 1.5rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            background: var(--bg-element);
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            box-shadow: var(--shadow);
-        }
-        #help-search:focus {
-            outline: none;
+        .help-card:hover {
             border-color: var(--primary);
-            background: var(--bg-element-hover);
+            transform: translateY(-4px);
+        }
+        .help-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        .help-card code {
+            display: block;
+            background: var(--bg-input);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--accent-green);
+        }
+        .workflow-guide {
+            margin-top: 4rem;
+            padding: 3rem;
+            background: var(--bg-sidebar);
+            border-radius: var(--radius-md);
+        }
+        .step-list {
+            list-style: none;
+            margin-top: 2rem;
+        }
+        .step-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -82,236 +78,79 @@
     <div id="header-placeholder"></div>
 
     <main class="container">
-        <div class="search-box-container" style="margin-top: 2rem;">
-            <input type="text" id="help-search" placeholder="Hilfe durchsuchen...">
+        <section class="help-hero">
+            <h1>Wie können wir helfen?</h1>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">Erfahren Sie alles über den professionellen Wiki-Workflow.</p>
+        </section>
+
+        <div class="workflow-guide">
+            <h2>Der Drei-Phasen-Workflow</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h3>Phase 1: Präzisions-Suche</h3>
+                        <p style="color: var(--text-secondary);">Nutzen Sie fortgeschrittene Parameter wie <code>incategory:</code> oder <code>deepcat:</code>, um Wikipedia gezielt nach Qualitätslücken zu scannen.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h3>Phase 2: Tiefen-Analyse</h3>
+                        <p style="color: var(--text-secondary);">Bewerten Sie die Ergebnisse mit dem KI-gestützten Health-Score und erkennen Sie inhaltliche Abweichungen (Semantic Drift) in Echtzeit.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h3>Phase 3: Editor Hub</h3>
+                        <p style="color: var(--text-secondary);">Verifizierte Experten können Artikel direkt mit Wartungsbausteinen versehen oder Korrekturen an die Wikipedia synchronisieren.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="help-container">
-            <section class="help-section">
-                <h2 id="modal-heading-main-query">Hauptsuchanfrage</h2>
-                
-                <div class="help-item">
-                    <h3 id="modal-label-keywords">Schlüsselwörter</h3>
-                    <p id="modal-text-keywords">Gib hier deine primären Suchbegriffe ein. Standardmäßig werden Begriffe mit 'UND' verknüpft. Verwende 'ODER' für Alternativen oder '-' vor einem Wort, um es auszuschließen. Nutze Anführungszeichen für exakte Phrasen.</p>
-                    <p><em>Beispiel:</em> <code>"Albert Einstein" OR "Isaac Newton" -Biographie</code></p>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-exact-phrase">Exakte Phrase</h3>
-                    <p id="modal-text-exact-phrase">Suche nach einer bestimmten Wortfolge.</p>
-                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-exact">Schließt den Text in doppelte Anführungszeichen (") ein.</span></p>
-                    <code>"Künstliche Intelligenz"</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-exclude">Wörter ausschließen</h3>
-                    <p id="modal-text-exclude">Entferne Ergebnisse, die bestimmte Wörter enthalten.</p>
-                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-exclude">Dem Wort ein Bindestrich (-) voranstellen.</span></p>
-                    <code>Computer -Laptop</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-any">Beliebige Wörter</h3>
-                    <p id="modal-text-any">Finde Artikel, die mindestens eines der angegebenen Wörter enthalten.</p>
-                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-any">Den Operator 'ODER' zwischen Wörtern verwenden.</span></p>
-                    <code>Apfel ODER Orange</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-wildcard">Platzhalter</h3>
-                    <p id="modal-text-wildcard">Verwende Platzhalterzeichen für unbekannte oder variable Teile eines Wortes.</p>
-                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-wildcard">Verwendet typischerweise * (null oder mehr Zeichen) oder ? (ein einzelnes Zeichen).</span></p>
-                    <code>Comput*</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-fuzzy">Unscharfe Suche</h3>
-                    <p id="modal-text-fuzzy">Finde Ergebnisse auch bei leichten Rechtschreibfehlern oder Variationen.</p>
-                    <p><em>Wikipedia-Syntax:</em> <span id="modal-text-syntax-any">Verwendet oft ~ am Ende eines Wortes.</span></p>
-                    <code>Farbe~</code>
-                </div>
-            </section>
-
-            <section class="help-section">
-                <h2 id="modal-heading-scope">Bereich & Ort</h2>
-                
-                <div class="help-item">
-                    <h3 id="modal-label-intitle">Im Titel (intitle:)</h3>
-                    <p id="modal-text-intitle">Beschränkt Ergebnisse auf Artikel, deren Titel bestimmte Wörter enthalten.</p>
-                    <code>intitle:"Vereinigte Staaten"</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-prefix">Präfix (prefix:)</h3>
-                    <p id="modal-text-prefix">Findet Seiten mit einem bestimmten Präfix im Titel (z.B. in einem bestimmten Namensraum).</p>
-                    <code>prefix:Benutzer:</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-incategory">In Kategorie (incategory:)</h3>
-                    <p id="modal-text-incategory">Begrenzt Ergebnisse auf Artikel, die Mitglieder einer bestimmten Kategorie sind.</p>
-                    <code>incategory:"Künstliche Intelligenz"</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-deepcat">Tiefe Kategorie (deepcat:)</h3>
-                    <p id="modal-text-deepcat">Schließt Artikel in Unterkategorien der angegebenen Kategorie ein.</p>
-                    <code>deepcat:"Science Fiction"</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-linkfrom">Verlinkt von (linkfrom:)</h3>
-                    <p id="modal-text-linkfrom">Findet Artikel, die auf eine bestimmte Seite verlinken.</p>
-                    <code>linkfrom:Wikipedia:Autorenportal</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-namespaces">Namensräume</h3>
-                    <p id="modal-text-namespaces">Wähle spezifische Wikipedia-Namensräume (z.B. Artikel, Benutzer, Datei, Kategorie) für deine Suche aus.</p>
-                </div>
-            </section>
-
-            <section class="help-section">
-                <h2 id="modal-heading-content">Inhalt & Technik</h2>
-                
-                <div class="help-item">
-                    <h3 id="modal-label-insource">Im Quelltext (insource:)</h3>
-                    <p id="modal-text-insource">Sucht im Wikitext-Inhalt der Seiten, nicht nur im angezeigten Text. Nützlich zum Finden spezifischer Markups oder Code-Schnipsel.</p>
-                    <code>insource:/\{\{Infobox/</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-hastemplate">Hat Vorlage (hastemplate:)</h3>
-                    <p id="modal-text-hastemplate">Findet Seiten, die eine bestimmte Vorlage verwenden.</p>
-                    <code>hastemplate:"Infobox Land"</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-filetype">Dateityp</h3>
-                    <p id="modal-text-filetype">Suchergebnisse nach bestimmten Dateiendungen filtern (z.B. PNG, JPG, PDF).<br><em>Wikipedia-Syntax:</em> <code>filetype:extension</code></p>
-                    <code>filetype:pdf</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-filesize">Dateigröße</h3>
-                    <p id="modal-text-filesize">Minimale und maximale Dateigrößen für Bild- oder Mediensuche angeben.<br><em>Wikipedia-Syntax:</em> <code>imagesize:value</code> oder <code>imagesize:min-max</code></p>
-                    <code>imagesize:5MP</code>
-                </div>
-            </section>
-
-            <section class="help-section">
-                <h2 id="modal-heading-date">Datumsfilter</h2>
-                
-                <div class="help-item">
-                    <h3 id="modal-label-dateafter">Datum nach</h3>
-                    <p id="modal-text-dateafter">Begrenzt Ergebnisse auf Artikel, die an oder nach einem bestimmten Datum erstellt oder geändert wurden.</p>
-                    <p><em>Format:</em> JJJJ-MM-TT</p>
-                    <code>createdafter:2023-01-01</code>
-                </div>
-
-                <div class="help-item">
-                    <h3 id="modal-label-datebefore">Datum vor</h3>
-                    <p id="modal-text-datebefore">Begrenzt Ergebnisse auf Artikel, die an oder vor einem bestimmten Datum erstellt oder geändert wurden.</p>
-                    <p><em>Format:</em> JJJJ-MM-TT</p>
-                    <code>createdbefore:2024-12-31</code>
-                </div>
-            </section>
+        <h2 style="margin: 4rem 0 2rem;">Wichtige Suchparameter</h2>
+        <div class="help-grid">
+            <div class="help-card">
+                <h3>In Kategorie</h3>
+                <p>Findet Artikel, die direkt in einer Kategorie liegen.</p>
+                <code>incategory:"Raumfahrt"</code>
+            </div>
+            <div class="help-card">
+                <h3>Tiefe Kategorie</h3>
+                <p>Scannt auch alle Unterkategorien ab.</p>
+                <code>deepcat:"Physik"</code>
+            </div>
+            <div class="help-card">
+                <h3>Quelltext-Suche</h3>
+                <p>Sucht nach spezifischen Vorlagen oder Code.</p>
+                <code>insource:"{{Belege_fehlen}}"</code>
+            </div>
         </div>
     </main>
 
-    <div id="cookie-banner">
-        <div class="cookie-content">
-            <p id="cookie-text"></p>
-            <div class="cookie-actions">
-                <button id="cookie-accept" class="btn-action btn-accent">OK</button>
-                <button id="cookie-decline" class="btn-action">NO</button>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <div class="container">
-            <nav>
-                <ul>
-                    <li><a href="../../index.html">Home</a></li>
-                    <li><a href="privacy_de.html">Datenschutz</a></li>
-                    <li><a href="impressum.html">Impressum</a></li>
-                </ul>
+    <footer id="footer" style="background: var(--bg-sidebar); padding: 4rem 0; margin-top: 6rem; border-top: 1px solid var(--border-color);">
+        <div class="container" style="text-align: center;">
+            <nav style="margin-bottom: 2rem;">
+                <a href="../../index.html" style="color: var(--text-secondary); margin: 0 1rem;">Home</a>
+                <a href="faq.html" style="color: var(--text-secondary); margin: 0 1rem;">FAQ</a>
+                <a href="impressum.html" style="color: var(--text-secondary); margin: 0 1rem;">Impressum</a>
             </nav>
-            <p id="footer-disclaimer" style="font-size: 0.75rem; margin-bottom: 1rem; opacity: 0.7;"></p>
-            <p id="footer-text">&copy; 2025 WikiGUI. Alle Rechte vorbehalten.</p>
+            <p style="color: var(--text-secondary); font-size: 0.8rem;">&copy; 2026 WikiGUI Enterprise. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
 
     <script type="module">
         import { getLanguage, setLanguage, setTranslations, getTranslation } from '../js/core/state.js';
-        import { applyTranslations } from '../js/ui/handlers.js';
         import { loadHeader } from '../js/ui/headerLoader.js';
-        import { initializeCookieBanner } from '../js/ui/cookie.js';
         
-        async function initHelp() {
-            await loadHeader('header-placeholder', 'header.html'); // AWAIT the header load
-            initializeCookieBanner();
+        async function init() {
+            await loadHeader('header-placeholder', 'header.html');
             const lang = getLanguage() || 'de';
-            const searchInput = document.getElementById('help-search'); // Moved declaration out of try block and to higher scope
-            try {
-                const response = await fetch(`../../translations/${lang}.json`);
-                const data = await response.json();
-                setTranslations(lang, data);
-                applyTranslations();
-                
-                // Set placeholder dynamically
-                if (searchInput) searchInput.placeholder = getTranslation('search-help-placeholder');
-
-            } catch (e) {
-                console.error(e);
-            }
-
-            // Search logic - use the already declared searchInput
-            const helpItems = document.querySelectorAll('.help-item');
-            const sections = document.querySelectorAll('.help-section');
-
-            searchInput?.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                
-                if (query.length >= 3) {
-                    helpItems.forEach(item => {
-                        const text = item.textContent.toLowerCase();
-                        item.style.display = text.includes(query) ? 'block' : 'none';
-                    });
-                    
-                    // Hide empty sections
-                    sections.forEach(section => {
-                        const items = section.querySelectorAll('.help-item');
-                        const hasVisibleItems = Array.from(items).some(item => item.style.display !== 'none');
-                        section.style.display = hasVisibleItems ? 'block' : 'none';
-                    });
-                } else {
-                    helpItems.forEach(item => item.style.display = 'block');
-                    sections.forEach(section => section.style.display = 'block');
-                }
-            });
-
-            // Mobile Menu Toggle - Re-attach after header is loaded
-            const menuToggle = document.getElementById('menu-toggle');
-            const navList = document.getElementById('nav-list');
-            if (menuToggle && navList) {
-                menuToggle.addEventListener('click', () => {
-                    navList.classList.toggle('active');
-                    menuToggle.classList.toggle('open');
-                });
-            }
-
-            // Language buttons - Re-attach after header is loaded
-            document.querySelectorAll('.lang-button').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const newLang = e.target.dataset.lang;
-                    setLanguage(newLang);
-                    location.reload();
-                });
-            });
+            document.documentElement.lang = lang;
         }
-        initHelp();
+        init();
     </script>
 </body>
 </html>

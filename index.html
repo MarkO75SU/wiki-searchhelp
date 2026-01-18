@@ -7,7 +7,7 @@
     <title>WikiGUI Suite 2026</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="src/css/style.css?v=1.14">
+    <link rel="stylesheet" href="src/css/style.css?v=1.15">
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -16,9 +16,7 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo">WikiGUI</div>
-            <nav id="workflow-nav" class="flow-nav">
-                <!-- Phases injected by flow_manager.js -->
-            </nav>
+            <nav id="workflow-nav" class="flow-nav"></nav>
             <div class="user-info">
                 <div id="user-status-badge" class="status-badge" style="display: none;"></div>
                 <button id="login-btn" class="btn btn-secondary">Login</button>
@@ -31,17 +29,91 @@
             <section id="phase-search" class="workflow-phase">
                 <div class="search-hero">
                     <h1 id="main-heading">Expert Wikipedia Search</h1>
-                    <form id="search-form" class="main-search-bar">
-                        <div class="search-input-group">
-                            <input type="text" id="search-query" placeholder="Thema suchen...">
-                            <select id="target-wiki-lang">
-                                <option value="de">🇩🇪 Deutsch</option>
-                                <option value="en">🇬🇧 English</option>
-                            </select>
+                    <form id="search-form">
+                        <div class="main-search-bar">
+                            <div class="search-input-group">
+                                <input type="text" id="search-query" placeholder="Hauptthema suchen...">
+                                <select id="target-wiki-lang">
+                                    <option value="de">🇩🇪 Deutsch</option>
+                                    <option value="en">🇬🇧 English</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Scan starten</button>
                         </div>
-                        <button type="submit" class="btn btn-primary">Qualitäts-Scan starten</button>
+
+                        <!-- ADVANCED PARAMETERS GRID -->
+                        <div class="advanced-settings-grid">
+                            <!-- Group: Concept -->
+                            <div class="settings-card">
+                                <h3>Such-Konzept</h3>
+                                <div class="form-group">
+                                    <label>Exakte Phrase</label>
+                                    <input type="text" id="exact-phrase" placeholder="\"phrase\"">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ausschließen</label>
+                                    <input type="text" id="without-words" placeholder="-wort">
+                                </div>
+                                <div class="form-row">
+                                    <label><input type="checkbox" id="option-intitle"> Nur im Titel</label>
+                                    <label><input type="checkbox" id="option-fuzzy"> Unscharf (~)</label>
+                                </div>
+                            </div>
+
+                            <!-- Group: Scope -->
+                            <div class="settings-card">
+                                <h3>Bereich & Filter</h3>
+                                <div class="form-group">
+                                    <label>In Kategorie</label>
+                                    <input type="text" id="incategory-value" placeholder="Kategorie...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tiefe Kategorie</label>
+                                    <input type="text" id="deepcat-value" placeholder="Deepcat...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hat Vorlage</label>
+                                    <input type="text" id="hastemplate-value" placeholder="Infobox...">
+                                </div>
+                            </div>
+
+                            <!-- Group: Technical & Time -->
+                            <div class="settings-card">
+                                <h3>Technik & Zeit</h3>
+                                <div class="form-group">
+                                    <label>Im Quelltext (insource)</label>
+                                    <input type="text" id="insource-value" placeholder="/regex/">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Ab Datum</label>
+                                        <input type="date" id="dateafter-value">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bis Datum</label>
+                                        <input type="date" id="datebefore-value">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group: Location -->
+                            <div class="settings-card">
+                                <h3>Geografisch</h3>
+                                <div class="form-group">
+                                    <label>Radius (km)</label>
+                                    <input type="number" id="geo-radius" value="5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Koordinaten</label>
+                                    <div class="input-with-action">
+                                        <input type="text" id="geo-coord" placeholder="lat,lon">
+                                        <button type="button" id="get-location-btn" class="btn-icon">📍</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
-                    <div class="quick-actions">
+                    <div class="quick-actions" style="margin-top: 2rem;">
                         <button id="surprise-me-button" class="btn btn-tertiary">🎲 Überrasch mich</button>
                     </div>
                 </div>
@@ -66,6 +138,9 @@
                 
                 <div class="results-container">
                     <h2 id="search-results-heading-normal">Ergebnisse</h2>
+                    <div id="results-preview-badge" class="status-badge" style="margin-bottom: 1rem; display: none;">
+                        <span id="results-preview-count">0</span> Treffer
+                    </div>
                     <ul id="simulated-search-results-normal" class="results-list"></ul>
                 </div>
 
@@ -79,9 +154,7 @@
                 <div class="editor-layout">
                     <div class="editor-sidebar">
                         <h3>Maintenance Tools</h3>
-                        <div id="maintenance-modal-inline">
-                            <!-- Maintenance Form will be injected here -->
-                        </div>
+                        <div id="maintenance-modal-inline"></div>
                     </div>
                     <div class="editor-main">
                         <div id="article-preview" class="preview-box">
@@ -104,24 +177,7 @@
                 <form id="login-form">
                     <input type="email" id="login-email" placeholder="E-Mail" required>
                     <input type="password" id="login-password" placeholder="Passwort" required>
-                    <button type="submit" class="btn btn-primary">Anmelden</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="profile-modal" class="modal" aria-hidden="true">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Editor Profil</h3>
-                <button class="close-modal" id="profile-modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Status: <span id="profile-tier-display"></span></p>
-                <form id="verification-form">
-                    <label for="wiki-username">Wikipedia Name:</label>
-                    <input type="text" id="wiki-username" placeholder="Dein Wiki-Nutzername">
-                    <button type="submit" class="btn btn-secondary">Status verifizieren</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Anmelden</button>
                 </form>
             </div>
         </div>
@@ -130,7 +186,7 @@
     <footer id="footer">
         <div class="container">
             <nav id="footer-nav">
-                <ul id="footer-links">
+                <ul id="footer-links" style="display: flex; gap: 2rem; justify-content: center; list-style: none;">
                     <li><a href="src/html/blog.html">Blog</a></li>
                     <li><a href="src/html/privacy_de.html">Datenschutz</a></li>
                     <li><a href="src/html/faq.html">FAQ</a></li>
@@ -138,7 +194,7 @@
                     <li><a href="src/html/impressum.html">Impressum</a></li>
                 </ul>
             </nav>
-            <p id="footer-text">&copy; 2026 WikiGUI Suite. Alle Rechte vorbehalten.</p>
+            <p id="footer-text" style="margin-top: 2rem; opacity: 0.5;">&copy; 2026 WikiGUI Suite. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
 

@@ -1,7 +1,7 @@
 // src/js/ui/handlers.js
-import { getTranslation, getLanguage, getSearchMode, setLanguage, setTranslations } from '../core/state.js';
+import { getTranslation, getLanguage, getSearchMode, setLanguage, setTranslations, setActiveArticle, FLOW_PHASES } from '../core/state.js';
 import { generateSearchString } from '../core/search.js';
-import { performWikipediaSearch, fetchBatchedMetadata, fetchWikiData, fetchJson } from '../services/wiki_service.js';
+import { performWikipediaSearch, fetchBatchedMetadata, fetchWikiData, fetchJson, fetchArticleWikitext } from '../services/wiki_service.js';
 import { addJournalEntry } from '../core/journal.js';
 import { showToast } from './toast.js';
 import { renderResultsList, renderMap, renderHealthUI } from './renderer.js';
@@ -10,22 +10,58 @@ import { generateEmbeddings, cosineSimilarity } from '../services/ai_service.js'
 import { analyzeGlobalRelevance } from '../core/interwiki.js';
 import { storage } from '../core/storage.js';
 import { presetCategories } from '../config/presets.js';
+import { flow } from '../core/flow_manager.js';
 
 let allSearchResults = [];
 
 export function getAllSearchResults() { return allSearchResults; }
 
-const wikipediaSearchHelpUrls = {
-    'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
-    'en': 'https://en.wikipedia.org/wiki/Help:Searching',
-    'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
-    'es': 'https://es.wikipedia.org/wiki/Ayuda:Búsqueda'
-};
+/**
+ * Handles all clicks on result list items (Similar, Maintenance, etc.)
+ */
+export function setupResultHandlers(container) {
+    container.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
 
-export function clearForm() {
-    const form = document.getElementById('search-form');
-    if (form) form.reset();
-    showToast(getTranslation('form-cleared') || 'Form cleared');
+        const title = btn.dataset.title;
+        
+        if (btn.classList.contains('maintenance-btn')) {
+            showToast(`Lade Editor für: ${title}...`);
+            setActiveArticle(title);
+            const wikitext = await fetchArticleWikitext(title, getLanguage());
+            
+            // Populate Editor Phase
+            const preview = document.getElementById('article-preview');
+            if (preview) preview.innerHTML = `<h2>${title}</h2><pre style="white-space: pre-wrap; font-size: 0.8rem; margin-top: 1rem;">${wikitext.substring(0, 2000)}...</pre>`;
+            
+            flow.navigateTo(FLOW_PHASES.EDITOR);
+            populateMaintenanceForm();
+        }
+    });
+}
+
+function populateMaintenanceForm() {
+    const container = document.getElementById('maintenance-modal-inline');
+    if (!container) return;
+
+    container.innerHTML = `
+        <form id="inline-maintenance-form" class="settings-card">
+            <div class="form-group">
+                <label>Baustein-Typ</label>
+                <select id="maint-type">
+                    <option value="sources">{{Belege fehlen}}</option>
+                    <option value="neutrality">{{Neutralität}}</option>
+                    <option value="gap">{{Lückenhaft}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Begründung</label>
+                <textarea id="maint-reason" rows="4" style="width:100%; background: var(--bg-input); border: 1px solid var(--border-color); color: #fff; border-radius: 4px; padding: 0.5rem;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Wiki-Sync starten</button>
+        </form>
+    `;
 }
 
 export async function handleSearchFormSubmit(event) {
@@ -56,7 +92,7 @@ export async function handleSearchFormSubmit(event) {
             };
         });
 
-        renderResultsList(allSearchResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', apiResponse.query.searchinfo.totalhits);
+        renderResultsList(allSearchResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', apiResponse.query.searchinfo.totalhits, setupResultHandlers);
         addJournalEntry(apiQuery, `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`, shareParams);
     }
 }

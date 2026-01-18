@@ -1,56 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.wikipedia.org; connect-src 'self' https://*.wikipedia.org;">
-    <title>FAQ - WikiGUI</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>FAQ - WikiGUI Suite</title>
+    <link rel="stylesheet" href="../css/style.css?v=1.15">
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
     <style>
-        .faq-search-container {
-            margin-bottom: 2rem;
+        .faq-hero {
+            background: var(--bg-sidebar);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: var(--radius-md);
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-color);
+        }
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
         }
         .faq-item {
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
             background: var(--bg-surface);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            padding: 2rem;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
-            list-style: none;
-            color: var(--text-secondary);
-        }
-        .faq-item strong {
-            display: block;
-            font-size: 1.15rem;
-            color: var(--primary);
-            margin-bottom: 0.75rem;
-        }
-        .faq-section {
-            margin-bottom: 3rem;
-        }
-        .faq-section h2 {
-            text-align: left;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
-            color: var(--text-primary);
+            transition: var(--transition);
         }
-        #faq-search {
-            width: 100%;
-            height: 56px;
-            padding: 0 1.5rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            background: var(--bg-element);
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            box-shadow: var(--shadow);
-        }
-        #faq-search:focus {
-            outline: none;
+        .faq-item:hover {
             border-color: var(--primary);
-            background: var(--bg-element-hover);
+        }
+        .faq-item h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .faq-item h3::before {
+            content: '?';
+            width: 24px;
+            height: 24px;
+            background: rgba(37, 99, 235, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.8rem;
+        }
+        .faq-item p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
         }
     </style>
 </head>
@@ -58,127 +60,52 @@
     <div id="header-placeholder"></div>
 
     <main class="container">
-        <div class="faq-search-container" style="margin-top: 2rem;">
-            <input type="text" id="faq-search" placeholder="FAQ durchsuchen...">
-        </div>
+        <section class="faq-hero">
+            <h1>Häufig gestellte Fragen</h1>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">Alles, was Sie über die WikiGUI Suite wissen müssen.</p>
+        </section>
 
-        <div class="faq-container" id="faq-list">
-            <!-- FAQ items will be rendered here dynamically -->
+        <div class="faq-container">
+            <div class="faq-item">
+                <h3>Was ist der Health-Score?</h3>
+                <p>Der Health-Score bewertet die Qualität eines Artikels basierend auf der Belegquote, der Bilderdichte und der Aktualität. Ein Score über 70 gilt als exzellent.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Wie werde ich zum Experten hochgestuft?</h3>
+                <p>Das System prüft automatisch Ihren Wikipedia-Editcount. Wenn Sie über 5.000 Edits in der deutsch- oder englischsprachigen Wikipedia haben, erhalten Sie den Experten-Status im Editor Hub.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Was bedeutet "Semantic Drift"?</h3>
+                <p>Die KI-Analyse vergleicht die Einleitung eines Artikels mit dem restlichen Inhalt. Weicht der Fokus stark ab, wird dies als "Drift" markiert, was auf strukturelle Mängel hindeuten kann.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Sind meine Daten sicher?</h3>
+                <p>Absolut. Wir speichern keine Wikipedia-Passwörter. Die Authentifizierung erfolgt über Supabase, und alle API-Anfragen werden über gesicherte Edge-Functions geleitet.</p>
+            </div>
         </div>
     </main>
 
-    <div id="cookie-banner">
-        <div class="cookie-content">
-            <p id="cookie-text"></p>
-            <div class="cookie-actions">
-                <button id="cookie-accept" class="btn-action btn-accent">OK</button>
-                <button id="cookie-decline" class="btn-action">NO</button>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <div class="container">
-            <nav>
-                <ul>
-                    <li><a href="../../index.html">Home</a></li>
-                    <li><a href="privacy_de.html">Datenschutz</a></li>
-                    <li><a href="impressum.html">Impressum</a></li>
-                </ul>
+    <footer id="footer" style="background: var(--bg-sidebar); padding: 4rem 0; margin-top: 6rem; border-top: 1px solid var(--border-color);">
+        <div class="container" style="text-align: center;">
+            <nav style="margin-bottom: 2rem;">
+                <a href="../../index.html" style="color: var(--text-secondary); margin: 0 1rem;">Home</a>
+                <a href="hilfe.html" style="color: var(--text-secondary); margin: 0 1rem;">Hilfe</a>
+                <a href="impressum.html" style="color: var(--text-secondary); margin: 0 1rem;">Impressum</a>
             </nav>
-            <p id="footer-disclaimer" style="font-size: 0.75rem; margin-bottom: 1rem; opacity: 0.7;"></p>
-            <p id="footer-text">&copy; 2025 WikiGUI. Alle Rechte vorbehalten.</p>
+            <p style="color: var(--text-secondary); font-size: 0.8rem;">&copy; 2026 WikiGUI Enterprise. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
 
     <script type="module">
-        import { getLanguage, setLanguage, setTranslations, getTranslation } from '../js/core/state.js';
-        import { applyTranslations } from '../js/ui/handlers.js';
+        import { getLanguage } from '../js/core/state.js';
         import { loadHeader } from '../js/ui/headerLoader.js';
-        import { initializeCookieBanner } from '../js/ui/cookie.js';
         
-        async function initFAQ() {
-            await loadHeader('header-placeholder', 'header.html'); // AWAIT the header load
-            initializeCookieBanner();
+        async function init() {
+            await loadHeader('header-placeholder', 'header.html');
             const lang = getLanguage() || 'de';
-            const searchInput = document.getElementById('faq-search');
-            
-            try {
-                const response = await fetch(`../../translations/${lang}.json`);
-                const data = await response.json();
-                setTranslations(lang, data);
-                applyTranslations();
-                
-                if (searchInput) searchInput.placeholder = getTranslation('search-faq-placeholder');
-
-                renderFAQ();
-            } catch (e) { console.error(e); }
-
-            function renderFAQ() {
-                const container = document.getElementById('faq-list');
-                const faqs = [
-                    { cat: 'faq-cat-1-title', items: [{q: 'faq-q1', a: 'faq-a1'}, {q: 'faq-q2', a: 'faq-a2'}, {q: 'faq-q3', a: 'faq-a3'}] },
-                    { cat: 'faq-cat-2-title', items: [{q: 'faq-q4', a: 'faq-a4'}, {q: 'faq-q5', a: 'faq-a5'}, {q: 'faq-q9', a: 'faq-a9'}] },
-                    { cat: 'faq-cat-3-title', items: [{q: 'faq-q6', a: 'faq-a6'}, {q: 'faq-q7', a: 'faq-a7'}] },
-                    { cat: 'faq-cat-4-title', items: [{q: 'faq-q8', a: 'faq-a8'}] }
-                ];
-
-                container.innerHTML = faqs.map(section => `
-                    <section class="faq-section">
-                        <h2>${getTranslation(section.cat)}</h2>
-                        <ul>
-                            ${section.items.map(item => `
-                                <li class="faq-item">
-                                    <strong>${lang === 'de' ? 'F: ' : 'Q: '}${getTranslation(item.q)}</strong>
-                                    ${lang === 'de' ? 'A: ' : 'A: '}${getTranslation(item.a)}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </section>
-                `).join('');
-            }
-
-            searchInput?.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                const faqItems = document.querySelectorAll('.faq-item');
-                const sections = document.querySelectorAll('.faq-section');
-
-                if (query.length >= 3) {
-                    faqItems.forEach(item => {
-                        const isMatch = item.textContent.toLowerCase().includes(query);
-                        item.style.display = isMatch ? 'block' : 'none';
-                    });
-                    
-                    sections.forEach(section => {
-                        const items = section.querySelectorAll('.faq-item');
-                        const hasVisibleItems = Array.from(items).some(item => item.style.display !== 'none');
-                        section.style.display = hasVisibleItems ? 'block' : 'none';
-                    });
-                } else {
-                    faqItems.forEach(item => item.style.display = 'block');
-                    sections.forEach(section => section.style.display = 'block');
-                }
-            });
-
-            // Mobile Menu Toggle - Re-attach after header is loaded
-            const menuToggle = document.getElementById('menu-toggle');
-            const navList = document.getElementById('nav-list');
-            if (menuToggle && navList) {
-                menuToggle.addEventListener('click', () => {
-                    navList.classList.toggle('active');
-                    menuToggle.classList.toggle('open');
-                });
-            }
-
-            // Language buttons - Re-attach after header is loaded
-            document.querySelectorAll('.lang-button').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    setLanguage(e.target.dataset.lang);
-                    location.reload();
-                });
-            });
+            document.documentElement.lang = lang;
         }
-        initFAQ();
+        init();
     </script>
 </body>
 </html>

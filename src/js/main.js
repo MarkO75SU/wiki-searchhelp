@@ -58,10 +58,51 @@ async function initializeApp() {
     setupCategoryAutocomplete(document.getElementById('search-query'));
 
     // 3. Event Listeners
+    const loginModal = document.getElementById('login-modal');
+    const profileModal = document.getElementById('profile-modal');
+
     document.getElementById('login-btn')?.addEventListener('click', () => {
-        // Toggle Login Modal Logic
-        const modal = document.getElementById('login-modal');
-        if (modal) modal.style.display = 'flex';
+        if (document.getElementById('login-btn').textContent === 'Logout') {
+            supabase.auth.signOut().then(() => {
+                updateUserStatusBadge();
+                flow.navigateTo('phase-search');
+            });
+        } else {
+            if (loginModal) loginModal.style.display = 'flex';
+        }
+    });
+
+    document.getElementById('profile-btn')?.addEventListener('click', () => {
+        if (profileModal) profileModal.style.display = 'flex';
+    });
+
+    // Close Modals on X click
+    document.querySelectorAll('.close-modal').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (loginModal) loginModal.style.display = 'none';
+            if (profileModal) profileModal.style.display = 'none';
+        });
+    });
+
+    // Close Modals on outside click
+    window.addEventListener('click', (e) => {
+        if (e.target === loginModal) loginModal.style.display = 'none';
+        if (e.target === profileModal) profileModal.style.display = 'none';
+    });
+
+    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+            showToast('Login fehlgeschlagen: ' + error.message, 'error');
+        } else {
+            showToast('Login erfolgreich!', 'success');
+            if (loginModal) loginModal.style.display = 'none';
+            updateUserStatusBadge();
+        }
     });
 
     document.getElementById('search-form')?.addEventListener('submit', async (e) => {
