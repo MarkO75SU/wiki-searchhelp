@@ -1,7 +1,7 @@
 // src/js/ui/handlers.js
 import { getTranslation, getLanguage, getSearchMode, setLanguage, setTranslations, setActiveArticle, FLOW_PHASES } from '../core/state.js';
 import { generateSearchString } from '../core/search.js';
-import { performWikipediaSearch, fetchBatchedMetadata, fetchWikiData, fetchJson, fetchArticleWikitext } from '../services/wiki_service.js';
+import { performWikipediaSearch, fetchBatchedMetadata, fetchWikiData, fetchJson, fetchArticleWikitext, fetchQualityMetrics, fetchRefCounts } from '../services/wiki_service.js';
 import { addJournalEntry } from '../core/journal.js';
 import { showToast } from './toast.js';
 import { renderResultsList, renderMap, renderHealthUI } from './renderer.js';
@@ -15,6 +15,13 @@ import { flow } from '../core/flow_manager.js';
 let allSearchResults = [];
 
 export function getAllSearchResults() { return allSearchResults; }
+
+const wikipediaSearchHelpUrls = {
+    'de': 'https://de.wikipedia.org/wiki/Hilfe:Suche',
+    'en': 'https://en.wikipedia.org/wiki/Help:Searching',
+    'fr': 'https://fr.wikipedia.org/wiki/Aide:Recherche',
+    'es': 'https://es.wikipedia.org/wiki/Ayuda:Búsqueda'
+};
 
 /**
  * Handles all clicks on result list items (Similar, Maintenance, etc.)
@@ -98,7 +105,13 @@ export async function handleSearchFormSubmit(event) {
             };
         });
 
+        // UI Updates
         renderResultsList(allSearchResults.slice(0, 10), 'simulated-search-results-normal', 'results-actions-container-normal', 'search-results-heading-normal', apiResponse.query.searchinfo.totalhits, setupResultHandlers);
+        
+        // AUTO-ANALYSIS: Health & Map
+        performHealthAnalysis(allSearchResults.slice(0, 10), 'health-score-container-normal');
+        renderMap(allSearchResults.slice(0, 50), 'search-results-map');
+
         addJournalEntry(apiQuery, `https://${lang}.wikipedia.org/wiki/Special:Search?${wikiSearchUrlParams}`, shareParams);
     }
 }
@@ -180,15 +193,21 @@ export function setupResultFilter() {
 
 export async function performHealthAnalysis(results, containerId) {
     if (!results.length) return;
-    showToast('Analyzing quality...');
-    const stats = calculateHealthScore(results, {}, {}); 
+    const titles = results.map(r => r.title);
+    const lang = getLanguage();
+    
+    // Fetch Metrics
+    const metrics = await fetchQualityMetrics(titles, lang);
+    const refCounts = await fetchRefCounts(titles, lang);
+    
+    const stats = calculateHealthScore(results, metrics, refCounts); 
     renderHealthUI(containerId, stats);
     storage.logResult({ query: 'Health Scan', healthScore: stats.score, resultsCount: results.length });
 }
 
 export async function performDriftAnalysis(results) {
     if (results.length < 3) return;
-    showToast('Analyzing semantic drift...');
+    showToast('KI-Analyse läuft...');
     const titles = results.map(r => r.title);
     const vectors = await generateEmbeddings(titles);
     const driftData = identifyDriftOutliers(results, vectors, null, cosineSimilarity);

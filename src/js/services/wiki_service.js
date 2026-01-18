@@ -160,6 +160,47 @@ export async function fetchWikipediaOpenSearch(query, lang = 'de', limit = 10) {
 }
 
 /**
+ * Fetches quality metrics (external links, etc.) for article titles.
+ */
+export async function fetchQualityMetrics(titles, lang = 'de') {
+    if (titles.length === 0) return {};
+    
+    const data = await fetchWikiData(lang, {
+        action: 'query',
+        titles: titles.join('|'),
+        prop: 'extlinks|info',
+        ellimit: 50 
+    });
+    
+    return data?.query?.pages || {};
+}
+
+/**
+ * Fetches the wikitext of articles and counts the number of <ref> tags.
+ */
+export async function fetchRefCounts(titles, lang = 'de') {
+    if (titles.length === 0) return {};
+
+    const data = await fetchWikiData(lang, {
+        action: 'query',
+        prop: 'revisions',
+        rvprop: 'content',
+        rvslots: 'main',
+        titles: titles.join('|')
+    });
+
+    if (!data || !data.query || !data.query.pages) return {};
+
+    const counts = {};
+    Object.values(data.query.pages).forEach(page => {
+        const content = page.revisions?.[0]?.slots?.main?.['*'] || '';
+        const matches = content.match(/<ref/gi);
+        counts[page.title] = matches ? matches.length : 0;
+    });
+    return counts;
+}
+
+/**
  * Fetches a resource from a given URL and returns it as text.
  */
 export async function fetchResource(url) {
