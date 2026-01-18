@@ -6,7 +6,7 @@
  * and identify structural gaps (e.g. category exists in EN but not DE).
  */
 
-import { fetchWikiData } from '../services/api.js';
+import { fetchWikiData } from '../services/wiki_service.js';
 
 /**
  * Key languages to check for Global Relevance Score.
