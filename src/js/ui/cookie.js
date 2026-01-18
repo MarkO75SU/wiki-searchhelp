@@ -1,6 +1,6 @@
 // src/js/ui/cookie.js
 import { showToast } from './toast.js';
-import { getTranslation } from './state.js';
+import { getTranslation } from '../core/state.js';
 
 function setCookie(name, value, days) {
     let expires = "";
