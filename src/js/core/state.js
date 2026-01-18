@@ -10,24 +10,30 @@ const STORAGE_KEYS = {
     PHASE: 'wikiGuiCurrentPhase'
 };
 
-const USER_TIERS = {
+export const USER_TIERS = {
     FREE: 'free',
     ADVANCED: 'advanced',
     EXPERT: 'expert'
 };
 
-const FLOW_PHASES = {
+export const FLOW_PHASES = {
     SEARCH: 'phase-search',
     ANALYSIS: 'phase-analysis',
     EDITOR: 'phase-editor'
 };
 
+export const SEARCH_MODES = {
+    STANDARD: 'standard',
+    PRESENTATION: 'presentation',
+    TRIP: 'trip'
+};
+
 const getSaved = (key, fallback) => localStorage.getItem(key) || fallback;
 
-const state = {
+export const state = {
     currentLang: getSaved(STORAGE_KEYS.LANG, 'de'),
     translations: {},
-    searchMode: getSaved(STORAGE_KEYS.MODE, 'normal'),
+    searchMode: getSaved(STORAGE_KEYS.MODE, SEARCH_MODES.STANDARD),
     userTier: getSaved(STORAGE_KEYS.TIER, USER_TIERS.FREE),
     currentPhase: FLOW_PHASES.SEARCH,
     analysisResults: null,
@@ -42,22 +48,19 @@ export function setLanguage(lang) {
 
 export function getLanguage() { return state.currentLang; }
 
-// Search Mode Management
 export function setSearchMode(mode) {
     state.searchMode = mode;
     localStorage.setItem(STORAGE_KEYS.MODE, mode);
 }
 
-export function getSearchMode() {
-    return state.searchMode || 'normal';
-}
+export function getSearchMode() { return state.searchMode; }
 
 export function setTranslations(lang, data) { state.translations[lang] = data; }
 
 export function getTranslation(key, defaultValue = '', replacements = {}) {
     let str = (state.translations[state.currentLang] && state.translations[state.currentLang][key]) || defaultValue || key;
     for (const p in replacements) {
-        str = str.replace(new RegExp(`{\\s*${p}\\s*}`, 'g'), replacements[p]);
+        str = str.replace(new RegExp(`{\s*${p}\s*}`, 'g'), replacements[p]);
     }
     return str;
 }
@@ -66,6 +69,8 @@ export function setTier(tier) {
     if (Object.values(USER_TIERS).includes(tier)) {
         state.userTier = tier;
         localStorage.setItem(STORAGE_KEYS.TIER, tier);
+        // Update Body Class for CSS Tier Gating
+        document.body.className = `tier-${tier}`;
     }
 }
 
@@ -78,11 +83,7 @@ export function setPhase(phase) {
 }
 
 export function getPhase() { return state.currentPhase; }
-
 export function setAnalysisResults(results) { state.analysisResults = results; }
 export function getAnalysisResults() { return state.analysisResults; }
-
 export function setActiveArticle(article) { state.activeArticle = article; }
 export function getActiveArticle() { return state.activeArticle; }
-
-export { USER_TIERS, FLOW_PHASES };

@@ -1,138 +1,46 @@
-// src/js/main.js
-import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMode, getSearchMode } from './core/state.js';
-import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer, performHealthAnalysis, performGeoValidation, performInterwikiCheck, performDriftAnalysis } from './ui/handlers.js';
-import { generateSearchString } from './core/search.js';
+/**
+ * main.js - Suite Entry Point
+ */
+import { state, setLanguage, setTranslations, FLOW_PHASES, USER_TIERS } from './core/state.js';
 import { flow } from './core/flow_manager.js';
-import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal, syncJournalToGist } from './core/journal.js';
-import { setupCategoryAutocomplete } from './ui/autocomplete.js';
-import { performNetworkAnalysis, exportNetworkAsJSON } from './core/network.js';
+import { handleSearchFormSubmit, setupGlobalHandlers, applyTranslations } from './ui/handlers.js';
 import { showToast } from './ui/toast.js';
-import { loadHeader } from './ui/headerLoader.js';
-import { initializeCookieBanner } from './ui/cookie.js';
-import { fetchJson } from './services/wiki_service.js';
-import { getCurrentPosition } from './core/utils.js';
-import { supabase } from './services/database.js';
 
-const SAVE_STATE_KEY = 'wikiGuiFormState';
+async function initApp() {
+    console.log("WikiGUI Suite 2026 Initializing...");
 
-async function updateUserStatusBadge() {
-    const badge = document.getElementById('user-status-badge');
-    if (!badge) return;
-
+    // 1. Load Translations
     try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session && session.user) {
-            badge.textContent = `Editor: ${session.user.email.split('@')[0]}`;
-            badge.style.display = 'inline-flex';
-            document.getElementById('login-btn').textContent = 'Logout';
-        } else {
-            badge.style.display = 'none';
-            document.getElementById('login-btn').textContent = 'Login';
-        }
-    } catch (err) {
-        badge.style.display = 'none';
+        const lang = state.currentLang;
+        const response = await fetch(`translations/${lang}.json`);
+        const translations = await response.json();
+        setTranslations(lang, translations);
+        applyTranslations();
+    } catch (e) {
+        console.error("Failed to load translations:", e);
     }
-}
 
-async function initializeApp() {
-    // 1. PWA Service Worker Registration
+    // 2. Setup UI Handlers
+    const searchForm = document.getElementById('search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', handleSearchFormSubmit);
+    }
+
+    // Initialize the new global interactions (Toggles, Mode-Tabs)
+    setupGlobalHandlers();
+
+    // 3. Flow & Tier Setup
+    flow.init();
+    document.body.className = `tier-${state.userTier}`;
+
+    // 4. Service Worker (PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('[PWA] ServiceWorker registered'))
-                .catch(err => console.warn('[PWA] ServiceWorker failed', err));
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log("SW failed:", err));
         });
     }
 
-    await loadHeader('header-placeholder', 'src/html/header.html');
-    initializeCookieBanner();
-    
-    // 2. Flow & State Initialization
-    const initialLang = getLanguage();
-    document.documentElement.lang = initialLang;
-    updateUserStatusBadge();
-    flow.updateUI(); // Set initial phase visibility
-
-    addAccordionFunctionality();
-    renderJournal();
-    setupCategoryAutocomplete(document.getElementById('search-query'));
-
-    // 3. Event Listeners
-    const loginModal = document.getElementById('login-modal');
-    const profileModal = document.getElementById('profile-modal');
-
-    document.getElementById('login-btn')?.addEventListener('click', () => {
-        if (document.getElementById('login-btn').textContent === 'Logout') {
-            supabase.auth.signOut().then(() => {
-                updateUserStatusBadge();
-                flow.navigateTo('phase-search');
-            });
-        } else {
-            if (loginModal) loginModal.style.display = 'flex';
-        }
-    });
-
-    document.getElementById('profile-btn')?.addEventListener('click', () => {
-        if (profileModal) profileModal.style.display = 'flex';
-    });
-
-    // Close Modals on X click
-    document.querySelectorAll('.close-modal').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (loginModal) loginModal.style.display = 'none';
-            if (profileModal) profileModal.style.display = 'none';
-        });
-    });
-
-    // Close Modals on outside click
-    window.addEventListener('click', (e) => {
-        if (e.target === loginModal) loginModal.style.display = 'none';
-        if (e.target === profileModal) profileModal.style.display = 'none';
-    });
-
-    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-            showToast('Login fehlgeschlagen: ' + error.message, 'error');
-        } else {
-            showToast('Login erfolgreich!', 'success');
-            if (loginModal) loginModal.style.display = 'none';
-            updateUserStatusBadge();
-        }
-    });
-
-    document.getElementById('search-form')?.addEventListener('submit', async (e) => {
-        await handleSearchFormSubmit(e);
-        flow.navigateTo('phase-analysis');
-    });
-
-    document.getElementById('delete-selected-btn')?.addEventListener('click', deleteSelectedEntries);
-    document.getElementById('export-json-button')?.addEventListener('click', () => exportJournal('json'));
-    document.getElementById('export-csv-button')?.addEventListener('click', () => exportJournal('csv'));
-    document.getElementById('surprise-me-button')?.addEventListener('click', triggerTopicExplorer);
-
-    document.getElementById('analyze-drift-button-normal')?.addEventListener('click', () => {
-        performDriftAnalysis(getAllSearchResults());
-    });
-
-    document.getElementById('analyze-health-button-normal')?.addEventListener('click', () => {
-        performHealthAnalysis(getAllSearchResults().slice(0, 10), 'health-score-container-normal');
-    });
-
-    // Initial Translation Load
-    try {
-        const data = await fetchJson(`translations/${initialLang}.json?v=${Date.now()}`);
-        if (data) {
-            setTranslations(initialLang, data);
-            applyTranslations();
-        }
-    } catch (error) {
-        console.error('Translation load error:', error);
-    }
+    console.log("WikiGUI Suite Ready.");
 }
 
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', initApp);

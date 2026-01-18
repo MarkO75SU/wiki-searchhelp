@@ -7,9 +7,9 @@
     <title>WikiGUI Suite 2026</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="src/css/style.css?v=1.16">
+    <link rel="stylesheet" href="src/css/style.css?v=1.17">
 </head>
-<body class="tier-free"> <!-- Tier class updated dynamically by JS -->
+<body class="tier-free">
     <div class="enterprise-layout">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
@@ -25,58 +25,65 @@
         <main class="content-area">
             <div id="header-placeholder"></div>
             
-            <!-- PHASE 1: SEARCH -->
+            <!-- PHASE 1: SEARCH & CONFIG -->
             <section id="phase-search" class="workflow-phase">
                 <div class="search-hero">
-                    <h1 id="main-heading">Expert Wikipedia Search</h1>
+                    <div class="mode-selector">
+                        <button class="mode-tab active" data-mode="standard">🌐 Recherche</button>
+                        <button class="mode-tab" data-mode="presentation">🎓 Referat</button>
+                        <button class="mode-tab" data-mode="trip">📍 Reise</button>
+                    </div>
+
                     <form id="search-form">
                         <div class="main-search-bar">
                             <div class="search-input-group">
-                                <input type="text" id="search-query" placeholder="Hauptthema suchen...">
+                                <input type="text" id="search-query" placeholder="Thema oder Ort eingeben...">
                                 <select id="target-wiki-lang">
-                                    <option value="de">🇩🇪 Deutsch</option>
-                                    <option value="en">🇬🇧 English</option>
+                                    <option value="de">🇩🇪 DE</option>
+                                    <option value="en">🇬🇧 EN</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary">Scan starten</button>
                         </div>
-                        <div class="quick-actions" style="margin-top: 1rem; text-align: left;">
-                            <button type="button" id="surprise-me-button" class="btn btn-tertiary" style="height: 32px; font-size: 0.75rem;">🎲 Überrasch mich</button>
-                            <button type="button" id="toggle-advanced-btn" class="btn btn-tertiary" style="height: 32px; font-size: 0.75rem;">⚙️ Erweiterte Parameter</button>
+
+                        <div class="search-toggles">
+                            <button type="button" id="toggle-advanced-btn" class="btn btn-link">⚙️ Erweiterte Pro-Parameter</button>
+                            <button type="button" id="surprise-me-button" class="btn btn-link">🎲 Überrasch mich</button>
                         </div>
 
                         <!-- ADVANCED PARAMETERS (Initially Hidden) -->
-                        <div id="advanced-settings-area" style="display: none; margin-top: 2rem;">
+                        <div id="advanced-settings-area" style="display: none;">
                             <div class="advanced-settings-grid">
                                 <div class="settings-card">
-                                    <h3>Such-Konzept</h3>
-                                    <div class="form-group"><label>Exakte Phrase</label><input type="text" id="exact-phrase" placeholder="\"phrase\""></div>
-                                    <div class="form-group"><label>Ausschließen</label><input type="text" id="without-words" placeholder="-wort"></div>
+                                    <h3>Konzept-Filter</h3>
+                                    <div class="form-group"><label>Exakte Phrase</label><input type="text" id="exact-phrase"></div>
+                                    <div class="form-group"><label>Ausschließen</label><input type="text" id="without-words"></div>
                                     <div class="form-row">
                                         <label><input type="checkbox" id="option-intitle"> Nur Titel</label>
-                                        <label><input type="checkbox" id="option-fuzzy"> Unscharf</label>
+                                        <label><input type="checkbox" id="option-fuzzy"> Fuzzy-Search</label>
                                     </div>
                                 </div>
                                 <div class="settings-card">
-                                    <h3>Bereich & Filter</h3>
-                                    <div class="form-group"><label>Kategorie</label><input type="text" id="incategory-value"></div>
-                                    <div class="form-group"><label>Tiefe</label><input type="text" id="deepcat-value"></div>
-                                    <div class="form-group"><label>Vorlage</label><input type="text" id="hastemplate-value"></div>
+                                    <h3>Struktur-Filter</h3>
+                                    <div class="form-group"><label>In Kategorie</label><input type="text" id="incategory-value"></div>
+                                    <div class="form-group"><label>Tiefe (DeepCat)</label><input type="text" id="deepcat-value"></div>
+                                    <div class="form-group"><label>Nutzt Vorlage</label><input type="text" id="hastemplate-value"></div>
                                 </div>
                                 <div class="settings-card">
-                                    <h3>Technik & Zeit</h3>
-                                    <div class="form-group"><label>Quelltext</label><input type="text" id="insource-value" placeholder="/regex/"></div>
+                                    <h3>Zeitliche Eingrenzung</h3>
                                     <div class="form-row">
-                                        <div class="form-group"><label>Ab</label><input type="date" id="dateafter-value"></div>
+                                        <div class="form-group"><label>Von</label><input type="date" id="dateafter-value"></div>
                                         <div class="form-group"><label>Bis</label><input type="date" id="datebefore-value"></div>
                                     </div>
+                                    <div class="form-group"><label>Regex Quelltext</label><input type="text" id="insource-value" placeholder="/regex/"></div>
                                 </div>
                                 <div class="settings-card">
-                                    <h3>Geografisch</h3>
-                                    <div class="form-group"><label>Radius (km)</label><input type="number" id="geo-radius" value="5"></div>
+                                    <h3>Umkreis (Geo)</h3>
+                                    <div class="form-group"><label>Radius (km)</label><input type="number" id="geo-radius" value="10"></div>
                                     <div class="form-group"><label>Koordinaten</label>
                                         <div class="input-with-action">
-                                            <input type="text" id="geo-coord"><button type="button" id="get-location-btn" class="btn-icon">📍</button>
+                                            <input type="text" id="geo-coord" placeholder="lat, lon">
+                                            <button type="button" id="get-location-btn" class="btn-icon">📍</button>
                                         </div>
                                     </div>
                                 </div>
@@ -86,46 +93,45 @@
                 </div>
             </section>
 
-            <!-- PHASE 2: ANALYSIS -->
+            <!-- PHASE 2: ANALYSIS & VISUALIZATION -->
             <section id="phase-analysis" class="workflow-phase" style="display: none;">
                 <div class="analysis-grid">
-                    <!-- Advanced Tier Feature -->
-                    <div class="card tier-gate advanced" id="health-card">
-                        <div class="card-header"><h3>Health Score</h3><span class="info-icon">i</span></div>
-                        <p class="card-info">Strukturelle Integrität & Belegqualität.</p>
-                        <div id="health-score-container-normal"></div>
-                    </div>
-                    <!-- Advanced Tier Feature -->
-                    <div class="card tier-gate advanced" id="drift-card">
-                        <div class="card-header"><h3>Semantic Drift</h3><span class="info-icon">i</span></div>
-                        <p class="card-info">KI-Analyse der inhaltlichen Abweichung.</p>
-                        <button id="analyze-drift-button-normal" class="btn btn-secondary btn-sm" style="width: 100%;">🔍 KI-Check</button>
-                    </div>
-                    <!-- Advanced Tier Feature: RETURN OF THE NETWORK GRAPH -->
-                    <div class="card tier-gate advanced" id="network-card">
-                        <div class="card-header"><h3>Netzwerkgraph</h3><span class="info-icon">i</span></div>
+                    <!-- FREE: NETWORK GRAPH (Returned) -->
+                    <div class="card" id="network-card">
+                        <div class="card-header">
+                            <h3>Netzwerkgraph</h3>
+                            <span class="info-icon" title="Visualisiert thematische Abhängigkeiten und Links zwischen den Artikeln.">i</span>
+                        </div>
                         <p class="card-info">Beziehungen und Abhängigkeiten.</p>
-                        <div class="canvas-wrapper" style="height: 150px; background: var(--bg-input); border-radius: 4px; overflow: hidden;">
+                        <div class="canvas-wrapper" style="height: 180px; background: var(--bg-input); border-radius: 4px; overflow: hidden; margin-top: 1rem;">
                             <canvas id="network-canvas" style="width: 100%; height: 100%; cursor: crosshair;"></canvas>
                         </div>
-                        <div id="network-analysis-container" style="display: none;"></div> <!-- Hidden logistics container -->
-                        <button id="analyze-network-button-normal" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 1rem;">🌐 Graph generieren</button>
+                        <button id="analyze-network-button-normal" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 1rem;">🌐 Graph berechnen</button>
                     </div>
-                    <!-- Free Tier Feature -->
+
+                    <!-- FREE: KNOWLEDGE MAP -->
                     <div class="card" id="map-card">
                         <div class="card-header"><h3>Knowledge Map</h3></div>
-                        <p class="card-info">Geografische Verteilung der Artikel.</p>
-                        <div id="search-results-map" class="mini-map" style="height: 150px;"></div>
+                        <p class="card-info">Geografische Verteilung der identifizierten Artikel.</p>
+                        <div id="search-results-map" class="mini-map" style="height: 180px; margin-top: 1rem;"></div>
+                    </div>
+
+                    <!-- ADVANCED: HEALTH & DRIFT -->
+                    <div class="card tier-gate advanced" id="quality-card">
+                        <div class="card-header"><h3>Integritäts-Check</h3><span class="info-icon" title="KI-Analyse der Belegquote und des inhaltlichen Drifts.">i</span></div>
+                        <p class="card-info">Health-Score & Semantic Drift (Advanced).</p>
+                        <div id="health-score-container-normal"></div>
+                        <button id="analyze-drift-button-normal" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 1rem;">🔍 KI-Drift prüfen</button>
                     </div>
                 </div>
                 
                 <div class="results-container">
-                    <h2 id="search-results-heading-normal">Ergebnisse</h2>
+                    <h2 id="search-results-heading-normal">Scan-Ergebnisse</h2>
                     <ul id="simulated-search-results-normal" class="results-list"></ul>
                 </div>
 
                 <div class="phase-actions">
-                    <button id="open-editor-btn" class="btn btn-primary tier-gate expert" disabled>Expert-Editor öffnen</button>
+                    <button id="open-editor-btn" class="btn btn-primary tier-gate expert" disabled>Redaktions-Hub öffnen</button>
                 </div>
             </section>
 
@@ -133,10 +139,12 @@
             <section id="phase-editor" class="workflow-phase" style="display: none;">
                 <div class="editor-layout">
                     <div class="editor-sidebar">
-                        <h3>Wartungstools</h3>
+                        <h3>Wartungs-Aktionen</h3>
                         <div id="maintenance-modal-inline"></div>
                     </div>
-                    <div class="editor-main"><div id="article-preview" class="preview-box"></div></div>
+                    <div class="editor-main">
+                        <div id="article-preview" class="preview-box"></div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -145,11 +153,17 @@
     <!-- MODALS -->
     <div id="login-modal" class="modal" aria-hidden="true">
         <div class="modal-content">
-            <div class="modal-header"><h3>Login</h3><button class="close-modal" id="login-modal-close">&times;</button></div>
+            <div class="modal-header"><h3>Enterprise Login</h3><button class="close-modal" id="login-modal-close">&times;</button></div>
             <div class="modal-body">
                 <form id="login-form">
-                    <input type="email" id="login-email" placeholder="E-Mail" required>
-                    <input type="password" id="login-password" placeholder="Passwort" required>
+                    <div class="form-group">
+                        <label>E-Mail</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Passwort</label>
+                        <input type="password" id="login-password" required>
+                    </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Anmelden</button>
                 </form>
             </div>

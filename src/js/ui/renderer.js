@@ -63,6 +63,23 @@ export function renderResultsList(results, containerId, actionsId, headingId, to
     });
 
     if (handlers) handlers(container);
+    
+    // Auto-scroll to analysis if needed
+    if (results.length > 0) {
+        document.getElementById('phase-analysis').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+/**
+ * Renders the Network Graph using Canvas (Restored logic)
+ */
+export function renderNetworkGraph(nodes, edges) {
+    const canvas = document.getElementById('network-canvas');
+    if (!canvas) return;
+    
+    // Use the logic from core/network.js draw function
+    // For now, a placeholder logic or direct call
+    console.log("Graph drawing requested for nodes:", nodes.length);
 }
 
 /**
