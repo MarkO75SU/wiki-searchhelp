@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Board - WikiGUI</title>
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css?v=1.13">
+    <style>
+        .admin-board { margin-top: 2rem; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+        .history-table th, .history-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .history-table th { color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
+        .score-badge { padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .score-high { background: #22c55e20; color: #22c55e; }
+        .score-mid { background: #eab30820; color: #eab308; }
+        .score-low { background: #ef444420; color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <main class="container">
+        <section class="admin-board">
+            <h1>Admin Board - History</h1>
+            <p>Übersicht aller durchgeführten System-Scans und Qualitätsprüfungen.</p>
+            
+            <div id="history-container">
+                <p>Lade Historie...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer-placeholder"></footer>
+
+    <script src="../js/admin_main.js" type="module"></script>
+</body>
+</html>

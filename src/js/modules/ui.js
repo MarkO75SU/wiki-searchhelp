@@ -6,8 +6,9 @@ import { presetCategories } from './presets.js';
 import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';
 import { loadLeaflet } from './utils.js';
-import { generateEmbeddings, calculateCentroid, cosineSimilarity } from './ai_mock.js';
+import { generateEmbeddings, calculateCentroid, cosineSimilarity } from './ai_service.js';
 import { analyzeGlobalRelevance } from './interwiki.js';
+import { saveTestReport } from './database.js';
 
 let allSearchResults = []; // Store full search results for downloading
 
