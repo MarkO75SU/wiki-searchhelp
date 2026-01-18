@@ -23,7 +23,7 @@ Die "Killer-Features", die das Tool zum Marktführer für Wiki-Redakteure machen
 
 * **Health-Score Engine:** Proaktive Bewertung von Kategorien basierend auf Belegquote, Metadaten-Vollständigkeit und Konsistenz. [x]
 * **Beleg-Radar:** Deep-Scan-Analyse der `<ref>`-Dichte zur Identifikation von Wartungsstau. [x]
-* **Semantic Drift Analysis:** KI-Vektoranalyse zur automatischen Markierung von Artikeln, die thematisch nicht in eine Kategorie passen.
+* **Semantic Drift Analysis:** KI-Vektoranalyse zur automatischen Markierung von Artikeln, die thematisch nicht in eine Kategorie passen. [x]
 * **Interwiki-Conflict-Detector:** Globaler Abgleich von Kategorien-Hierarchien (DE/EN/FR/Wikidata), um strukturelle Lücken oder Fehlübersetzungen aufzudecken.
 
 
