@@ -245,10 +245,45 @@ html, body {
 .btn:hover { transform: translateY(-1px); border-color: var(--primary); }
 
 /* --- Forms --- */
-.main-search-bar { background: var(--bg-surface); padding: 0.5rem; border-radius: var(--radius-md); display: flex; gap: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.main-search-bar { 
+    background: var(--bg-surface); 
+    padding: 0.5rem; 
+    border-radius: var(--radius-md); 
+    display: flex; 
+    gap: 0.5rem; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
+}
+
+@media (max-width: 600px) {
+    .main-search-bar {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    .search-input-group {
+        flex-direction: column;
+    }
+    .main-search-bar select {
+        border-top: 1px solid var(--border-color);
+        width: 100%;
+    }
+}
+
 .search-input-group { display: flex; flex-grow: 1; background: var(--bg-input); border-radius: var(--radius-sm); overflow: hidden; }
 input, select { background: transparent; border: none; padding: 0.75rem 1rem; color: #fff; width: 100%; }
 input:focus { outline: none; background: rgba(37, 99, 235, 0.05); }
+
+/* --- Table Responsiveness --- */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 1rem;
+    border-radius: var(--radius-md);
+}
+
+.history-table {
+    min-width: 600px; /* Force scroll on small mobile */
+}
 
 /* --- Health Score UI --- */
 .health-display { display: flex; align-items: center; gap: 1.5rem; margin-top: auto; }
@@ -266,6 +301,28 @@ input:focus { outline: none; background: rgba(37, 99, 235, 0.05); }
 /* --- Popups --- */
 .leaflet-popup-content-wrapper { background: var(--bg-sidebar) !important; color: #fff !important; border-radius: 4px !important; }
 .leaflet-popup-tip { background: var(--bg-sidebar) !important; }
+
+/* --- Map Labels & Scale --- */
+.map-article-label {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid var(--primary);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.leaflet-control-scale-line {
+    background: rgba(0, 0, 0, 0.5) !important;
+    color: #fff !important;
+    border: 1px solid var(--border-color) !important;
+    border-top: none !important;
+    font-size: 0.65rem !important;
+}
 
 /* --- Responsive --- */
 @media (max-width: 1100px) {
