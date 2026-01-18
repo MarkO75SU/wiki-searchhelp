@@ -1,6 +1,6 @@
 // src/js/main.js
 import { setLanguage, setTranslations, getLanguage, getTranslation, setSearchMode, getSearchMode } from './modules/state.js';
-import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer, performHealthAnalysis, performGeoValidation, performInterwikiCheck } from './modules/ui.js';
+import { applyTranslations, clearForm, handleSearchFormSubmit, addAccordionFunctionality, populatePresetCategories, populatePresets, applyPreset as applyPresetToForm, downloadResults, getAllSearchResults, setupResultFilter, handleTripFormSubmit, renderResultsList, setupSortByRelevance, exportCitations, triggerTopicExplorer, performHealthAnalysis, performGeoValidation, performInterwikiCheck, performDriftAnalysis } from './modules/ui.js';
 import { generateSearchString } from './modules/search.js';
 import { presetCategories } from './modules/presets.js';
 import { renderJournal, clearJournal, deleteSelectedEntries, exportJournal, importJournal, syncJournalToGist } from './modules/journal.js';
@@ -262,6 +262,9 @@ async function initializeApp() {
     });
     document.getElementById('interwiki-check-button')?.addEventListener('click', () => {
         performInterwikiCheck(getAllSearchResults());
+    });
+    document.getElementById('analyze-drift-button-normal')?.addEventListener('click', () => {
+        performDriftAnalysis(getAllSearchResults());
     });
 
     const exportNetworkBtn = document.getElementById('export-network-button');

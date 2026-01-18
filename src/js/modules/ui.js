@@ -6,6 +6,7 @@ import { presetCategories } from './presets.js';
 import { addJournalEntry } from './journal.js';
 import { showToast } from './toast.js';
 import { loadLeaflet } from './utils.js';
+import { generateEmbeddings, calculateCentroid, cosineSimilarity } from './ai_mock.js';
 
 let allSearchResults = []; // Store full search results for downloading
 
@@ -1311,4 +1312,63 @@ export async function performInterwikiCheck(results) {
           `Davon in EN vorhanden: ${totalFound - missingInEn}\n` +
           `Fehlend in EN: ${missingInEn}\n\n` +
           `Globalisierungs-Index: ${rate.toFixed(1)}%`);
+}
+
+export async function performDriftAnalysis(results) {
+    if (results.length < 3) {
+        showToast("Zu wenige Artikel für Drift-Analyse (min. 3).");
+        return;
+    }
+
+    showToast("Analysiere semantischen Drift (AI Simulation)...");
+
+    const titles = results.map(r => r.title);
+    
+    // 1. Generate Embeddings (Mock)
+    const vectors = await generateEmbeddings(titles);
+    
+    // 2. Calculate Centroid (The "Main Topic" of this list)
+    const centroid = calculateCentroid(vectors);
+
+    // 3. Measure Distance of each article to Centroid
+    let outlierCount = 0;
+    const outlierThreshold = 0.85; // Similarity below 85% = Drift
+
+    const enrichedResults = results.map((res, i) => {
+        const similarity = cosineSimilarity(vectors[i], centroid);
+        const isOutlier = similarity < outlierThreshold;
+        if (isOutlier) outlierCount++;
+        return { ...res, semanticScore: similarity, isOutlier };
+    });
+
+    // 4. Visual Feedback
+    // Sort so outliers appear at the top? Or just highlight them.
+    // Let's just update the UI in place for now.
+    
+    const container = document.getElementById('simulated-search-results-normal'); // Assuming normal mode for now
+    if (!container) return;
+    
+    const listItems = container.querySelectorAll('li.result-item');
+    enrichedResults.forEach((res, index) => {
+        if (res.isOutlier) {
+            const li = listItems[index];
+            if (li) {
+                li.style.borderLeft = "4px solid #ef4444";
+                li.style.backgroundColor = "rgba(239, 68, 68, 0.05)";
+                
+                // Add a warning badge if not exists
+                if (!li.querySelector('.drift-warning')) {
+                    const badge = document.createElement('div');
+                    badge.className = 'drift-warning';
+                    badge.style.color = '#ef4444';
+                    badge.style.fontSize = '0.75rem';
+                    badge.style.marginTop = '0.5rem';
+                    badge.innerHTML = `⚠️ <strong>Themen-Drift erkannt!</strong> (Sim: ${(res.semanticScore * 100).toFixed(0)}%)<br>Dieser Artikel passt semantisch evtl. nicht in diese Liste.`;
+                    li.querySelector('.result-content').appendChild(badge);
+                }
+            }
+        }
+    });
+
+    showToast(`Drift-Analyse fertig: ${outlierCount} potenzielle Ausreißer gefunden.`);
 }
