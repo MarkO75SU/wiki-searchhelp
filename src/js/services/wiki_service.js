@@ -103,7 +103,9 @@ export async function fetchBatchedMetadata(titles, lang, props = 'pageimages|ext
             action: 'query',
             titles: batch.join('|'),
             prop: props,
-            exlimit: batch.length,
+            exintro: 1,
+            explaintext: 1,
+            exlimit: 'max',
             clshow: '!hidden'
         });
         if (data?.query?.pages) Object.assign(results, data.query.pages);
