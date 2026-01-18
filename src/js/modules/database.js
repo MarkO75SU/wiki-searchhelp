@@ -5,13 +5,13 @@ import { CONFIG } from './config.js';
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 /**
- * Saves analysis results to the system_tests table.
+ * Saves analysis results to the analysis_logs table.
  * @param {object} report - The report data containing drift, health, and global scores.
  */
 export async function saveTestReport(report) {
     try {
         const { data, error } = await supabase
-            .from('system_tests')
+            .from('analysis_logs')
             .insert([
                 {
                     search_query: report.query,
@@ -24,21 +24,21 @@ export async function saveTestReport(report) {
             ]);
 
         if (error) throw error;
-        console.log('[Database] Test report saved successfully:', data);
+        console.log('[Database] Analysis log saved successfully:', data);
         return data;
     } catch (err) {
-        console.error('[Database] Error saving test report:', err.message);
+        console.error('[Database] Error saving analysis log:', err.message);
         return null;
     }
 }
 
 /**
- * Fetches the history of test reports.
+ * Fetches the history of analysis logs.
  */
 export async function getTestHistory() {
     try {
         const { data, error } = await supabase
-            .from('system_tests')
+            .from('analysis_logs')
             .select('*')
             .order('created_at', { ascending: false });
 
